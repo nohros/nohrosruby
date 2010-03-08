@@ -26,9 +26,8 @@
 
 #include "..\notify\eventmessages.h"
 #include "..\notify\listener.h"
+#include "rbstack.h"
 #include "windows.h"
-
-//HANDLE hSlot;
 
 /**/
 PRBCALLBACK callback;
@@ -70,21 +69,6 @@ typedef struct RBVOCABULARY {
 	PRBCOMMAND cmds; /* pointer to an array of commands */
 }*PRBVOCABULARY;
 
-/* a structure that represents a node in the command stack. */
-typedef struct RBNODE {
-	char* data; /* the node data */
-	char pi; /* the parameter identification */
-	int size; /* the size of the node data */
-	RBNODE* next; /* the next node in the chain */
-}*PRBNODE;
-
-/* a structure that represents the command stack */
-typedef struct RBSTACK {
-	PRBNODE head; /* pointer to the first node */
-	PRBNODE sp; /* pointer to the last node */
-	int length; /* the stack length */
-}*PRBSTACK;
-
 /* the command stack */
 RBSTACK stack;
 
@@ -108,6 +92,9 @@ bool msi();
 /* displays a message to the logged-on user */
 bool show();
 
+/* creates a process */
+bool callproc();
+
 /* download binary files from the server
  * @param name The name of the file.
  * @param len Length (in characters) of the name.
@@ -122,6 +109,11 @@ bool download( char *name, int len, pmsgprocbuf_t msgbuf );
 // NOP command vocabulary
 RBCCOMMAND rb_cmd[] = {
 	{ "NOP", nop }
+};
+
+// CALLPROC command vocabulary
+RBCCOMMAND rb_cmd_c[] = {
+	{ "CALLPROC", callproc }
 };
 
 // M command vocabulary
@@ -148,7 +140,7 @@ RBCCOMMAND rb_cmd_u[] = {
 RBVOCABULARY commands[26] = {
 	rb_cmd, /* A */
 	rb_cmd, /* B */
-	rb_cmd, /* C */
+	rb_cmd_c, /* C */
 	rb_cmd, /* D */
 	rb_cmd, /* E */
 	rb_cmd, /* F */

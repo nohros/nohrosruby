@@ -226,6 +226,73 @@ bool new_node(PRBNODE* node)
 
 #pragma region commands
 
+bool callproc()
+{
+	STARTUPINFO si;
+	PROCESS_INFORMATION pi;
+	int nsize, len;
+	char szPath[MAX_PATH], *pch, *name;
+	RBNODE* pnode;
+
+	/* must have only one nodes */
+	pnode = stack.head->next;
+	if( pnode == NULL || pnode->pi != 'N' || pnode->data == NULL )
+		return false;
+
+	// get the application directory path
+	nsize = GetModuleFileNameA( NULL, szPath, MAX_PATH );
+	if ( nsize == 0 ) {
+		error_t.e_errorcode = GetLastError();
+		error_t.len = 0;
+		callback->dllerror( &error_t );
+
+		return false;
+	}
+
+	// build the file path
+	pch = strrchr( szPath, L'\\' )+1; // remove the file name from the path
+	if( (pch-szPath)+pnode->size > MAX_PATH ) {
+		error_t.e_errorcode = NNMSG_RUNTIME_MAX_PATH;
+		error_t.len = 0;
+		callback->dllerror( &error_t );
+
+		return false;
+	}
+
+	memcpy( pch+7, name, pnode->size ); // +7(plugin folder+1) file name
+	memcpy( pch, "plugin\\", 7 ); // plugin folder
+	len += pch-szPath+7;
+
+	ZeroMemory( &si, sizeof(si) );
+	si.cb = sizeof(si);
+	ZeroMemory( &pi, sizeof(pi) );
+
+	// start the process
+	if ( !CreateProcessA(
+		szPath,	// module name
+		NULL,	// process handle not inheritable
+		NULL,	// process handle not inheritable
+		NULL,	// thread handle not inheritable
+		FALSE,	// no inheritence
+		0,		// no creation flags
+		NULL,	// parent environment
+		NULL,	// parent starting directory
+		(LPSTARTUPINFOA)&si,
+		&pi)
+		) {
+			error_t.e_errorcode = GetLastError();
+			error_t.len = 0;
+			callback->dllerror( &error_t );
+
+			return false;
+	}
+
+	CloseHandle( pi.hProcess );
+	CloseHandle( pi.hThread );
+
+	return true;
+}
+
 bool msi()
 {
 	return true;
