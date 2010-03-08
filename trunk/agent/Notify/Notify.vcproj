@@ -14,7 +14,7 @@
 	</Platforms>
 	<ToolFiles>
 		<ToolFile
-			RelativePath="H:\Documents and Settings\neylor.silva\Meus documentos\Visual Studio 2005\Settings\mc.rule"
+			RelativePath=".\mc.rule"
 		/>
 	</ToolFiles>
 	<Configurations>
