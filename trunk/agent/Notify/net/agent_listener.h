@@ -1,41 +1,38 @@
-#pragma region MIT License
-/*
- * Nohros Notify
- * Copyright (c) 2009 Nohros Systems Inc, http://www.nohros.com
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this 
- * software and associated documentation files (the "Software"), to deal in the Software 
- * without restriction, including without limitation the rights to use, copy, modify, merge, 
- * publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons 
- * to whom the Software is furnished to do so, subject to the following conditions:
- * 	
- * The above copyright notice and this permission notice shall be included in all copies or 
- * substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
- * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
- * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
- * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
- * DEALINGS IN THE SOFTWARE.
- */
-
-#pragma endregion
+// Copyright (c) 2009 Nohros Systems Inc.
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+// software and associated documentation files (the "Software"), to deal in the Software 
+// without restriction, including without limitation the rights to use, copy, modify, merge, 
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons 
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 	
+// The above copyright notice and this permission notice shall be included in all copies or 
+// substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+// DEALINGS IN THE SOFTWARE.
+// ===========================================================================================
 
 // For historical reasons, the windows.h header defaults to including the winsock.h
 // header file for Windows Sockets 1.1. The WIN32_LEAN_AND_MEAN macro prevents the
 // winsock.h from beign included by the windows.h header.
-#ifndef _NOTIFY_LISTENER_
-#define _NOTIFY_LISTENER_
-
 #define WIN32_LEAN_AND_MEAN
 #define _WIN32_WINNT 0x0500
 
-#include "windows.h"
-#include "winsock2.h"
-#include "ws2tcpip.h"
-#include "stdio.h"
-#include "config.h"
+#ifndef AGENT_NET_AGENT_LISTENER_H__
+#define AGENT_NET_AGENT_LISTENER_H__
+
+#include "common/settings.h"
+
+#include <windows.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <stdio.h>
+#include "common/constants.h"
 
 #define LISTENER_STOPED		0x1
 #define LISTENER_LISTENING	0x2
@@ -43,7 +40,7 @@
 typedef struct notifybuf
 {
 	SOCKET fd; /* control connection */
-	char inbuf[NOTIFY_BUFSIZE]; /* last received data */
+	char inbuf[kDefaultBufferSize]; /* last received data */
 	char *extra; /* extra characters */
 	int extralen; /* number of extra chars */
 	int len; /* number of chars last readed */
@@ -52,7 +49,7 @@ typedef struct notifybuf
 typedef struct msgprocbuf
 {
 	SOCKET fd; /* control connection */
-	char inbuf[NOTIFY_BUFSIZE]; /* last received data */
+	char inbuf[kDefaultBufferSize]; /* last received data */
 	int len; /* number of chars last readed */
 	char *host; /* hostname:port */
 } msgprocbuf_t, *pmsgprocbuf_t;
@@ -183,4 +180,4 @@ private:
 	static int sendmsg( char *msg, int len );
 };
 
-#endif //_NOTIFY_LISTENER_
+#endif // AGENT_NET_AGENT_LISTENER_H__

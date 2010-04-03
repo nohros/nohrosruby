@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="Notify"
+	Name="agent"
 	ProjectGUID="{D5268E38-98ED-4298-B9A2-483ED31CFEC2}"
 	RootNamespace="Bufalo"
 	Keyword="Win32Proj"
@@ -48,6 +48,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="$(SolutionDir)"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -191,54 +192,26 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source Files"
-			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+			Name="service"
 			>
 			<File
-				RelativePath=".\config.cpp"
+				RelativePath=".\service\service_main.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\listener.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\logging.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\service.cpp"
+				RelativePath=".\service\service_main.h"
 				>
 			</File>
 		</Filter>
 		<Filter
-			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
+			Name="net"
 			>
 			<File
-				RelativePath=".\config.h"
+				RelativePath=".\net\agent_listener.cc"
 				>
 			</File>
 			<File
-				RelativePath=".\eventmessages.h"
-				>
-			</File>
-			<File
-				RelativePath=".\listener.h"
-				>
-			</File>
-			<File
-				RelativePath=".\logging.h"
-				>
-			</File>
-			<File
-				RelativePath=".\resource.h"
-				>
-			</File>
-			<File
-				RelativePath=".\service.h"
+				RelativePath=".\net\agent_listener.h"
 				>
 			</File>
 		</Filter>
@@ -248,11 +221,7 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\eventmessages.mc"
-				>
-			</File>
-			<File
-				RelativePath=".\eventmessages.rc"
+				RelativePath=".\resource.h"
 				>
 			</File>
 			<File
