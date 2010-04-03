@@ -39,8 +39,14 @@ BOOL WINAPI DllMain(HINSTANCE hInst, DWORD fdwReason, LPVOID lpvReserveds)
 	return TRUE;
 }
 
+/* Changes history:
+ *		2010-09-03 - nohros - Release
+ */
 bool startup( PRBCALLBACK p )
 {
+	int size;
+	char path[MAX_PATH], *pch;
+
 	callback = p;
 	procheap = GetProcessHeap();
 
@@ -70,9 +76,39 @@ bool startup( PRBCALLBACK p )
 	stack.head->size = 0;
 	stack.sp = stack.head;
 
+	// Get the enviroment directories
+	ZeroMemory( path, MAX_PATH );
+
+	// get the application base directory
+	if ( GetModuleFileNameA( NULL, path, MAX_PATH ) == 0 ) {
+		error_t.e_errorcode = GetLastError();
+		error_t.len = 0;
+		callback->dllerror( &error_t );
+
+		return false;
+	}
+
+	pch = strrchr( path, L'\\' )+1; // remove the file name from the path
+	size = (int)(pch-path);
+
+	env.base.name = (char*)HeapAlloc( procheap, HEAP_ZERO_MEMORY, size );
+	if( env.base.name == NULL ) {
+		error_t.e_errorcode = GetLastError();
+		error_t.len = 0;
+		callback->dllerror( &error_t );
+
+		return false;
+	}
+
+	memcpy( env.base.name, path, size );
+	env.base.len = size;
+
 	return true;
 }
 
+/* Changes history:
+ *		2010-09-03 - nohros - Release
+ */
 bool process(char *msg, int length)
 {
 	char c, *ps, *p;
@@ -130,9 +166,9 @@ bool process(char *msg, int length)
 				ps=p+3;
 				p=strchr(ps, '/');
 				
-				// the last parameter?
-				if( p == NULL )
-					p=&msg[len]+1;
+				p = (p==NULL) ?
+					&msg[len]+1 : // include the '\0' character into the size of the last parameter?
+					p-1;	// the starting space of the currrent parameter identification will becomes '\0'.
 
 				if( !new_node(&stack.sp->next) )
 					return free_stack();
@@ -167,6 +203,9 @@ bool process(char *msg, int length)
 	return ret;
 }
 
+/* Changes history:
+ *		2010-09-03 - nohros - Release
+ */
 void end()
 {
 	free_stack();
@@ -174,6 +213,9 @@ void end()
 	HeapFree(procheap, HEAP_ZERO_MEMORY, stack.head );
 }
 
+/* Changes history:
+ *		2010-09-03 - nohros - Release
+ */
 bool free_stack()
 {
 	int i=0;
@@ -210,6 +252,9 @@ bool free_stack()
 	return true;
 }
 
+/* Changes history:
+ *		2010-09-03 - nohros - Release
+ */
 bool new_node(PRBNODE* node)
 {
 	*node = (PRBNODE)HeapAlloc( procheap, HEAP_ZERO_MEMORY, sizeof(RBNODE) );
@@ -226,42 +271,84 @@ bool new_node(PRBNODE* node)
 
 #pragma region commands
 
+/* Changes history:
+ *		2010-09-03 - nohros - Release
+ */
 bool callproc()
 {
-	STARTUPINFO si;
-	PROCESS_INFORMATION pi;
-	int nsize, len;
-	char szPath[MAX_PATH], *pch, *name;
+	int len, num;
+	char *path = NULL, *ppath = NULL, *args = NULL;
+	bool isnet = false, ret;
+
+	PRBNODE nodes[3] = { NULL, NULL, NULL }; // 0: exe name/, 1: .NET class name
 	RBNODE* pnode;
 
-	/* must have only one nodes */
+	STARTUPINFO si;
+	PROCESS_INFORMATION pi;
+
+	// N: required
+	// P: optional
+	if( stack.length > 3 || stack.length < 1 )
+		return false;
+
+	// parse nodes
 	pnode = stack.head->next;
-	if( pnode == NULL || pnode->pi != 'N' || pnode->data == NULL )
-		return false;
+	while( pnode != NULL )
+	{
+		switch( pnode->pi )
+		{
+			case 'N':
+				if( pnode->data == NULL) return false;
+				num = 0;
+				break;
 
-	// get the application directory path
-	nsize = GetModuleFileNameA( NULL, szPath, MAX_PATH );
-	if ( nsize == 0 ) {
-		error_t.e_errorcode = GetLastError();
-		error_t.len = 0;
-		callback->dllerror( &error_t );
+			case 'L':
+				num = 1;
+				break;
 
-		return false;
+			case 'A':
+				num = 2;
+				break;
+
+			default:
+				return false;
+		}
+		nodes[num] = pnode;
+		pnode = pnode->next;
 	}
 
-	// build the file path
-	pch = strrchr( szPath, L'\\' )+1; // remove the file name from the path
-	if( (pch-szPath)+pnode->size > MAX_PATH ) {
-		error_t.e_errorcode = NNMSG_RUNTIME_MAX_PATH;
-		error_t.len = 0;
-		callback->dllerror( &error_t );
+	isnet = ( nodes[1] != NULL && strcmp(nodes[1]->data, ".NET") ==0); // .NET dll assembly ?
+	pnode = nodes[0];
 
-		return false;
+	len = env.base.len // base directory name length
+		+(isnet ? 9 : pnode->size) // "rint.exe\0"[9] || file name length
+		+7; // "plugin" directory name length
+
+	ppath = path = (char*)HeapAlloc( procheap, HEAP_ZERO_MEMORY, len );
+	if( path == NULL )
+		goto LBL_ERR;
+
+	// have arguments?
+	if( nodes[2]->data != NULL ) {
+		args = (char*)HeapAlloc( procheap, HEAP_ZERO_MEMORY, pnode->size+nodes[2]->size+1 );
+		if( args == NULL )
+			goto LBL_ERR;
+
+		memcpy( args, pnode->data, pnode->size ); // copy the program name
+		memcpy( args+pnode->size+1, nodes[2]->data, nodes[2]->size ); // copy the command-line arguments
+		args[pnode->size+1] = ' ';
 	}
 
-	memcpy( pch+7, name, pnode->size ); // +7(plugin folder+1) file name
-	memcpy( pch, "plugin\\", 7 ); // plugin folder
-	len += pch-szPath+7;
+	memcpy( path, env.base.name, env.base.len ); // copy the base directory path
+
+	ppath += env.base.len;
+	memcpy( ppath, "plugin\\", 7 ); // copy the plugin directory name
+
+	ppath += 7;
+	if( isnet )
+		memcpy( ppath, "rint.exe\0", 9); // copy name of the assembly loader
+	else
+		memcpy( ppath, pnode->data, pnode->size ); // copy the file name
 
 	ZeroMemory( &si, sizeof(si) );
 	si.cb = sizeof(si);
@@ -269,8 +356,8 @@ bool callproc()
 
 	// start the process
 	if ( !CreateProcessA(
-		szPath,	// module name
-		NULL,	// process handle not inheritable
+		path,	// module name
+		args,	// command line arguments
 		NULL,	// process handle not inheritable
 		NULL,	// thread handle not inheritable
 		FALSE,	// no inheritence
@@ -280,29 +367,50 @@ bool callproc()
 		(LPSTARTUPINFOA)&si,
 		&pi)
 		) {
-			error_t.e_errorcode = GetLastError();
-			error_t.len = 0;
-			callback->dllerror( &error_t );
-
-			return false;
+			goto LBL_ERR;
 	}
 
 	CloseHandle( pi.hProcess );
 	CloseHandle( pi.hThread );
 
-	return true;
+	ret = true;
+	goto LBL_CLEANUP;
+
+LBL_ERR:
+	error_t.e_errorcode = GetLastError();
+	error_t.len = 0;
+	callback->dllerror( &error_t );
+	ret = false;
+
+LBL_CLEANUP:
+	if( path != NULL )
+		HeapFree( procheap, HEAP_ZERO_MEMORY, path );
+
+	if( args == NULL )
+		HeapFree( procheap, HEAP_ZERO_MEMORY, args );
+
+	return ret;
 }
 
+/* Changes history:
+ *		2010-09-03 - nohros - Release
+ */
 bool msi()
 {
 	return true;
 }
 
+/* Changes history:
+ *		2010-09-03 - nohros - Release
+ */
 bool nop()
 {
 	return true;
 }
 
+/* Changes history:
+ *		2010-09-03 - nohros - Release
+ */
 bool update()
 {
 	int size = 0, len;
@@ -349,6 +457,8 @@ bool update()
 				}
 				memcpy( msgbuf.host, pnode->data, len*sizeof(char) );
 				msgbuf.host[len] = '\0';
+			
+			//case 'P'
 		}
 		pnode = pnode->next;
 	}
@@ -383,6 +493,9 @@ bool update()
 	return ret;
 }
 
+/* Changes history:
+ *		2010-09-03 - nohros - Release
+ */
 bool show()
 {
 	DWORD cbWritten;
@@ -427,45 +540,36 @@ bool show()
 
 #pragma endregion
 
+/* Changes history:
+ *		2010-09-03 - nohros - Release
+ */
 bool download( char *name, int len, pmsgprocbuf_t msgbuf )
 {
 	int nsize;
 	char szPath[MAX_PATH];
-	char* pch;
+	char* path;
 	bool ret;
 
 	HANDLE fp;
 	DWORD cbBytesWritten;
 
-	ZeroMemory( szPath, MAX_PATH );
+	ZeroMemory( path, MAX_PATH );
 
-	// get the application directory path
-	nsize = GetModuleFileNameA( NULL, szPath, MAX_PATH );
-	if ( nsize == 0 ) {
+	path = (char*)HeapAlloc( procheap, HEAP_ZERO_MEMORY, env.base.len+len );
+	if( path == NULL ) {
 		error_t.e_errorcode = GetLastError();
 		error_t.len = 0;
 		callback->dllerror( &error_t );
-
 		return false;
 	}
 
-	// build the file path
-	pch = strrchr( szPath, L'\\' )+1; // remove the file name from the path
-	if( (pch-szPath)+len > MAX_PATH ) {
-		error_t.e_errorcode = NNMSG_RUNTIME_MAX_PATH;
-		error_t.len = 0;
-		callback->dllerror( &error_t );
-
-		return false;
-	}
-
-	memcpy( pch+7, name, len ); // +8(update folder+1) file name
-	memcpy( pch, "update\\", 7 ); // update folder
-	len += pch-szPath+7;
+	memcpy( path, env.base.name, env.base.len );
+	memcpy( path+env.base.len, "update\\", env.base.len+1 );
+	memcpy( path+env.base.len+7, name, len );
 
 	// download and save the file
 	fp = CreateFileA(
-		szPath,
+		path,
 		GENERIC_WRITE,
 		FILE_SHARE_READ,
 		NULL,

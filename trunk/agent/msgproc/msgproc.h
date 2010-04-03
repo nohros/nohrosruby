@@ -32,12 +32,6 @@
 /**/
 PRBCALLBACK callback;
 
-/* the process heap handle */
-HANDLE procheap;
-
-/* error callback structure */
-dllerror_t error_t;
-
 #ifdef __cplusplus
 extern "C"
 {
@@ -56,6 +50,15 @@ __declspec(dllexport) void end();
 }
 #endif
 
+/* base directory */
+typedef struct ENVIRONMENT
+{
+	struct {
+		char* name;
+		int len;
+	} base;
+} *PENVIRONMENT;
+
 /* a structure which contains information on the commands this program can understand */
 typedef bool (*RBCMDHANDLER)();
 typedef struct RBCCOMMAND
@@ -72,11 +75,23 @@ typedef struct RBVOCABULARY {
 /* the command stack */
 RBSTACK stack;
 
+/* the process heap handle */
+HANDLE procheap;
+
+/* error callback structure */
+dllerror_t error_t;
+
+ENVIRONMENT env;
+
+#pragma region stack
+
 /* create a new RBNODE data structure */
 bool new_node( PRBNODE *node );
 
 /* release resource used by the ruby command stack */
 bool free_stack();
+
+#pragma endregion
 
 #pragma region commands handlers
 
@@ -133,8 +148,6 @@ RBCCOMMAND rb_cmd_u[] = {
 	{ "NOP", nop }
 };
 
-#pragma endregion
-
 /* indexed commands array
  * each slot represents a ASCII code(shifted 41 positions) of a characters of the english alphabet */
 RBVOCABULARY commands[26] = {
@@ -165,5 +178,7 @@ RBVOCABULARY commands[26] = {
 	rb_cmd, /* Y */
 	rb_cmd  /* Z */
 };
+
+#pragma endregion
 
 #endif // _NOTIFY_MSGPROC_
