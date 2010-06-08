@@ -20,7 +20,7 @@
 #include "agent/net/agent_listener.h"
 
 #include "common/settings.h"
-#include "third_party/chrome/logging.h"
+#include "third_party/glog/logging.h"
 
 // Allocating and initializing Configuration's
 // static data member. The pointer is beign

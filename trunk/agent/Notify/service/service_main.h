@@ -24,7 +24,7 @@
 #define AGENT_SERVICE_SERVICE_MAIN_H__
 
 #include <windows.h>
-#include "third_party/chrome/logging.h"
+#include "third_party/glog/logging.h"
 #include "common/settings.h"
 
 #define NOTIFY_SERVICE_START_LISTENER 0x80
