@@ -235,6 +235,14 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\glog\libglog.lib"
+			>
+		</File>
+		<File
+			RelativePath=".\glog\logging.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

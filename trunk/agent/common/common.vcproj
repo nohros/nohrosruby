@@ -144,14 +144,6 @@
 			>
 		</File>
 		<File
-			RelativePath=".\logging.cc"
-			>
-		</File>
-		<File
-			RelativePath=".\logging.h"
-			>
-		</File>
-		<File
 			RelativePath=".\port.h"
 			>
 		</File>
