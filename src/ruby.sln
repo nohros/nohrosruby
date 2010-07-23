@@ -8,6 +8,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rubynet", "services\net\rub
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "irubyservice", "services\net\irubynet\irubyservice.csproj", "{970C40CD-03F5-4761-9AE3-7E358E108E56}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(base)", "(base)", "{00A6864F-D91E-4132-A4DB-60F3F9B69201}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(third_party)", "(third_party)", "{F027E4F0-E6A4-4A4D-9AB2-F95934ACD5C4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(nohros)", "(nohros)", "{514E17FD-D99D-4932-88BA-263A78BA1DBE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(must)", "(must)", "{47C233F3-CFF5-4E4E-A7A6-E1BBDA3D328A}"
+	ProjectSection(SolutionItems) = preProject
+		third_party\nohros\must\nohros.desktop.dll = third_party\nohros\must\nohros.desktop.dll
+		third_party\nohros\must\nohros.dll = third_party\nohros\must\nohros.dll
+		third_party\nohros\must\nohros.resources.dll = third_party\nohros\must\nohros.resources.dll
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -34,5 +47,7 @@ Global
 		{959F77CD-D65A-494E-9D8C-B0D0D825818A} = {34F0FDB9-08D7-4C5F-9C6D-1303EE4C691B}
 		{561B3424-32B8-484E-9E4C-972D341F431E} = {959F77CD-D65A-494E-9D8C-B0D0D825818A}
 		{970C40CD-03F5-4761-9AE3-7E358E108E56} = {959F77CD-D65A-494E-9D8C-B0D0D825818A}
+		{514E17FD-D99D-4932-88BA-263A78BA1DBE} = {F027E4F0-E6A4-4A4D-9AB2-F95934ACD5C4}
+		{47C233F3-CFF5-4E4E-A7A6-E1BBDA3D328A} = {514E17FD-D99D-4932-88BA-263A78BA1DBE}
 	EndGlobalSection
 EndGlobal

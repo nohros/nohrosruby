@@ -25,10 +25,10 @@ Usage: nohros.rubynet [-help] -assembly=ASSEMBLYNAME -type=TYPENAME [arguments]
 
    arguments     Any argument to pass to the loaded assembly.
 
-  -assemblyName  specifes the assembly to load and run. This value must be
+  -assembly      specifes the assembly to load and run. This value must be
                  an absolute path or a path relative to the base directory.
 
-  -typeName      specifies the fully qualified type name of a class
+  -type          specifies the fully qualified type name of a class
                  that implements the IRubyService interface.
 
   -help          Displays this help and exit.";
