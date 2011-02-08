@@ -1,0 +1,44 @@
+// Ruby - Distributed task scheduler
+// Copyright (c) 2010 Nohros Systems Inc. All rights reserved.
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+// software and associated documentation files (the "Software"), to deal in the Software 
+// without restriction, including without limitation the rights to use, copy, modify, merge, 
+// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons 
+// to whom the Software is furnished to do so, subject to the following conditions:
+// 	
+// The above copyright notice and this permission notice shall be included in all copies or 
+// substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+// DEALINGS IN THE SOFTWARE.
+
+// Author: neylor.silva@nohros.com (Neylor Ohmaly)
+
+package nohros.ruby;
+
+import "google/protobuf/csharp_options.proto";
+
+option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby";
+
+option optimize_for = SPEED;
+
+// Wraps a protobuf message into a envelope, which defines what is in the message and how
+// to process it. The ruby server send messages that could be one of several different types.
+// However, protocol buffers parsers cannot necessarily determine the type of a message based
+// on the contents alone. This message was created to ensure that the sent message is correctly
+// decoded/encoded by the ruby service.
+message RubyMessagePacket {
+
+	// Represents the message that this envelope wraps. This is a varint encoded string.
+	optional string message = 1;
+	
+	// The name of the class that is used to encode/decode the message wrapped by this envelope.
+	// The Java and C# version of the services may use this type to instantiate the appropriated
+	// parser class.
+	optional string type = 2;
+}
