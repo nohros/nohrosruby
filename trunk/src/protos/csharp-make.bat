@@ -33,6 +33,7 @@ set OUT_PATH=.\parsers\csharp
 :: clean up residual files
 if exist DescriptorProtoFile.cs del /q DescriptorProtoFile.cs
 if exist CSharpOptions.cs del /q CSharpOptions.cs
+del /y *.protobin
 
 :: move the generated classes to the output folder
 move /y *.cs %OUT_PATH%
