@@ -24,6 +24,7 @@ package nohros.ruby;
 import "google/protobuf/csharp_options.proto";
 
 option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby";
+option (google.protobuf.csharp_file_options).umbrella_classname = "RubyMessageProtos";
 
 option optimize_for = SPEED;
 
@@ -41,4 +42,6 @@ message RubyMessagePacket {
 	// The Java and C# version of the services may use this type to instantiate the appropriated
 	// parser class.
 	optional string type = 2;
+	
+	optional string guid = 3;
 }
