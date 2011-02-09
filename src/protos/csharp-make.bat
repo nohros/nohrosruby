@@ -27,13 +27,13 @@ set PROTOC=%BIN_PATH%\protoc.exe
 set PROTOGEN=%BIN_PATH%\protogen.exe
 set OUT_PATH=.\parsers\csharp
 
-%PROTOC% --descriptor_set_out=%1bin --include_imports ruby_message_packet.proto
+%PROTOC% --descriptor_set_out=%1bin --include_imports %1
 %PROTOGEN% %1bin
 
 :: clean up residual files
 if exist DescriptorProtoFile.cs del /q DescriptorProtoFile.cs
 if exist CSharpOptions.cs del /q CSharpOptions.cs
-del /y *.protobin
+del /q *.protobin
 
 :: move the generated classes to the output folder
 move /y *.cs %OUT_PATH%
