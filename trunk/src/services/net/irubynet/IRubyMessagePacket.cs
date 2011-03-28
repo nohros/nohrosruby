@@ -23,6 +23,6 @@ namespace Nohros.Ruby
         /// <summary>
         /// Gets the fully assembly qualified named of the class that can be used to decode the <see cref="Message"/>.
         /// </summary>
-        string Type { get; }
+        string ParserType { get; }
     }
 }

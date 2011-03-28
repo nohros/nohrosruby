@@ -21,6 +21,57 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(must)", "(must)", "{47C233
 		third_party\nohros\must\nohros.resources.dll = third_party\nohros\must\nohros.resources.dll
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(server)", "(server)", "{40D055A1-F3D4-4D98-9F8B-3561E2A7678C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(client)", "(client)", "{54C8184B-07C9-4D70-9DF0-C474AD9C2235}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ruby_client", "client\ruby_client.vcproj", "{C2CD67FE-BB0C-4F3A-A1F3-01E0C9EB39F6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(gson)", "(gson)", "{BB55C05B-9933-491A-B412-FFC8CACCFE0C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "base", "third_party\nohros\gson\src\base\base.vcproj", "{916E48ED-4BA0-4BE4-A25E-AD1BA5A48979}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(third_party)", "(third_party)", "{2C8041C1-0775-4874-BB1E-2181FCC94361}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "base", "base\base.vcproj", "{365ECDCF-A7F2-4E5B-B45F-72D551F1C449}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(protobuf-csharp-port)", "(protobuf-csharp-port)", "{EC891FEB-20FC-4EA3-985A-56A5A156EF7B}"
+	ProjectSection(SolutionItems) = preProject
+		third_party\protobuf-csharp-port\Google.ProtocolBuffers.dll = third_party\protobuf-csharp-port\Google.ProtocolBuffers.dll
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(google)", "(google)", "{3C8B7E59-063E-405E-A717-7CF06E5249EA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(protobuf)", "(protobuf)", "{D3CA8286-3E88-4E15-B40D-B181079541FD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(tests)", "(tests)", "{E0A2F434-C7FC-4FBA-86B6-128CA4A35178}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(third_party)", "(third_party)", "{45BED0F4-E9F8-4967-ABFE-880E69FD28A9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(services)", "(services)", "{B0CB5BEE-87F9-4CE4-B815-1B538812A2AD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(protos)", "(protos)", "{78AEFBF4-83C8-4FB8-93A8-B96154347AB8}"
+	ProjectSection(SolutionItems) = preProject
+		protos\ruby_message.proto = protos\ruby_message.proto
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(parsers)", "(parsers)", "{69758CCE-B2BB-4A84-BDC4-50CB6F3CC0E4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(nunit)", "(nunit)", "{9B15B4FE-53C1-49D1-8E71-E2A6FF473EA5}"
+	ProjectSection(SolutionItems) = preProject
+		tests\third_party\nunit\nunit.framework.dll = tests\third_party\nunit\nunit.framework.dll
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rubynet_unittest", "tests\services\rubynet_unittest\rubynet_unittest.csproj", "{0CB5E36D-8305-4D6C-8FE8-4793B039D6C0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(docs)", "(docs)", "{3CEF0714-3539-45DE-BA8B-14C4AA304A2D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(third_party)", "(third_party)", "{FE7AB0E5-CA8F-4839-9D65-E5D0A75C59E9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(services)", "(services)", "{F0633E4B-C1C2-4C69-885A-73FEFD75508E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(net)", "(net)", "{36C1F00F-C748-4B52-9410-B8C806238122}"
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -28,26 +79,98 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|Win32 = Debug|Win32
 		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{561B3424-32B8-484E-9E4C-972D341F431E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{561B3424-32B8-484E-9E4C-972D341F431E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{561B3424-32B8-484E-9E4C-972D341F431E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{561B3424-32B8-484E-9E4C-972D341F431E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{561B3424-32B8-484E-9E4C-972D341F431E}.Debug|Win32.ActiveCfg = Debug|Any CPU
 		{561B3424-32B8-484E-9E4C-972D341F431E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{561B3424-32B8-484E-9E4C-972D341F431E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{561B3424-32B8-484E-9E4C-972D341F431E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{561B3424-32B8-484E-9E4C-972D341F431E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{561B3424-32B8-484E-9E4C-972D341F431E}.Release|Win32.ActiveCfg = Release|Any CPU
 		{970C40CD-03F5-4761-9AE3-7E358E108E56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{970C40CD-03F5-4761-9AE3-7E358E108E56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{970C40CD-03F5-4761-9AE3-7E358E108E56}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{970C40CD-03F5-4761-9AE3-7E358E108E56}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{970C40CD-03F5-4761-9AE3-7E358E108E56}.Debug|Win32.ActiveCfg = Debug|Any CPU
 		{970C40CD-03F5-4761-9AE3-7E358E108E56}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{970C40CD-03F5-4761-9AE3-7E358E108E56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{970C40CD-03F5-4761-9AE3-7E358E108E56}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{970C40CD-03F5-4761-9AE3-7E358E108E56}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{970C40CD-03F5-4761-9AE3-7E358E108E56}.Release|Win32.ActiveCfg = Release|Any CPU
+		{C2CD67FE-BB0C-4F3A-A1F3-01E0C9EB39F6}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{C2CD67FE-BB0C-4F3A-A1F3-01E0C9EB39F6}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{C2CD67FE-BB0C-4F3A-A1F3-01E0C9EB39F6}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{C2CD67FE-BB0C-4F3A-A1F3-01E0C9EB39F6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C2CD67FE-BB0C-4F3A-A1F3-01E0C9EB39F6}.Debug|Win32.Build.0 = Debug|Win32
+		{C2CD67FE-BB0C-4F3A-A1F3-01E0C9EB39F6}.Release|Any CPU.ActiveCfg = Release|Win32
+		{C2CD67FE-BB0C-4F3A-A1F3-01E0C9EB39F6}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{C2CD67FE-BB0C-4F3A-A1F3-01E0C9EB39F6}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{C2CD67FE-BB0C-4F3A-A1F3-01E0C9EB39F6}.Release|Win32.ActiveCfg = Release|Win32
+		{C2CD67FE-BB0C-4F3A-A1F3-01E0C9EB39F6}.Release|Win32.Build.0 = Release|Win32
+		{916E48ED-4BA0-4BE4-A25E-AD1BA5A48979}.Debug|Any CPU.ActiveCfg = debug|Win32
+		{916E48ED-4BA0-4BE4-A25E-AD1BA5A48979}.Debug|Mixed Platforms.ActiveCfg = debug|Win32
+		{916E48ED-4BA0-4BE4-A25E-AD1BA5A48979}.Debug|Mixed Platforms.Build.0 = debug|Win32
+		{916E48ED-4BA0-4BE4-A25E-AD1BA5A48979}.Debug|Win32.ActiveCfg = debug|Win32
+		{916E48ED-4BA0-4BE4-A25E-AD1BA5A48979}.Debug|Win32.Build.0 = debug|Win32
+		{916E48ED-4BA0-4BE4-A25E-AD1BA5A48979}.Release|Any CPU.ActiveCfg = release|Win32
+		{916E48ED-4BA0-4BE4-A25E-AD1BA5A48979}.Release|Mixed Platforms.ActiveCfg = release|Win32
+		{916E48ED-4BA0-4BE4-A25E-AD1BA5A48979}.Release|Mixed Platforms.Build.0 = release|Win32
+		{916E48ED-4BA0-4BE4-A25E-AD1BA5A48979}.Release|Win32.ActiveCfg = release|Win32
+		{916E48ED-4BA0-4BE4-A25E-AD1BA5A48979}.Release|Win32.Build.0 = release|Win32
+		{365ECDCF-A7F2-4E5B-B45F-72D551F1C449}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{365ECDCF-A7F2-4E5B-B45F-72D551F1C449}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{365ECDCF-A7F2-4E5B-B45F-72D551F1C449}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{365ECDCF-A7F2-4E5B-B45F-72D551F1C449}.Debug|Win32.ActiveCfg = Debug|Win32
+		{365ECDCF-A7F2-4E5B-B45F-72D551F1C449}.Debug|Win32.Build.0 = Debug|Win32
+		{365ECDCF-A7F2-4E5B-B45F-72D551F1C449}.Release|Any CPU.ActiveCfg = Release|Win32
+		{365ECDCF-A7F2-4E5B-B45F-72D551F1C449}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{365ECDCF-A7F2-4E5B-B45F-72D551F1C449}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{365ECDCF-A7F2-4E5B-B45F-72D551F1C449}.Release|Win32.ActiveCfg = Release|Win32
+		{365ECDCF-A7F2-4E5B-B45F-72D551F1C449}.Release|Win32.Build.0 = Release|Win32
+		{0CB5E36D-8305-4D6C-8FE8-4793B039D6C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CB5E36D-8305-4D6C-8FE8-4793B039D6C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CB5E36D-8305-4D6C-8FE8-4793B039D6C0}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{0CB5E36D-8305-4D6C-8FE8-4793B039D6C0}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{0CB5E36D-8305-4D6C-8FE8-4793B039D6C0}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{0CB5E36D-8305-4D6C-8FE8-4793B039D6C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CB5E36D-8305-4D6C-8FE8-4793B039D6C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CB5E36D-8305-4D6C-8FE8-4793B039D6C0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0CB5E36D-8305-4D6C-8FE8-4793B039D6C0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{0CB5E36D-8305-4D6C-8FE8-4793B039D6C0}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{959F77CD-D65A-494E-9D8C-B0D0D825818A} = {34F0FDB9-08D7-4C5F-9C6D-1303EE4C691B}
+		{2C8041C1-0775-4874-BB1E-2181FCC94361} = {34F0FDB9-08D7-4C5F-9C6D-1303EE4C691B}
 		{561B3424-32B8-484E-9E4C-972D341F431E} = {959F77CD-D65A-494E-9D8C-B0D0D825818A}
 		{970C40CD-03F5-4761-9AE3-7E358E108E56} = {959F77CD-D65A-494E-9D8C-B0D0D825818A}
+		{365ECDCF-A7F2-4E5B-B45F-72D551F1C449} = {00A6864F-D91E-4132-A4DB-60F3F9B69201}
 		{514E17FD-D99D-4932-88BA-263A78BA1DBE} = {F027E4F0-E6A4-4A4D-9AB2-F95934ACD5C4}
+		{EC891FEB-20FC-4EA3-985A-56A5A156EF7B} = {F027E4F0-E6A4-4A4D-9AB2-F95934ACD5C4}
+		{3C8B7E59-063E-405E-A717-7CF06E5249EA} = {F027E4F0-E6A4-4A4D-9AB2-F95934ACD5C4}
 		{47C233F3-CFF5-4E4E-A7A6-E1BBDA3D328A} = {514E17FD-D99D-4932-88BA-263A78BA1DBE}
+		{BB55C05B-9933-491A-B412-FFC8CACCFE0C} = {514E17FD-D99D-4932-88BA-263A78BA1DBE}
+		{C2CD67FE-BB0C-4F3A-A1F3-01E0C9EB39F6} = {54C8184B-07C9-4D70-9DF0-C474AD9C2235}
+		{916E48ED-4BA0-4BE4-A25E-AD1BA5A48979} = {BB55C05B-9933-491A-B412-FFC8CACCFE0C}
+		{D3CA8286-3E88-4E15-B40D-B181079541FD} = {3C8B7E59-063E-405E-A717-7CF06E5249EA}
+		{45BED0F4-E9F8-4967-ABFE-880E69FD28A9} = {E0A2F434-C7FC-4FBA-86B6-128CA4A35178}
+		{B0CB5BEE-87F9-4CE4-B815-1B538812A2AD} = {E0A2F434-C7FC-4FBA-86B6-128CA4A35178}
+		{9B15B4FE-53C1-49D1-8E71-E2A6FF473EA5} = {45BED0F4-E9F8-4967-ABFE-880E69FD28A9}
+		{0CB5E36D-8305-4D6C-8FE8-4793B039D6C0} = {B0CB5BEE-87F9-4CE4-B815-1B538812A2AD}
+		{69758CCE-B2BB-4A84-BDC4-50CB6F3CC0E4} = {78AEFBF4-83C8-4FB8-93A8-B96154347AB8}
+		{FE7AB0E5-CA8F-4839-9D65-E5D0A75C59E9} = {3CEF0714-3539-45DE-BA8B-14C4AA304A2D}
+		{F0633E4B-C1C2-4C69-885A-73FEFD75508E} = {3CEF0714-3539-45DE-BA8B-14C4AA304A2D}
+		{36C1F00F-C748-4B52-9410-B8C806238122} = {F0633E4B-C1C2-4C69-885A-73FEFD75508E}
 	EndGlobalSection
 EndGlobal
