@@ -1,7 +1,7 @@
 <project SchemaVersion="1.3">
     <assemblies>
-        <assembly location="..\..\bin\release\nohros.rubynet.exe" documentation="..\services\net\nohros.rubynet.xml" />
-        <assembly location="..\..\bin\release\nohros.rubynet.irubyservice.dll" documentation="..\services\net\nohros.rubynet.irubyservice.xml" />
+        <assembly location="..\..\src\bin\release\nohros.rubynet.exe" documentation="..\services\net\nohros.rubynet.xml" />
+        <assembly location="..\..\src\bin\release\nohros.rubynet.irubyservice.dll" documentation="..\services\net\nohros.rubynet.irubyservice.xml" />
     </assemblies>
     <documenters>
         <documenter name="MSDN">
