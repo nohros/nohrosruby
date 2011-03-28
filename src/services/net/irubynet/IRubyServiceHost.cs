@@ -13,6 +13,21 @@ namespace Nohros.Ruby
         /// Sends a message to the ruby server.
         /// </summary>
         /// <returns>true if the message is succesfully send; otherwise, false.</returns>
-        bool SendMessage(IRubyMessage message);
+        bool SendMessage(IRubyMessagePacket message);
+
+        /// <summary>
+        /// Starts the hosted service.
+        /// </summary>
+        void StartService();
+
+        /// <summary>
+        /// Stops the hosted service.
+        /// </summary>
+        void StopService();
+
+        /// <summary>
+        /// Gets a reference to the running service.
+        /// </summary>
+        IRubyService Service { get; }
     }
 }

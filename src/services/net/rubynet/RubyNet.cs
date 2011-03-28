@@ -14,29 +14,47 @@ namespace Nohros.Ruby.Service.Net
 {
     static class RubyNet
     {
-        const string kUsage =
-@"
-RubyNet version 0.1.1
+        const string kVersion =
+            @"
+RubyNet Version 0.3.0
+";
+
+        internal const string kHeader = kVersion + @"
 Copyright (c) 2010 Nohros Systems Inc.
 All Rights Reserved.
 
 Use of this software code is governed by a MIT license.
 
 Runs a .NET assembly like a console application.
-
-Usage: nohros.rubynet -assembly=ASSEMBLYNAME -type=TYPENAME [-help] -- ARGS
-
+";
+        const string kUsageCommon = @"
   -assembly      specifes the assembly to load and run. This value must be
                  an absolute path or a path relative to the base directory.
 
   -type          specifies the fully qualified type name of a class
                  that implements the IRubyService interface.
 
+  -with-shell    specifies that the a command line language interpreter
+                 must be started. With a shell users can stop and start
+                 services directly from the command line and without
+                 the intervention of a ruby net agent. It can to send
+                 commands to a running service. Check out the full
+                 documentation to know how to do it.
+
    ARGS          A list of arguments to pass to the loaded assembly. The
                  list of arguments must be preceded by a '-- ' argument
                  (without quotes).
+";
+        const string kUsage = kHeader + @"
+
+Usage: nohros.rubynet -assembly=ASSEMBLYNAME -type=TYPENAME [-help] -- ARGS
+"
+            + kUsageCommon +
+@"
 
   -help          Displays this help and exit.
+  
+  -version       Displays this help and exit.
 
    Examples:
      nohros.rubynet -assembly=my.assembly.dll -type=my.type, my.namespace
@@ -54,12 +72,9 @@ Usage: nohros.rubynet -assembly=ASSEMBLYNAME -type=TYPENAME [-help] -- ARGS
         const string kTypeNameSwitch = "type";
         const string kHelpSwitch = "help";
         const string kDebugSwitch = "debug";
-        internal const string kPipeSwitch = "pipe";
+        const string kWithShellSwitch = "with-shell";
 
-        /// <summary>
-        /// Synchronization object.
-        /// </summary>
-        static ManualResetEvent mutex = null;
+        internal const string kPipeSwitch = "pipe";
 
         /// <summary>
         /// The main application logger.
@@ -67,83 +82,38 @@ Usage: nohros.rubynet -assembly=ASSEMBLYNAME -type=TYPENAME [-help] -- ARGS
         static ILog logger;
 
         static void Main() {
-#if DEBUG
             logger = FileLogger.ForCurrentProcess.Logger;
-#else
-            logger = FileLogger.ForCurrentProcess.Logger;
-#endif
             CommandLine command_line = CommandLine.ForCurrentProcess;
+            RubyNetShell rn_shell = new RubyNetShell();
+
             if (command_line.HasSwitch(kDebugSwitch))
-                System.Diagnostics.Debugger.Break();
+                System.Diagnostics.Debugger.Launch();
 
-            if (command_line.HasSwitch(kHelpSwitch) || !(command_line.HasSwitch(kAssemblyNameSwitch) && command_line.HasSwitch(kTypeNameSwitch))) {
+            bool with_shell = false;
+            with_shell = command_line.HasSwitch(kWithShellSwitch);
+
+            if (command_line.HasSwitch(kHelpSwitch))
                 logger.Info(kUsage);
-                return;
-            }
 
-            string assembly_path = command_line.GetSwitchValue(kAssemblyNameSwitch);
-            string assembly_qualified_name = command_line.GetSwitchValue(kTypeNameSwitch);
+            // we cannot control the behavior of the service. For, logger purposes, we will monitor
+            // all the unhandled application exception. NOTE: this does not prevents the application
+            // from shutting down, its is used only for logging.
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(OnUnhandledException);
 
-            mutex = new ManualResetEvent(false);
-
-            // if the path is not absolute it must be relative to the application base diractory.
-            if (!Path.IsPathRooted(assembly_path))
-                assembly_path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, assembly_path);
-
-            if (!File.Exists(assembly_path)) {
-                logger.Error("[Main   Nohros.Ruby.Service.Net.RubyNet]   Could not find a assembly at the path:" + assembly_path);
-                return;
-            }
-
-            Assembly service_assemlby = Assembly.LoadFrom(assembly_path);
-            Type sevice_type = service_assemlby.GetType(assembly_qualified_name);
-            if (sevice_type == null || sevice_type.GetInterface("Nohros.Ruby.IRubyService") == null) {
-                logger.Error("[Main   Nohros.Ruby.Service.Net.RubyNet]   The type " + assembly_qualified_name + " could not be loaded or it does implements the [Nohros.Ruby.IRubyService interface].");
-                return;
-            }
-
-            // builds a command line to pass to the assembly.
-            string assembly_command_line = assembly_path;
-
-            IList<string> loose_values = command_line.LooseValues;
-            for (int i = 0, j = loose_values.Count; i < j; i++) {
-                assembly_command_line += string.Concat(" ", loose_values[i]);
-            }
-
-            try {
-                IRubyService service = Activator.CreateInstance(sevice_type, assembly_command_line) as IRubyService;
-                if (service == null) {
-                    logger.Error("[Main   Nohros.Ruby.Service.Net.RubyNet]   An instance of the " + service + "type could not be created. Check the constructor implied by the IDevice interface.");
+            // start a service if we have enough information to do it or explain to the caller how to use this
+            // application.
+            if (!(command_line.HasSwitch(kAssemblyNameSwitch) && command_line.HasSwitch(kTypeNameSwitch))) {
+                if (!with_shell) {
+                    logger.Info(kUsage);
                     return;
                 }
-
-                // we cannot control the behavior of the service. For, logger purposes, we will monitor
-                // all the unhandled application exception. NOTE: this does not prevents the application
-                // from shutting down, its is used only for logging.
-                AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(OnUnhandledException);
-
-                // attempt to get the IPC channel name.
-                string pipe_name = command_line.GetSwitchValue(kPipeSwitch);
-
-                // host and start the service.
-                RubyNetServiceHost host = new RubyNetServiceHost(service, pipe_name);
-                host.StartService();
-
-            } catch(Exception ex) {
-                Exception exception = ex;
-                do {
-                    logger.Fatal("[Main   Nohros.Ruby.Service.Net.RubyNet]", exception);
-                    exception = exception.InnerException;
-                } while (exception != null);
+            } else {
+                rn_shell.StartAndExit(command_line);
             }
-        }
 
-        internal static void LOG_ERROR(string message) {
-            LOG_ERROR(message, null);
-        }
-
-        internal static void LOG_ERROR(string message, Exception exception) {
-            logger.Error(message, exception);
+            // starts the shell if desired.
+            if (with_shell)
+                rn_shell.Start();
         }
 
         /// <summary>
@@ -159,6 +129,20 @@ Usage: nohros.rubynet -assembly=ASSEMBLYNAME -type=TYPENAME [-help] -- ARGS
             // derive from System.Exception. This is possible in some CLR based languages but
             // not C#. We can safe cast it to System.Exception.
             logger.Fatal("[Main   Nohros.Ruby.Service.Net.RubyNet]", (Exception)e.ExceptionObject);
+        }
+
+        /// <summary>
+        /// Custom wrapper aroung logger.Error();
+        /// </summary>
+        internal static void LOG_ERROR(string message) {
+            LOG_ERROR(message, null);
+        }
+
+        /// <summary>
+        /// Custom wrapper aroung logger.Error();
+        /// </summary>
+        internal static void LOG_ERROR(string message, Exception exception) {
+            logger.Error(message, exception);
         }
     }
 }

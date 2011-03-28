@@ -45,14 +45,23 @@
       <HintPath>..\..\third_party\nunit\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NonRubyService.cs" />
+    <Compile Include="RunAndStopService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StartCommand_.cs" />
+    <Compile Include="ThrowExceptionWhenRunService.cs" />
+    <Compile Include="WaitService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\services\net\irubynet\irubyservice.csproj">
+      <Project>{970C40CD-03F5-4761-9AE3-7E358E108E56}</Project>
+      <Name>irubyservice</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\services\net\rubynet\rubynet.csproj">
       <Project>{561B3424-32B8-484E-9E4C-972D341F431E}</Project>
       <Name>rubynet</Name>

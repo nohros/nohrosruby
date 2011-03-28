@@ -11,7 +11,7 @@ namespace Nohros.Ruby.Service.Net
 {
     /// <summary>
     /// .NET implementation of the <see cref="IRubyServiceHost"/>. This class is used to host
-    /// ruby .NET based services.
+    /// .NET based ruby services.
     /// </summary>
     internal class RubyNetServiceHost : IRubyServiceHost
     {
@@ -19,17 +19,21 @@ namespace Nohros.Ruby.Service.Net
 
         string ipc_channel_name_;
         IRubyService service_;
-        ManualResetEvent mutex_;
         NamedPipeClientStream pipe_stream_;
 
+        static EmptyServiceHost empty_service_host_;
+
         #region .ctor
+        static RubyNetServiceHost() {
+            empty_service_host_ = new EmptyServiceHost();
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RubyNetServiceHost"/> by using the specified
         /// service and IPC channel name.
         /// </summary>
         public RubyNetServiceHost(IRubyService service, string ipc_channel_name) {
             service_ = service;
-            mutex_ = new ManualResetEvent(false);
             ipc_channel_name_ = ipc_channel_name;
         }
         #endregion
@@ -41,35 +45,28 @@ namespace Nohros.Ruby.Service.Net
         /// <para>The hosted service runs into a dedicated thread. The thread where this code is running is
         /// used to send/receive messages to/from the service.</para>
         /// <para>This method does not return until the running hosted service have finished your execution.</para>
+        /// <para>If the service throws any exception this is propaggated to the caller and the status
+        /// of service is changed to stopped.</para>
         /// </remarks>
         public void StartService() {
             // attempt to open the IPC channel.
             if (ipc_channel_name_ != null && ipc_channel_name_ != string.Empty)
                 ConnectPipe(ipc_channel_name_);
 
-            Thread service_thread = new Thread(new ThreadStart(delegate() {
-                // start the service.
-                service_.Run();
-
-                // signal the main thread that the service has been finished.
-                mutex_.Set();
-            }));
-
-            service_thread.IsBackground = true;
-            service_thread.Start();
-
-            // wait the service to finish.
-            mutex_.WaitOne();
-
-            // releasing resources
-            if (pipe_stream_ != null && pipe_stream_.IsConnected) {
-                pipe_stream_.Close();
-                pipe_stream_ = null;
-            }
+            // runs the service.
+            service_.Run();
         }
 
         /// <summary>
-        /// Connects to a named pipe whose name is <see cref="pipe_name"/>.
+        /// Stops the hosted service.
+        /// </summary>
+        /// <remarks>
+        /// </remarks>
+        public void StopService() {
+        }
+
+        /// <summary>
+        /// Connects to a named pipe whose name is <paramref name="pipe_name"/>
         /// </summary>
         /// <param name="pipe_name">The name of the pipe to connects.</param>
         /// <returns>true if the connection is successfull; otherwise, false.</returns>
@@ -80,6 +77,12 @@ namespace Nohros.Ruby.Service.Net
             try {
                 pipe_stream_ = new NamedPipeClientStream(pipe_name);
                 pipe_stream_.Connect(kTimeout);
+
+                // the pipe transmission mode must be message
+                if (pipe_stream_.TransmissionMode == PipeTransmissionMode.Byte) {
+                    RubyNet.LOG_ERROR("[ConnectPipe   Nohros.Ruby.Service.Net.RubyNetServiceHost]   The pipe transmission mode must be message(PIPE_TYPE_MESSAGE).");
+                    return false;
+                }
 
                 // we need to read and write to the pipe.
                 if (!pipe_stream_.CanRead || !pipe_stream_.CanWrite) {
@@ -100,7 +103,6 @@ namespace Nohros.Ruby.Service.Net
         /// <summary>
         /// Handle service messages sent from the Ruby Service Host.
         /// </summary>
-        /// <param name="service">The <see cref="IRubyService"/> object that will receive the messages</param>
         /// <remarks>
         /// The ruby agent communicates with the service host through a named pipe. Each service host must create a 
         /// pipe with the name that was specified by the ruby agent service and wait for the connection of the agent.
@@ -128,13 +130,29 @@ namespace Nohros.Ruby.Service.Net
             // the pipe is disconnected
             if (readed == 0) return;
 
-            // TODO: convert the readed data to an instance of a IRubyMessage and pass them to the service.
-            
-            //service_.OnServerMessage();
+            // convert the readed data to an instance of a IRubyMessagePacket and pass them to the service.
+            try {
+                RubyMessagePacket message_packet = RubyMessagePacket.ParseFrom(async_state.Message);
+                service_.OnServerMessage(message_packet);
+            } catch (InvalidProtocolBufferException iex) {
+                RubyNet.LOG_ERROR("[MessageHandler   Nohros.Ruby.Service.Net.RubyNet]   The received protocol buffer message is could not be parsed into a ruby message packet.", iex);
+            } catch(Exception ex) {
+                // handle exceptions that may occur while the service is handling a message.
+                RubyNet.LOG_ERROR("[MessageHandler   Nohros.Ruby.Service.Net.RubyNet]   The service " + service_.Name + " was not capable to handle the received message", ex);
+            }
         }
 
-        public bool SendMessage(IRubyMessage message) {
+        public bool SendMessage(IRubyMessagePacket message) {
             return false;
+        }
+
+        public static EmptyServiceHost EmptyServiceHost {
+            get { return empty_service_host_; }
+        }
+
+        /// <inherithdoc/>
+        public IRubyService Service {
+            get { return service_; }
         }
     }
 }

@@ -41,7 +41,5 @@ message RubyMessagePacket {
 	// The name of the class that is used to encode/decode the message wrapped by this envelope.
 	// The Java and C# version of the services may use this type to instantiate the appropriated
 	// parser class.
-	optional string type = 2;
-	
-	optional string guid = 3;
+	optional string parser_type = 2;
 }
