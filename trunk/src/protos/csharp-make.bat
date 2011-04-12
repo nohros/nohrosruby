@@ -22,14 +22,21 @@
 ::
 @echo off
 
+:: Creating a newline variable. Note that the two blank lines are required.
+set NLM=^
+
+
+set newline=^^^%NLM%%NLM%^%NLM%%NLM%
 set BIN_PATH=..\third_party\protobuf-csharp-port
 set PROTOC=%BIN_PATH%\protoc.exe
 set PROTOGEN=%BIN_PATH%\protogen.exe
 set OUT_PATH=.\parsers\csharp
 
+echo    %1 %newline%
 %PROTOC% --descriptor_set_out=%1bin --include_imports %1
 %PROTOGEN% %1bin
 
+echo Removing residual files...
 :: clean up residual files
 if exist DescriptorProtoFile.cs del /q DescriptorProtoFile.cs
 if exist CSharpOptions.cs del /q CSharpOptions.cs
