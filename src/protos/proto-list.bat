@@ -23,10 +23,19 @@
 ::
 @echo off
 
+cls
+
+:: Creating a newline variable. Note that the two blank lines are required.
+set NLM=^
+
+
+set newline=^^^%NLM%%NLM%^%NLM%%NLM%
+
 :: check if the language specific batch compiler name was specified and exists.
 if [%1]==[] goto COMPILER_FLAG
 if not exist %1 goto COMPILER_FLAG
 
+echo Compiling...
 for /f %%a in ('dir /b *.proto') do %1 %%a
 pause
 
