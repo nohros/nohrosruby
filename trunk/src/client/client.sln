@@ -16,11 +16,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(build)", "(build)", "{181E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(glog)", "(glog)", "{B25C8983-9694-405A-8C54-8EDF784227AF}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common", "msvs\common.vcproj", "{B15BDCC3-04FC-4CFF-A3F4-58DA84D274BB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common", "vsprojects\common.vcproj", "{B15BDCC3-04FC-4CFF-A3F4-58DA84D274BB}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "service", "msvs\service.vcproj", "{344D0226-0D51-4AE9-AAA0-A66354E044FA}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "service", "vsprojects\service.vcproj", "{344D0226-0D51-4AE9-AAA0-A66354E044FA}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "net", "msvs\net.vcproj", "{53B52D72-17F1-4647-997C-399F7DA5DA8D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "net", "vsprojects\net.vcproj", "{53B52D72-17F1-4647-997C-399F7DA5DA8D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "base", "third_party\chrome\base\base.vcproj", "{1832A374-8A74-4F9E-B536-69A699B3E165}"
 EndProject
