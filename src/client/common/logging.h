@@ -29,6 +29,8 @@ namespace ruby {
 // Shortcuts for different common logging levels
 #define SERVICE_LOG(y)		DLOG(INFO) << y;
 
+#define NOTREACHED() DCHECK(false)
+
 }
 
 #endif // CLIENT_COMMON_LOGGING_H__

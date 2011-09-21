@@ -11,6 +11,10 @@
     <AssemblyName>nohros.rubynet</AssemblyName>
     <StartupObject>
     </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -59,8 +63,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AsyncPipeState.cs" />
+    <Compile Include="configuration\SettingsFactory.cs" />
     <Compile Include="EmptyService.cs" />
     <Compile Include="EmptyServiceHost.cs" />
+    <Compile Include="configuration\RubyNetSettings.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

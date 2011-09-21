@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Ruby .NET process starter interfaces")]
-[assembly: AssemblyDescription("Ruby .NET process starter interfaces")]
+[assembly: AssemblyTitle("RubyNet Unit Test")]
+[assembly: AssemblyDescription("RubyNet Unit Test")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Nohros Systems Inc")]
-[assembly: AssemblyProduct("Nohros Ruby")]
-[assembly: AssemblyCopyright("Copyright ©  2010 by Nohros Systems Inc")]
+[assembly: AssemblyCompany("Nohros Systems Inc.")]
+[assembly: AssemblyProduct("Nohros Ruby.")]
+[assembly: AssemblyCopyright("Copyright ©  2011 by Nohros Systems Inc.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("a9686210-15e9-4b8f-aec7-e14598e92a34")]
+[assembly: Guid("aa0c5026-cd04-4356-bda9-67345452428d")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -31,5 +31,5 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("0.3.1.0")]
-[assembly: AssemblyFileVersion("0.3.1.0")]
+[assembly: AssemblyVersion("0.1.0.0")]
+[assembly: AssemblyFileVersion("0.1.0.0")]
