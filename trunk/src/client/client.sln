@@ -13,6 +13,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(base)", "(base)", "{6F74EC81-5F0A-49E7-8A73-D5E36255F1E4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(build)", "(build)", "{181E5AFD-9462-43BB-95C2-71EFFB8D4FD3}"
+	ProjectSection(SolutionItems) = preProject
+		third_party\chrome\build\build_config.h = third_party\chrome\build\build_config.h
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(glog)", "(glog)", "{B25C8983-9694-405A-8C54-8EDF784227AF}"
 EndProject
@@ -27,6 +30,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(net)", "(net)", "{07504183-C969-4E0D-B228-2DF79644ED14}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "net_base", "third_party\chrome\net\net_base.vcproj", "{9B6FAEE0-4CFD-8942-397F-500C5408D1AA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(build)", "(build)", "{6FA25D2B-2893-4EB5-81DD-410F3F1B5433}"
+	ProjectSection(SolutionItems) = preProject
+		build\build_config.h = build\build_config.h
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution

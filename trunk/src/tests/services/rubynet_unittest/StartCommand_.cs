@@ -29,73 +29,55 @@ namespace Nohros.Ruby.Tests.Net
 
         [SetUp]
         public void SetUp() {
-            logger = ConsoleLogger.ForCurrentProcess.Logger;
+            logger = new Log4NetLogger(ConsoleLogger.ForCurrentProcess.Logger);
             command_line = CommandLine.ForCurrentProcess;
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void ShouldThrowArgumentNullExceptionWhenCommandLineIsNull() {
-            StartCommand command = new StartCommand(null, logger);
+        public void ShouldThrowArgumentNullExceptionWhenTypeIsNull() {
+            StartCommand command = new StartCommand(null, string.Empty, string.Empty);
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void ShouldThrowArgumentNullExceptionWhenLoggerIsNull() {
-            StartCommand command = new StartCommand(command_line, null);
+        public void ShouldCreateAnInstanceEvenWhenPipeNameIsNull() {
+            StartCommand command = new StartCommand(typeof(RunAndStopService), null, string.Empty);
         }
 
         [Test]
-        public void ShouldConstructNewStartCommand() {
-            StartCommand command = new StartCommand(command_line, logger);
+        public void ShouldCreateAnInstanceEvenWhenCommandLineIsNull() {
+            StartCommand command = new StartCommand(typeof(RunAndStopService), string.Empty, null);
         }
 
         [Test]
-        public void ShouldReturnTheWordStartAsAString() {
-            StartCommand command = new StartCommand(command_line, logger);
-            Assert.AreEqual(command.Name, "start");
+        [ExpectedException(typeof(ArgumentException))]
+        public void ShouldThrowArgumentExceptionWhenTypeDoesNotImplementsIRubyServiceInterface() {
+            StartCommand command = new StartCommand(typeof(NonRubyService), string.Empty, null);
         }
 
         [Test]
-        public void ShouldReturnEmptyServiceHostWhenServiceThrowExceptionOnRun() {
-            StartCommand command = new StartCommand(command_line, logger);
-            IRubyServiceHost host = command.StartService(kTestServiceAssembly, kThrowExceptionWhenRunServiceType, null, null);
-            Assert.IsInstanceOf<EmptyServiceHost>(host);
+        public void ShouldNotStartTheServiceIfDelayStartIsTrue() {
+            StartCommand command = new StartCommand(typeof(RunAndStopService), null, null);
+            IRubyServiceHost host = command.StartService(true, logger);
+            Assert.AreEqual(ServiceStatus.Stopped, host.Service.Status);
         }
 
         [Test]
-        public void ShouldReturnEmptyServiceHostWhenAssemblyDoesNotExixts() {
-            StartCommand command = new StartCommand(command_line, logger);
-            IRubyServiceHost host = command.StartService("missing-assembly-file", kStartAndStopServiceType, null, null);
-            Assert.IsInstanceOf<EmptyServiceHost>(host);
+        public void ShouldStartTheServiceIfDelayStartIsFalse() {
+            StartCommand command = new StartCommand(typeof(RunAndStopService), null, null);
+            IRubyServiceHost host = command.StartService(false, logger);
+            Assert.AreEqual(ServiceStatus.Running, host.Service.Status);
         }
 
         [Test]
-        public void ShouldReturnEmptyServiceHostWhenTypeCouldNotBeLoaded() {
-            StartCommand command = new StartCommand(command_line, logger);
-            IRubyServiceHost host = command.StartService(kTestServiceAssembly, "wrong-type", null, null);
-            Assert.IsInstanceOf<EmptyServiceHost>(host);
-        }
-
-        [Test]
-        public void ShouldReturnEmptyServiceHostWhenTypeDoesNotImplementsIRubyServiceInterface() {
-            StartCommand command = new StartCommand(command_line, logger);
-            IRubyServiceHost host = command.StartService(kTestServiceAssembly, "wrong-type", null, null);
-            Assert.IsInstanceOf<EmptyServiceHost>(host);
-        }
-
-        [Test]
-        public void ShouldStartTheServiceEvenWhenPipeChannelNameIsNull() {
-            StartCommand command = new StartCommand(command_line, logger);
-            IRubyServiceHost host = command.StartService(kTestServiceAssembly, kStartAndStopServiceType, null, string.Empty);
-            Assert.IsNotInstanceOf<EmptyServiceHost>(host);
-        }
-
-        [Test]
-        public void ShouldStartTheServiceEvenWhenCommandLineIsNull() {
-            StartCommand command = new StartCommand(command_line, logger);
-            IRubyServiceHost host = command.StartService(kTestServiceAssembly, kStartAndStopServiceType, string.Empty, null);
-            Assert.IsNotInstanceOf<EmptyServiceHost>(host);
+        public void ShouldPropagateExceptionsThrowedByService() {
+            StartCommand command = new StartCommand(typeof(ThrowExceptionWhenRunService), null, null);
+            try {
+                IRubyServiceHost host = command.StartService(false, logger);
+                Assert.Fail();
+            } catch {
+                Assert.Pass();
+            }
         }
     }
 }
