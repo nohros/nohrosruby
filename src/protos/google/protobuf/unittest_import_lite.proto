@@ -1,3 +1,9 @@
+// Additional options required for C# generation. File from copyright
+// line onwards is as per original distribution.
+import "google/protobuf/csharp_options.proto";
+option (google.protobuf.csharp_file_options).namespace = "Google.ProtocolBuffers.TestProtos";
+option (google.protobuf.csharp_file_options).umbrella_classname = "UnitTestImportLiteProtoFile";
+
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
 // http://code.google.com/p/protobuf/
@@ -28,25 +34,22 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-// Author: jonskeet@google.com (Jon Skeet)
+// Author: kenton@google.com (Kenton Varda)
 //
-// A proto file for unit testing the custom C# options
+// This is like unittest_import.proto but with optimize_for = LITE_RUNTIME.
 
-import "google/protobuf/csharp_options.proto";
-option (google.protobuf.csharp_file_options).namespace = "Google.ProtocolBuffers.TestProtos";
-option (google.protobuf.csharp_file_options).umbrella_classname = "UnitTestCSharpOptionsProtoFile";
-//option (google.protobuf.csharp_file_options).nest_classes = true;
+package protobuf_unittest_import;
 
-package protobuf_unittest;
+option optimize_for = LITE_RUNTIME;
 
-message OptionsMessage {
+option java_package = "com.google.protobuf";
 
-  // Will be left as Normal
-  optional string normal = 1;
+message ImportMessageLite {
+  optional int32 d = 1;
+}
 
-  // Will be converted to OptionsMessage_
-  optional string options_message = 2;
-  
-  // Will be converted to CustomName
-  optional string customized = 3 [(google.protobuf.csharp_field_options).property_name = "CustomName"];
+enum ImportEnumLite {
+  IMPORT_LITE_FOO = 7;
+  IMPORT_LITE_BAR = 8;
+  IMPORT_LITE_BAZ = 9;
 }
