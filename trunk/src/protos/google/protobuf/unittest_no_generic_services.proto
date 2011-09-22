@@ -1,3 +1,9 @@
+// Additional options required for C# generation. File from copyright
+// line onwards is as per original distribution.
+import "google/protobuf/csharp_options.proto";
+option (google.protobuf.csharp_file_options).namespace = "Google.ProtocolBuffers.TestProtos.NoGenericService";
+option (google.protobuf.csharp_file_options).umbrella_classname = "UnitTestNoGenericServicesProtoFile";
+
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
 // http://code.google.com/p/protobuf/
@@ -28,25 +34,27 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-// Author: jonskeet@google.com (Jon Skeet)
-//
-// A proto file for unit testing the custom C# options
+// Author: kenton@google.com (Kenton Varda)
 
-import "google/protobuf/csharp_options.proto";
-option (google.protobuf.csharp_file_options).namespace = "Google.ProtocolBuffers.TestProtos";
-option (google.protobuf.csharp_file_options).umbrella_classname = "UnitTestCSharpOptionsProtoFile";
-//option (google.protobuf.csharp_file_options).nest_classes = true;
+package google.protobuf.no_generic_services_test;
 
-package protobuf_unittest;
+option cc_generic_services = false;
+option java_generic_services = false;
+option py_generic_services = false;
 
-message OptionsMessage {
+message TestMessage {
+  optional int32 a = 1;
+  extensions 1000 to max;
+}
 
-  // Will be left as Normal
-  optional string normal = 1;
+enum TestEnum {
+  FOO = 1;
+}
 
-  // Will be converted to OptionsMessage_
-  optional string options_message = 2;
-  
-  // Will be converted to CustomName
-  optional string customized = 3 [(google.protobuf.csharp_field_options).property_name = "CustomName"];
+extend TestMessage {
+  optional int32 test_extension = 1000;
+}
+
+service TestService {
+  rpc Foo(TestMessage) returns(TestMessage);
 }
