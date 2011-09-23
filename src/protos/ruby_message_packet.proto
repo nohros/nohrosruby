@@ -1,0 +1,37 @@
+// Copyright (c) 2011 Nohros Inc. All rights reserved.
+// Use of this source code is governed by a MIT-style license that can be
+// found in the LICENSE file.
+
+package nohros.ruby;
+
+import "google/protobuf/csharp_options.proto";
+import "ruby_message.proto";
+
+option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby";
+option (google.protobuf.csharp_file_options).umbrella_classname = "RubyMessageProtos";
+
+option optimize_for = SPEED;
+
+// Wraps a protobuf message into a envelope, which defines what is in the message and how
+// to process it. The ruby server send messages that could be one of several different types.
+// However, protocol buffers parsers cannot necessarily determine the type of a message based
+// on the contents alone. This message was created to ensure that the sent message is correctly
+// decoded/encoded by the ruby service.
+message RubyMessagePacket {
+    optional int32 packet_size = 1;
+    optional int32 packet_header_size = 2;
+
+    // Represents the header of that packet
+    message RubyMessagePacketHeader {
+    }
+
+    optional RubyMessage ruby_message = 3
+
+	// Represents the message that this envelope wraps. This is a varint encoded string.
+	optional string message = 1;
+	
+	// The name of the class that is used to encode/decode the message wrapped by this envelope.
+	// The Java and C# version of the services may use this type to instantiate the appropriated
+	// parser class.
+	optional string parser_type = 2;
+}
