@@ -18,14 +18,38 @@ namespace Nohros.Ruby
     public interface IRubyMessagePacket
     {
         /// <summary>
-        /// Gets the varint encoded message representing the command that was sent from the server.
+        /// Gets the total size of the packet(in bytes), not including the size of this field.
         /// </summary>
-        string Message { get; }
+        int Size { get; }
 
         /// <summary>
-        /// Gets the assembly's fully qualified named of the class that can be used to decode the
-        /// <see cref="Message"/>.
+        /// Gets the Id of the packet that is used to match the request/response.
         /// </summary>
-        string ParserType { get; }
+        int Id { get; }
+
+        /// <summary>
+        /// Gets the name of the service which this message is related.
+        /// </summary>
+        string ServiceName { get; }
+
+        /// <summary>
+        /// A string used to identify the message.
+        /// </summary>
+        /// <remarks>
+        /// The meaning of the value stored into this field is service-dependant. For example,
+        /// a service could use this field to store the name of a message and them use this value
+        /// to locate a class that could parse the message or it could store the name of the class
+        /// that can parse the message, so it could instantiate the class directly throught
+        /// reflection(in languages that support it, of course).
+        /// </remarks>
+        string MessageType { get; }
+
+        /// <summary>
+        /// Gets the protocol buffer encoded message that must be dispatched to the service.
+        /// </summary>
+        /// <remarks>
+        /// The meaning of the value of this member is service-dependant. The RSH do not touch this member.
+        /// </remarks>
+        string Message { get; }
     }
 }
