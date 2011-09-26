@@ -21,8 +21,6 @@ package nohros.ruby;
 import "google/protobuf/csharp_options.proto";
 
 option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby";
-option (google.protobuf.csharp_file_options).umbrella_classname = "RubyMessageProtos";
-option (google.protobuf.csharp_file_options).multiple_files = true;
 
 option optimize_for = SPEED;
 
