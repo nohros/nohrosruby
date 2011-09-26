@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(services)", "(services)", "{34F0FDB9-08D7-4C5F-9C6D-1303EE4C691B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(net)", "(net)", "{959F77CD-D65A-494E-9D8C-B0D0D825818A}"
@@ -43,10 +43,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(services)", "(services)", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(protos)", "(protos)", "{78AEFBF4-83C8-4FB8-93A8-B96154347AB8}"
 	ProjectSection(SolutionItems) = preProject
-		protos\csharp-make.bat = protos\csharp-make.bat
-		protos\csharp-proto-list.bat = protos\csharp-proto-list.bat
-		protos\proto-list.bat = protos\proto-list.bat
-		protos\ruby_message.proto = protos\ruby_message.proto
+		protos\local_charp_proto_parser_generator_.py = protos\local_charp_proto_parser_generator_.py
+		protos\proto_parser_generator.py = protos\proto_parser_generator.py
+		protos\ruby_message_packet.proto = protos\ruby_message_packet.proto
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(parsers)", "(parsers)", "{69758CCE-B2BB-4A84-BDC4-50CB6F3CC0E4}"
@@ -65,10 +64,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(net)", "(net)", "{36C1F00F-C748-4B52-9410-B8C806238122}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(csharp)", "(csharp)", "{FA57983A-1E72-4253-9EDD-423597377794}"
-	ProjectSection(SolutionItems) = preProject
-		protos\parsers\csharp\RubyMessagePacket.cs = protos\parsers\csharp\RubyMessagePacket.cs
-		protos\parsers\csharp\RubyMessageProtos.cs = protos\parsers\csharp\RubyMessageProtos.cs
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(service)", "(service)", "{164DC1C0-D27F-4C59-A313-C71C065621C8}"
 EndProject
@@ -87,28 +82,28 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(build)", "(build)", "{F105
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(common)", "(common)", "{EFB65014-CA92-4984-A2D5-009E3C8AD054}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(glog)", "(glog)", "{CB0C7345-FE05-4015-A283-1FF0911232EE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0567A44D-27C9-480A-AE27-585EF824F1C6}"
+	ProjectSection(SolutionItems) = preProject
+		ruby.gyp = ruby.gyp
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rubynet", "services\net\rubynet\rubynet.csproj", "{561B3424-32B8-484E-9E4C-972D341F431E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "irubyservice", "services\net\irubynet\irubyservice.csproj", "{970C40CD-03F5-4761-9AE3-7E358E108E56}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rubynet_unittest", "tests\services\rubynet_unittest\rubynet_unittest.csproj", "{0CB5E36D-8305-4D6C-8FE8-4793B039D6C0}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "service", "client\vsprojects\service.vcproj", "{344D0226-0D51-4AE9-AAA0-A66354E044FA}"
-	ProjectSection(ProjectDependencies) = postProject
-		{34BD04BD-BC1D-4BFC-AAFC-ED02D9E960F1} = {34BD04BD-BC1D-4BFC-AAFC-ED02D9E960F1}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "service", "client\vsprojects\service.vcxproj", "{344D0226-0D51-4AE9-AAA0-A66354E044FA}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "net", "client\vsprojects\net.vcproj", "{53B52D72-17F1-4647-997C-399F7DA5DA8D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "net", "client\vsprojects\net.vcxproj", "{53B52D72-17F1-4647-997C-399F7DA5DA8D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common", "client\vsprojects\common.vcproj", "{B15BDCC3-04FC-4CFF-A3F4-58DA84D274BB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common", "client\vsprojects\common.vcxproj", "{B15BDCC3-04FC-4CFF-A3F4-58DA84D274BB}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(glog)", "(glog)", "{CB0C7345-FE05-4015-A283-1FF0911232EE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "net_base", "client\third_party\chrome\net\net_base.vcxproj", "{9B6FAEE0-4CFD-8942-397F-500C5408D1AA}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libglog", "client\third_party\glog\vsprojects\libglog\libglog.vcproj", "{34BD04BD-BC1D-4BFC-AAFC-ED02D9E960F1}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "net_base", "client\third_party\chrome\net\net_base.vcproj", "{9B6FAEE0-4CFD-8942-397F-500C5408D1AA}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "base", "client\third_party\chrome\base\base.vcproj", "{1832A374-8A74-4F9E-B536-69A699B3E165}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "base", "client\third_party\chrome\base\base.vcxproj", "{1832A374-8A74-4F9E-B536-69A699B3E165}"
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
@@ -217,21 +212,6 @@ Global
 		{B15BDCC3-04FC-4CFF-A3F4-58DA84D274BB}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{B15BDCC3-04FC-4CFF-A3F4-58DA84D274BB}.Release|Win32.ActiveCfg = Release|Win32
 		{B15BDCC3-04FC-4CFF-A3F4-58DA84D274BB}.Release|Win32.Build.0 = Release|Win32
-		{34BD04BD-BC1D-4BFC-AAFC-ED02D9E960F1}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{34BD04BD-BC1D-4BFC-AAFC-ED02D9E960F1}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{34BD04BD-BC1D-4BFC-AAFC-ED02D9E960F1}.Debug|Mixed Platforms.Build.0 = Debug|Win32
-		{34BD04BD-BC1D-4BFC-AAFC-ED02D9E960F1}.Debug|Win32.ActiveCfg = Debug|Win32
-		{34BD04BD-BC1D-4BFC-AAFC-ED02D9E960F1}.Debug|Win32.Build.0 = Debug|Win32
-		{34BD04BD-BC1D-4BFC-AAFC-ED02D9E960F1}.Purify|Any CPU.ActiveCfg = Release|Win32
-		{34BD04BD-BC1D-4BFC-AAFC-ED02D9E960F1}.Purify|Mixed Platforms.ActiveCfg = Release|Win32
-		{34BD04BD-BC1D-4BFC-AAFC-ED02D9E960F1}.Purify|Mixed Platforms.Build.0 = Release|Win32
-		{34BD04BD-BC1D-4BFC-AAFC-ED02D9E960F1}.Purify|Win32.ActiveCfg = Release|Win32
-		{34BD04BD-BC1D-4BFC-AAFC-ED02D9E960F1}.Purify|Win32.Build.0 = Release|Win32
-		{34BD04BD-BC1D-4BFC-AAFC-ED02D9E960F1}.Release|Any CPU.ActiveCfg = Release|Win32
-		{34BD04BD-BC1D-4BFC-AAFC-ED02D9E960F1}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{34BD04BD-BC1D-4BFC-AAFC-ED02D9E960F1}.Release|Mixed Platforms.Build.0 = Release|Win32
-		{34BD04BD-BC1D-4BFC-AAFC-ED02D9E960F1}.Release|Win32.ActiveCfg = Release|Win32
-		{34BD04BD-BC1D-4BFC-AAFC-ED02D9E960F1}.Release|Win32.Build.0 = Release|Win32
 		{9B6FAEE0-4CFD-8942-397F-500C5408D1AA}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{9B6FAEE0-4CFD-8942-397F-500C5408D1AA}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
 		{9B6FAEE0-4CFD-8942-397F-500C5408D1AA}.Debug|Mixed Platforms.Build.0 = Debug|Win32
@@ -299,6 +279,5 @@ Global
 		{9B6FAEE0-4CFD-8942-397F-500C5408D1AA} = {9F41B8B6-BC4F-43E0-8067-7854D63633CE}
 		{1832A374-8A74-4F9E-B536-69A699B3E165} = {8814A852-D5B9-4FAC-9DB2-AC5E2471C8C6}
 		{B15BDCC3-04FC-4CFF-A3F4-58DA84D274BB} = {EFB65014-CA92-4984-A2D5-009E3C8AD054}
-		{34BD04BD-BC1D-4BFC-AAFC-ED02D9E960F1} = {CB0C7345-FE05-4015-A283-1FF0911232EE}
 	EndGlobalSection
 EndGlobal
