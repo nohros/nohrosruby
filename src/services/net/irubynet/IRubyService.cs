@@ -81,7 +81,7 @@ namespace Nohros.Ruby
         /// handler. This prevents the service from tying up the message dispatcher.
         /// </para>
         /// </remarks>
-        IRubyMessage OnServerMessage(IRubyMessagePacket message);
+        IRubyMessagePacket OnServerMessage(IRubyMessagePacket message);
 
         /// <summary>
         /// Gets the status information for a service. This property is used by services to report its current
