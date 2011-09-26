@@ -1,8 +1,10 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>
+    </ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{561B3424-32B8-484E-9E4C-972D341F431E}</ProjectGuid>
     <OutputType>Exe</OutputType>
@@ -15,6 +17,8 @@
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -63,9 +67,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AsyncPipeState.cs" />
-    <Compile Include="configuration\SettingsFactory.cs" />
-    <Compile Include="EmptyService.cs" />
-    <Compile Include="EmptyServiceHost.cs" />
     <Compile Include="configuration\RubyNetSettings.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -85,12 +86,12 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="shell\RubyNetShell.cs" />
-    <Compile Include="shell\CommandType.cs" />
+    <Compile Include="CommandType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RubyMessagePacketImpl.cs" />
     <Compile Include="RubyNet.cs" />
     <Compile Include="RubyNetServiceHost.cs" />
-    <Compile Include="$(SolutionDir)protos\parsers\csharp\RubyMessageProtos.cs" />
+    <Compile Include="$(SolutionDir)protos\parsers\csharp\RubyMessagePacket.cs" />
     <Compile Include="shell\commands\StartCommand.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -100,18 +101,18 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="rubynet.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Resources.resx">
       <SubType>Designer</SubType>
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <None Include="rubynet.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
