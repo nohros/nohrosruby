@@ -19,56 +19,31 @@
 package nohros.ruby;
 
 import "google/protobuf/csharp_options.proto";
+import "ruby_message_header.proto";
 
 option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby";
 
 option optimize_for = SPEED;
 
-// The message packet header. Contains information about the packed message. The
-// ruby service host use this message packet to deliver a RubyMessage to a specific
-// service. More specifically, it use the service property to find a service and then
-// dispatch the message defined by the message property to the service.
-/*message RubyMessageHeader {
-    // Message ID, used to match request/response.
-    optional int32 id = 1;
-
-    // Total size (in bytes) of the message following this header.
-    optional int32 size = 2;
-
-    // The name of the service which this packet is associated.
-    optional string service_name = 3;
-
-    // A string used to identify the message. The meaning of the value stored into
-    // this field is service-dependant. For example, a service could use this
-    // field to store the name of a message and them use this value to
-    // locate a class that could parse the message or it could store the name of
-    // the class that can parse the message, so it could instantiate the class
-    // directly throught reflection(in languages that support it, of course).
-    optional string message_type = 4;
-}*/
-
 // Wraps a protobuf message into a envelope, which defines what is in the message and how to
 // process it. The ruby server send messages that could be one of several different types. However,
 // protocol buffers parsers cannot necessarily determine the type of a message based on the
 // contents alone. This message was defined to ensure that the sent message is correctly
-// decoded/encoded.
+// decoded/encoded. This message is also used by the ruby service host to deliver the packet
+// message to a specific service. More specifically, it use the service property to find the service
+// which the message must be dispatched.
 message RubyMessagePacket {
     // Total size of the packet(in bytes), not including the size of this field.
     optional int32 size = 1;
 
-    // Message packet ID, used to match request/response.
-    optional int32 id = 2;
+    // Total size (in bytes) of the message header(RubyMessageHeader).
+    optional int32 message_size = 2;
 
-    // The name of the service which this packet is associated.
-    optional string service_name = 3;
+    // The name of the service related packed with the message.
+    optional string service = 3;
 
-    // A string used to identify the message. The meaning of the value stored into
-    // this field is service-dependant. For example, a service could use this
-    // field to store the name of a message and them use this value to
-    // locate a class that could parse the message or it could store the name of
-    // the class that can parse the message, so it could instantiate the class
-    // directly throught reflection(in languages that support it, of course).
-    optional string message_type = 4;
+    // The message header.
+    optional RubyMessageHeader header = 4;
 
     // Service specific message serialized in protocol buffer format.
     optional string message = 5;

@@ -27,24 +27,27 @@ namespace Nohros.Ruby {
       static RubyMessagePacket() {
         byte[] descriptorData = global::System.Convert.FromBase64String(
             "ChlydWJ5X21lc3NhZ2VfcGFja2V0LnByb3RvEgtub2hyb3MucnVieRokZ29v" + 
-            "Z2xlL3Byb3RvYnVmL2NzaGFycF9vcHRpb25zLnByb3RvImoKEVJ1YnlNZXNz" + 
-            "YWdlUGFja2V0EgwKBHNpemUYASABKAUSCgoCaWQYAiABKAUSFAoMc2Vydmlj" + 
-            "ZV9uYW1lGAMgASgJEhQKDG1lc3NhZ2VfdHlwZRgEIAEoCRIPCgdtZXNzYWdl" + 
-            "GAUgASgJQhJIAcI+DQoLTm9ocm9zLlJ1Ynk=");
+            "Z2xlL3Byb3RvYnVmL2NzaGFycF9vcHRpb25zLnByb3RvGhlydWJ5X21lc3Nh" + 
+            "Z2VfaGVhZGVyLnByb3RvIokBChFSdWJ5TWVzc2FnZVBhY2tldBIMCgRzaXpl" + 
+            "GAEgASgFEhQKDG1lc3NhZ2Vfc2l6ZRgCIAEoBRIPCgdzZXJ2aWNlGAMgASgJ" + 
+            "Ei4KBmhlYWRlchgEIAEoCzIeLm5vaHJvcy5ydWJ5LlJ1YnlNZXNzYWdlSGVh" + 
+            "ZGVyEg8KB21lc3NhZ2UYBSABKAlCEkgBwj4NCgtOb2hyb3MuUnVieQ==");
         pbd::FileDescriptor.InternalDescriptorAssigner assigner = delegate(pbd::FileDescriptor root) {
           descriptor = root;
           internal__static_nohros_ruby_RubyMessagePacket__Descriptor = Descriptor.MessageTypes[0];
           internal__static_nohros_ruby_RubyMessagePacket__FieldAccessorTable = 
               new pb::FieldAccess.FieldAccessorTable<global::Nohros.Ruby.RubyMessagePacket, global::Nohros.Ruby.RubyMessagePacket.Builder>(internal__static_nohros_ruby_RubyMessagePacket__Descriptor,
-                  new string[] { "Size", "Id", "ServiceName", "MessageType", "Message", });
+                  new string[] { "Size", "MessageSize", "Service", "Header", "Message", });
           pb::ExtensionRegistry registry = pb::ExtensionRegistry.CreateInstance();
           RegisterAllExtensions(registry);
           global::Google.ProtocolBuffers.DescriptorProtos.CSharpOptions.RegisterAllExtensions(registry);
+          global::Nohros.Ruby.Proto.RubyMessageHeader.RegisterAllExtensions(registry);
           return registry;
         };
         pbd::FileDescriptor.InternalBuildGeneratedFileFrom(descriptorData,
             new pbd::FileDescriptor[] {
             global::Google.ProtocolBuffers.DescriptorProtos.CSharpOptions.Descriptor, 
+            global::Nohros.Ruby.Proto.RubyMessageHeader.Descriptor, 
             }, assigner);
       }
       #endregion
@@ -84,34 +87,34 @@ namespace Nohros.Ruby {
       get { return size_; }
     }
     
-    public const int IdFieldNumber = 2;
-    private bool hasId;
-    private int id_ = 0;
-    public bool HasId {
-      get { return hasId; }
+    public const int MessageSizeFieldNumber = 2;
+    private bool hasMessageSize;
+    private int messageSize_ = 0;
+    public bool HasMessageSize {
+      get { return hasMessageSize; }
     }
-    public int Id {
-      get { return id_; }
-    }
-    
-    public const int ServiceNameFieldNumber = 3;
-    private bool hasServiceName;
-    private string serviceName_ = "";
-    public bool HasServiceName {
-      get { return hasServiceName; }
-    }
-    public string ServiceName {
-      get { return serviceName_; }
+    public int MessageSize {
+      get { return messageSize_; }
     }
     
-    public const int MessageTypeFieldNumber = 4;
-    private bool hasMessageType;
-    private string messageType_ = "";
-    public bool HasMessageType {
-      get { return hasMessageType; }
+    public const int ServiceFieldNumber = 3;
+    private bool hasService;
+    private string service_ = "";
+    public bool HasService {
+      get { return hasService; }
     }
-    public string MessageType {
-      get { return messageType_; }
+    public string Service {
+      get { return service_; }
+    }
+    
+    public const int HeaderFieldNumber = 4;
+    private bool hasHeader;
+    private global::Nohros.Ruby.RubyMessageHeader header_ = global::Nohros.Ruby.RubyMessageHeader.DefaultInstance;
+    public bool HasHeader {
+      get { return hasHeader; }
+    }
+    public global::Nohros.Ruby.RubyMessageHeader Header {
+      get { return header_; }
     }
     
     public const int MessageFieldNumber = 5;
@@ -135,14 +138,14 @@ namespace Nohros.Ruby {
       if (HasSize) {
         output.WriteInt32(1, Size);
       }
-      if (HasId) {
-        output.WriteInt32(2, Id);
+      if (HasMessageSize) {
+        output.WriteInt32(2, MessageSize);
       }
-      if (HasServiceName) {
-        output.WriteString(3, ServiceName);
+      if (HasService) {
+        output.WriteString(3, Service);
       }
-      if (HasMessageType) {
-        output.WriteString(4, MessageType);
+      if (HasHeader) {
+        output.WriteMessage(4, Header);
       }
       if (HasMessage) {
         output.WriteString(5, Message);
@@ -160,14 +163,14 @@ namespace Nohros.Ruby {
         if (HasSize) {
           size += pb::CodedOutputStream.ComputeInt32Size(1, Size);
         }
-        if (HasId) {
-          size += pb::CodedOutputStream.ComputeInt32Size(2, Id);
+        if (HasMessageSize) {
+          size += pb::CodedOutputStream.ComputeInt32Size(2, MessageSize);
         }
-        if (HasServiceName) {
-          size += pb::CodedOutputStream.ComputeStringSize(3, ServiceName);
+        if (HasService) {
+          size += pb::CodedOutputStream.ComputeStringSize(3, Service);
         }
-        if (HasMessageType) {
-          size += pb::CodedOutputStream.ComputeStringSize(4, MessageType);
+        if (HasHeader) {
+          size += pb::CodedOutputStream.ComputeMessageSize(4, Header);
         }
         if (HasMessage) {
           size += pb::CodedOutputStream.ComputeStringSize(5, Message);
@@ -267,14 +270,14 @@ namespace Nohros.Ruby {
         if (other.HasSize) {
           Size = other.Size;
         }
-        if (other.HasId) {
-          Id = other.Id;
+        if (other.HasMessageSize) {
+          MessageSize = other.MessageSize;
         }
-        if (other.HasServiceName) {
-          ServiceName = other.ServiceName;
+        if (other.HasService) {
+          Service = other.Service;
         }
-        if (other.HasMessageType) {
-          MessageType = other.MessageType;
+        if (other.HasHeader) {
+          MergeHeader(other.Header);
         }
         if (other.HasMessage) {
           Message = other.Message;
@@ -316,15 +319,20 @@ namespace Nohros.Ruby {
               break;
             }
             case 16: {
-              Id = input.ReadInt32();
+              MessageSize = input.ReadInt32();
               break;
             }
             case 26: {
-              ServiceName = input.ReadString();
+              Service = input.ReadString();
               break;
             }
             case 34: {
-              MessageType = input.ReadString();
+              global::Nohros.Ruby.RubyMessageHeader.Builder subBuilder = global::Nohros.Ruby.RubyMessageHeader.CreateBuilder();
+              if (HasHeader) {
+                subBuilder.MergeFrom(Header);
+              }
+              input.ReadMessage(subBuilder, extensionRegistry);
+              Header = subBuilder.BuildPartial();
               break;
             }
             case 42: {
@@ -354,59 +362,76 @@ namespace Nohros.Ruby {
         return this;
       }
       
-      public bool HasId {
-        get { return result.HasId; }
+      public bool HasMessageSize {
+        get { return result.HasMessageSize; }
       }
-      public int Id {
-        get { return result.Id; }
-        set { SetId(value); }
+      public int MessageSize {
+        get { return result.MessageSize; }
+        set { SetMessageSize(value); }
       }
-      public Builder SetId(int value) {
-        result.hasId = true;
-        result.id_ = value;
+      public Builder SetMessageSize(int value) {
+        result.hasMessageSize = true;
+        result.messageSize_ = value;
         return this;
       }
-      public Builder ClearId() {
-        result.hasId = false;
-        result.id_ = 0;
-        return this;
-      }
-      
-      public bool HasServiceName {
-        get { return result.HasServiceName; }
-      }
-      public string ServiceName {
-        get { return result.ServiceName; }
-        set { SetServiceName(value); }
-      }
-      public Builder SetServiceName(string value) {
-        pb::ThrowHelper.ThrowIfNull(value, "value");
-        result.hasServiceName = true;
-        result.serviceName_ = value;
-        return this;
-      }
-      public Builder ClearServiceName() {
-        result.hasServiceName = false;
-        result.serviceName_ = "";
+      public Builder ClearMessageSize() {
+        result.hasMessageSize = false;
+        result.messageSize_ = 0;
         return this;
       }
       
-      public bool HasMessageType {
-        get { return result.HasMessageType; }
+      public bool HasService {
+        get { return result.HasService; }
       }
-      public string MessageType {
-        get { return result.MessageType; }
-        set { SetMessageType(value); }
+      public string Service {
+        get { return result.Service; }
+        set { SetService(value); }
       }
-      public Builder SetMessageType(string value) {
+      public Builder SetService(string value) {
         pb::ThrowHelper.ThrowIfNull(value, "value");
-        result.hasMessageType = true;
-        result.messageType_ = value;
+        result.hasService = true;
+        result.service_ = value;
         return this;
       }
-      public Builder ClearMessageType() {
-        result.hasMessageType = false;
-        result.messageType_ = "";
+      public Builder ClearService() {
+        result.hasService = false;
+        result.service_ = "";
+        return this;
+      }
+      
+      public bool HasHeader {
+       get { return result.HasHeader; }
+      }
+      public global::Nohros.Ruby.RubyMessageHeader Header {
+        get { return result.Header; }
+        set { SetHeader(value); }
+      }
+      public Builder SetHeader(global::Nohros.Ruby.RubyMessageHeader value) {
+        pb::ThrowHelper.ThrowIfNull(value, "value");
+        result.hasHeader = true;
+        result.header_ = value;
+        return this;
+      }
+      public Builder SetHeader(global::Nohros.Ruby.RubyMessageHeader.Builder builderForValue) {
+        pb::ThrowHelper.ThrowIfNull(builderForValue, "builderForValue");
+        result.hasHeader = true;
+        result.header_ = builderForValue.Build();
+        return this;
+      }
+      public Builder MergeHeader(global::Nohros.Ruby.RubyMessageHeader value) {
+        pb::ThrowHelper.ThrowIfNull(value, "value");
+        if (result.HasHeader &&
+            result.header_ != global::Nohros.Ruby.RubyMessageHeader.DefaultInstance) {
+            result.header_ = global::Nohros.Ruby.RubyMessageHeader.CreateBuilder(result.header_).MergeFrom(value).BuildPartial();
+        } else {
+          result.header_ = value;
+        }
+        result.hasHeader = true;
+        return this;
+      }
+      public Builder ClearHeader() {
+        result.hasHeader = false;
+        result.header_ = global::Nohros.Ruby.RubyMessageHeader.DefaultInstance;
         return this;
       }
       

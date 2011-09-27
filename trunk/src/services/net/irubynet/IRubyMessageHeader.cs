@@ -15,7 +15,7 @@ namespace Nohros.Ruby
     /// ruby service.
     /// <para>All messages classes must implements this interface.</para>
     /// </remarks>
-    public interface IRubyMessagePacket
+    public interface IRubyMessageHeader
     {
         /// <summary>
         /// Gets the total size of the packet(in bytes), not including the size of this field.
