@@ -1,0 +1,47 @@
+// Copyright (c) 2011 Nohros Inc. All rights reserved.
+// Use of this source code is governed by a MIT-style license that can be
+// found in the LICENSE file.
+//
+// The ruby server send messages that could be one of several different types.
+// However, protocol buffers parsers cannot necessarily determine the type of a message based
+// on the contents alone. We need to define a way to ensure that the ruby messages is correctly
+// decoded/encoded by the ruby service. Essentially, with every message we send some header information
+// that is encoded with protocol buffers.
+//
+// The basic structure of the message is:
+//
+// RubyMessagePacket
+//   RubyMessagePacketHeader
+//   RubyMessage
+//     RubyMessageHeader
+//     [A service define message]
+
+package nohros.ruby;
+
+import "google/protobuf/csharp_options.proto";
+
+option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby";
+
+option optimize_for = SPEED;
+
+// The message header. Contains information about the packed message.
+message RubyMessageHeader {
+    // Message ID, used to match request/response.
+    optional int32 id = 1;
+
+    // The size (in bytes) of the packed message. This is the size of the
+    // service specific message. This information is used by the ruby
+    // service host to correctly pack the message and send it to the
+    // server. If this value is incorrectly defined, the message created
+    // by the service will not be fully dispatched to the service and
+    // possibly it will be discarded.
+    optional int32 size = 2;
+
+    // A string used to identify the message. The meaning of the value stored into
+    // this field is service-dependant. For example, a service could use this
+    // field to store the name of a message and them use this value to
+    // locate a class that could parse the message or it could store the name of
+    // the class that can parse the message, so it could instantiate the class
+    // directly throught reflection(in languages that support it, of course).
+    optional string message_type = 3;
+}
