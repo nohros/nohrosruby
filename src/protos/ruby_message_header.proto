@@ -33,8 +33,8 @@ message RubyMessageHeader {
     // service specific message. This information is used by the ruby
     // service host to correctly pack the message and send it to the
     // server. If this value is incorrectly defined, the message created
-    // by the service will not be fully dispatched to the service and
-    // possibly it will be discarded.
+    // by the service will not be fully dispatched to the server and
+    // possibly discarded.
     optional int32 size = 2;
 
     // A string used to identify the message. The meaning of the value stored into

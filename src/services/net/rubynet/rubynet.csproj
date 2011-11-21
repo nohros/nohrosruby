@@ -44,21 +44,21 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\third_party\protobuf-csharp-port\Google.ProtocolBuffers.dll</HintPath>
     </Reference>
-    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+    <Reference Include="mytoolspack.console, Version=0.2.2.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\third_party\log4net\log4net.dll</HintPath>
+      <HintPath>..\..\..\third_party\nohros\mytoolspack.console.dll</HintPath>
     </Reference>
-    <Reference Include="nohros, Version=0.5.5.644, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="nohros, Version=0.6.2.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\third_party\nohros\must\nohros.dll</HintPath>
+      <HintPath>..\..\..\third_party\nohros\nohros.dll</HintPath>
     </Reference>
-    <Reference Include="nohros.desktop, Version=0.5.5.644, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="nohros.desktop, Version=0.6.0.51, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\third_party\nohros\must\nohros.desktop.dll</HintPath>
+      <HintPath>..\..\..\third_party\nohros\nohros.desktop.dll</HintPath>
     </Reference>
-    <Reference Include="nohros.resources, Version=0.1.2.90, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="nohros.resources, Version=0.2.0.2363, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\third_party\nohros\must\nohros.resources.dll</HintPath>
+      <HintPath>..\..\..\third_party\nohros\nohros.resources.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
@@ -66,39 +66,47 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppFactory.cs" />
     <Compile Include="AsyncPipeState.cs" />
-    <Compile Include="configuration\RubyNetSettings.cs" />
+    <Compile Include="configuration\IRubyLogger.cs" />
+    <Compile Include="configuration\RubyLogger.cs" />
+    <Compile Include="configuration\RubySettings.cs" />
+    <Compile Include="configuration\RunningMode.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="RubyMessage.cs" />
+    <Compile Include="RubyMessageHeaderImpl.cs" />
+    <Compile Include="RubyServiceHosts.cs" />
+    <Compile Include="ServicesFactory.cs" />
+    <Compile Include="shell\commands\ClearCommand.cs" />
     <Compile Include="shell\commands\HelpCommand.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="shell\commands\IShellCommand.cs" />
     <Compile Include="shell\commands\SendCommand.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="shell\commands\ShellCommand.cs" />
+    <Compile Include="shell\commands\InternalCommandsFactory.cs" />
     <Compile Include="shell\commands\StopCommand.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="shell\commands\UnknownCommand.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="shell\RubyNetShell.cs" />
+    <Compile Include="shell\RubyShell.cs" />
     <Compile Include="CommandType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RubyMessagePacketImpl.cs" />
     <Compile Include="RubyNet.cs" />
-    <Compile Include="RubyNetServiceHost.cs" />
+    <Compile Include="RubyServiceHost.cs" />
     <Compile Include="$(SolutionDir)protos\parsers\csharp\RubyMessagePacket.cs" />
+    <Compile Include="$(SolutionDir)protos\parsers\csharp\RubyMessageHeader.cs" />
     <Compile Include="shell\commands\StartCommand.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\irubynet\irubyservice.csproj">
-      <Project>{970C40CD-03F5-4761-9AE3-7E358E108E56}</Project>
-      <Name>irubyservice</Name>
-    </ProjectReference>
+    <Compile Include="shell\ServiceConsole.cs" />
+    <Compile Include="Switches.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">
@@ -108,9 +116,16 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="rubynet.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\irubynet\irubyservice.csproj">
+      <Project>{970C40CD-03F5-4761-9AE3-7E358E108E56}</Project>
+      <Name>irubyservice</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

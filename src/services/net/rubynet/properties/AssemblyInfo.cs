@@ -14,7 +14,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: InternalsVisibleTo("Nohros.Ruby.Tests.Net")]
-[assembly: log4net.Config.XmlConfigurator(ConfigFile="rubynet.config", Watch=true)]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
