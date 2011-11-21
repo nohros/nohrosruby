@@ -1,45 +1,18 @@
-// Copyright (c) 2010 Nohros Systems Inc.
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this 
-// software and associated documentation files (the "Software"), to deal in the Software 
-// without restriction, including without limitation the rights to use, copy, modify, merge, 
-// publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons 
-// to whom the Software is furnished to do so, subject to the following conditions:
-// 	
-// The above copyright notice and this permission notice shall be included in all copies or 
-// substantial portions of the Software.
+// Copyright (c) 2010 Nohros Systems Inc. All rights reserved
+// Use of this source code is governed by BSD-style license that can be found
+// in the LICENCE file.
 //
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
-// PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE 
-// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
-// DEALINGS IN THE SOFTWARE.
-// ===========================================================================================
+// The service can be started as a regular service only, typically at system
+// startup. No COM support.
 //
-// The service can be started as a regular service only, typically at system startup. No COM
-// support.
-// 
 
-#include "service/service_main.h"
+#include <windows.h>
+#include <tchar.h>
 
-#include "common/logging.h"
+#include "third_party/chrome/base/command_line.h"
 
-namespace ruby {
-
-ServiceModule::ServiceModule()
-    : service_thread_(NULL) {
-	SERVICE_LOG(_T("[ServiceModule::ServiceModule]"));
+int main(int argc, char* argv[]) {
+  
+  // Initialize the commandline singleton from the environment.
+  CommandLine::Init(0, NULL);
 }
-
-ServiceModule::~ServiceModule() {
-  SERVICE_LOG(_T("[ServiceModule::~ServiceModule]"));
-  DCHECK_NOTNULL(service_thread_);
-
-  // ServiceModule is typically created on the stack. We therefhore reset the
-  // global ATL Module to NULL when ServiceModule is destroyed.
-  _pAtlModule = NULL;
-}
-
-} // namespace service
-

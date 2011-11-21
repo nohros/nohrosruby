@@ -25,13 +25,15 @@ option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby";
 
 option optimize_for = SPEED;
 
-// Wraps a protobuf message into a envelope, which defines what is in the message and how to
-// process it. The ruby server send messages that could be one of several different types. However,
-// protocol buffers parsers cannot necessarily determine the type of a message based on the
-// contents alone. This message was defined to ensure that the sent message is correctly
-// decoded/encoded. This message is also used by the ruby service host to deliver the packet
-// message to a specific service. More specifically, it use the service property to find the service
-// which the message must be dispatched.
+// Wraps a protobuf message into a envelope, which defines what is in the
+// message and how to process it. The ruby server send messages that could be
+// one of several different types. However, protocol buffers parsers cannot
+// necessarily determine the type of a message based on the contents alone.
+// This message was defined to ensure that the sent message is correctly
+// decoded/encoded. This message is also used by the ruby service host to
+// deliver the packed message to a specific service. More specifically, it use
+// the service property to find the service which the message must be
+// dispatched.
 message RubyMessagePacket {
     // Total size of the packet(in bytes), not including the size of this field.
     optional int32 size = 1;

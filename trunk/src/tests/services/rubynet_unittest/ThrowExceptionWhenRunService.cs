@@ -4,38 +4,29 @@ using System.Text;
 
 namespace Nohros.Ruby.Tests.Net
 {
-    public class ThrowExceptionWhenRunService : IRubyService
-    {
-        ServiceStatus service_status_;
-        ILog logger_;
-        string command_line_;
+  public class ThrowExceptionWhenRunService: IRubyService, IRubyServiceFactory
+  {
+    #region .ctor
+    public ThrowExceptionWhenRunService() { }
+    #endregion
 
-        #region .ctor()
-        public ThrowExceptionWhenRunService(string command_line, ILog logger) {
-            command_line_ = command_line;
-            service_status_ = 0;
-            logger_ = logger;
-        }
-        #endregion
-
-        public void Run() {
-            throw new Exception();
-        }
-
-        public void Stop() {
-            service_status_ = ServiceStatus.Running;
-        }
-
-        public bool OnServerMessage(IRubyMessagePacket message) {
-            return true;
-        }
-
-        public string Name {
-            get { return "ThrowExceptionWhenRunService"; }
-        }
-
-        public ServiceStatus Status {
-            get { return service_status_; }
-        }
+    public void Start() {
+      throw new Exception();
     }
+
+    public void Stop() {
+    }
+
+    public IRubyMessage OnServerMessage(IRubyMessage message) {
+      return message;
+    }
+
+    public string Name {
+      get { return "ThrowExceptionWhenRunService"; }
+    }
+
+    IRubyService IRubyServiceFactory.CreateService(string command_line) {
+      return new ThrowExceptionWhenRunService();
+    }
+  }
 }

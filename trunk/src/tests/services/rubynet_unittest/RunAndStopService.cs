@@ -6,38 +6,32 @@ using Nohros.Ruby.Service;
 
 namespace Nohros.Ruby.Tests.Net
 {
-    public class RunAndStopService : IRubyService
-    {
-        ServiceStatus service_status_;
-        string command_line_;
-        ILog logger_;
+  public class RunAndStopService: IRubyService, IRubyServiceFactory
+  {
+    string command_line_;
 
-        #region .ctor()
-        public RunAndStopService(string command_line, ILog logger) {
-            command_line_ = command_line;
-            service_status_ = ServiceStatus.Stopped;
-            logger_ = logger;
-        }
-        #endregion
+    #region .ctor
+    public RunAndStopService() { }
+    #endregion
 
-        public void Run() {
-            service_status_ = ServiceStatus.Running;
-        }
+    # region IRubyService
+    public void Start() { }
 
-        public void Stop() {
-            service_status_ = ServiceStatus.Stopped;
-        }
+    public void Stop() { }
 
-        public bool OnServerMessage(IRubyMessagePacket message) {
-            return true;
-        }
-
-        public string Name {
-            get { return "RunAndStopService"; }
-        }
-
-        public ServiceStatus Status {
-            get { return service_status_; }
-        }
+    public IRubyMessage OnServerMessage(IRubyMessage message) {
+      return message;
     }
+
+    public string Name {
+      get { return "RunAndStopService"; }
+    }
+    #endregion
+
+    #region IRubyServiceFactory
+    IRubyService IRubyServiceFactory.CreateService(string command_line) {
+      return new RunAndStopService();
+    }
+    #endregion
+  }
 }
