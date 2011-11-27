@@ -118,7 +118,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="rubynet.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
