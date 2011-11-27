@@ -73,7 +73,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(base)", "(base)", "{8814A8
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(build)", "(build)", "{F1050E85-B8DA-4348-BD3E-77C66F550E28}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(base)", "(base)", "{EFB65014-CA92-4984-A2D5-009E3C8AD054}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(common)", "(common)", "{EFB65014-CA92-4984-A2D5-009E3C8AD054}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(glog)", "(glog)", "{CB0C7345-FE05-4015-A283-1FF0911232EE}"
 EndProject
@@ -89,6 +89,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rubynet_unittest", "tests\services\rubynet_unittest\rubynet_unittest.csproj", "{0CB5E36D-8305-4D6C-8FE8-4793B039D6C0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "service", "node\service.vcxproj", "{81CFE71C-16B1-4070-BA29-A0C15748E18E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{92D9DE4E-A244-4F1D-9F09-F3E78C81A6A8} = {92D9DE4E-A244-4F1D-9F09-F3E78C81A6A8}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common", "node\common.vcxproj", "{92D9DE4E-A244-4F1D-9F09-F3E78C81A6A8}"
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
@@ -182,6 +187,24 @@ Global
 		{81CFE71C-16B1-4070-BA29-A0C15748E18E}.Release|Win32.ActiveCfg = Release|Win32
 		{81CFE71C-16B1-4070-BA29-A0C15748E18E}.Release|Win32.Build.0 = Release|Win32
 		{81CFE71C-16B1-4070-BA29-A0C15748E18E}.Release|x64.ActiveCfg = Release|Win32
+		{92D9DE4E-A244-4F1D-9F09-F3E78C81A6A8}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{92D9DE4E-A244-4F1D-9F09-F3E78C81A6A8}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{92D9DE4E-A244-4F1D-9F09-F3E78C81A6A8}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{92D9DE4E-A244-4F1D-9F09-F3E78C81A6A8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{92D9DE4E-A244-4F1D-9F09-F3E78C81A6A8}.Debug|Win32.Build.0 = Debug|Win32
+		{92D9DE4E-A244-4F1D-9F09-F3E78C81A6A8}.Debug|x64.ActiveCfg = Debug|Win32
+		{92D9DE4E-A244-4F1D-9F09-F3E78C81A6A8}.Purify|Any CPU.ActiveCfg = Release|Win32
+		{92D9DE4E-A244-4F1D-9F09-F3E78C81A6A8}.Purify|Mixed Platforms.ActiveCfg = Release|Win32
+		{92D9DE4E-A244-4F1D-9F09-F3E78C81A6A8}.Purify|Mixed Platforms.Build.0 = Release|Win32
+		{92D9DE4E-A244-4F1D-9F09-F3E78C81A6A8}.Purify|Win32.ActiveCfg = Release|Win32
+		{92D9DE4E-A244-4F1D-9F09-F3E78C81A6A8}.Purify|Win32.Build.0 = Release|Win32
+		{92D9DE4E-A244-4F1D-9F09-F3E78C81A6A8}.Purify|x64.ActiveCfg = Release|Win32
+		{92D9DE4E-A244-4F1D-9F09-F3E78C81A6A8}.Release|Any CPU.ActiveCfg = Release|Win32
+		{92D9DE4E-A244-4F1D-9F09-F3E78C81A6A8}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{92D9DE4E-A244-4F1D-9F09-F3E78C81A6A8}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{92D9DE4E-A244-4F1D-9F09-F3E78C81A6A8}.Release|Win32.ActiveCfg = Release|Win32
+		{92D9DE4E-A244-4F1D-9F09-F3E78C81A6A8}.Release|Win32.Build.0 = Release|Win32
+		{92D9DE4E-A244-4F1D-9F09-F3E78C81A6A8}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -215,5 +238,6 @@ Global
 		{CB0C7345-FE05-4015-A283-1FF0911232EE} = {0D3FC159-9996-4444-A4DE-F0ECE0EE7EE4}
 		{8814A852-D5B9-4FAC-9DB2-AC5E2471C8C6} = {9F41B8B6-BC4F-43E0-8067-7854D63633CE}
 		{F1050E85-B8DA-4348-BD3E-77C66F550E28} = {9F41B8B6-BC4F-43E0-8067-7854D63633CE}
+		{92D9DE4E-A244-4F1D-9F09-F3E78C81A6A8} = {EFB65014-CA92-4984-A2D5-009E3C8AD054}
 	EndGlobalSection
 EndGlobal

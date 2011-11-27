@@ -74,7 +74,7 @@ Usage: nohros.rubynet -assembly=ASSEMBLYNAME -type=TYPENAME [-help] -- ARGS
 
     internal const string kPipeSwitch = "pipe";
 
-    static void Main() {
+    static void Main(string[] args) {
       CommandLine command_line = CommandLine.ForCurrentProcess;
 
       // check if the debug is enabled first, so the caller has the chance
