@@ -59,7 +59,7 @@ message RubyMessageHeader {
     // directly throught reflection(in languages that support it, of course), it
     // could also use this filed to specify the name of a method that should be
     // called on the remote side.
-    optional string token = 3;
+    optional string token = 4;
 }
 
 // Wraps a protobuf message into a envelope, which defines what is in the
@@ -79,12 +79,12 @@ message RubyMessagePacket {
     optional uint32 header_size = 2;
 
     // The message header.
-    optional RubyMessageHeader header = 4;
+    optional RubyMessageHeader header = 3;
 
     // A string contained the service message serialized using the protobuf
     // format. The meaning of the value stored into this field is
     // service-dependant. For example, a service could use the
     // RubyMessageHeader.MessageType field to define the method name and this
     // this field to store the parameters of the method call.
-    optional string message = 5;
+    optional string message = 4;
 }
