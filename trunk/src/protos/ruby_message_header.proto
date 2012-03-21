@@ -3,45 +3,88 @@
 // found in the LICENSE file.
 //
 // The ruby server send messages that could be one of several different types.
-// However, protocol buffers parsers cannot necessarily determine the type of a message based
-// on the contents alone. We need to define a way to ensure that the ruby messages is correctly
-// decoded/encoded by the ruby service. Essentially, with every message we send some header information
-// that is encoded with protocol buffers.
+// However, protocol buffers parsers cannot necessarily determine the type of a
+// message based on the contents alone. We need to define a way to ensure that
+// the ruby messages is correctly decoded/encoded by the ruby service.
+// Essentially, with every message we send some header information that is
+// encoded with protocol buffers.
 //
 // The basic structure of the message is:
 //
-// RubyMessagePacket
-//   RubyMessagePacketHeader
-//   RubyMessage
-//     RubyMessageHeader
-//     [A service define message]
+// [RubyMessagePacket]
+//   [TotalPacketSize][HeaderSize][RubyMessageHeader][Message]
+//
+// A TCP message could be fragmented over a number of data chunks and a chunk
+// could have more than one message fragment. We cannot assume we always
+// receive a full message packet or a single message per send. Since the
+// protocol buffer wire format is not self-delimiting, two integers was added to
+// the begining of the packet. The first integer contains the size of the
+// packet, and the second integer contains the size of the packet header. Only 
+// one field containing the size of the whosle packet cold be used but, the
+// receiver will need to wait the whole packet to come to start processing it.
+// Encoding the header size right after the packet size enable the receiver to
+// start processing the request(ex. creating the deocoder objets, request
+// processor, etc.) while the rest of the message is comming.
 
 package nohros.ruby;
-
-import "google/protobuf/csharp_options.proto";
-
-option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby";
 
 option optimize_for = SPEED;
 
 // The message header. Contains information about the packed message.
 message RubyMessageHeader {
-    // Message ID, used to match request/response.
-    optional int32 id = 1;
+    // Message ID, used to match request/response. Use the maximum integer
+    // allowed to not impose a limit on the number of sequentially requests
+    // that could be generated.
+    required uint64 id = 1;
 
     // The size (in bytes) of the packed message. This is the size of the
-    // service specific message. This information is used by the ruby
-    // service host to correctly pack the message and send it to the
-    // server. If this value is incorrectly defined, the message created
-    // by the service will not be fully dispatched to the server and
-    // possibly discarded.
-    optional int32 size = 2;
+    // service specific message(RubyMessagePacket.Message). This information
+    // is used by the ruby service host to correctly pack the message and
+    // send it to the server. If this value is incorrectly defined, the
+    // message created by the service will not be fully dispatched to the
+    // server and possibly discarded. Accordingly to the documentation
+    // "Protocol buffers are not designed to handle larger messages and as a
+    // general rule of thumb a message should be not greather than one megabyte
+    // each". So, a unsigned integer is more than sufficient.
+    optional uint32 size = 2;
+    
+    // The name of the service related with the packed message.
+    optional string service = 3;
 
-    // A string used to identify the message. The meaning of the value stored into
-    // this field is service-dependant. For example, a service could use this
-    // field to store the name of a message and them use this value to
+    // A string used to identify the message. The meaning of the value stored
+    // into this field is service-dependant. For example, a service could use
+    // this field to store the name of a message and them use this value to
     // locate a class that could parse the message or it could store the name of
     // the class that can parse the message, so it could instantiate the class
-    // directly throught reflection(in languages that support it, of course).
-    optional string message_type = 3;
+    // directly throught reflection(in languages that support it, of course), it
+    // could also use this filed to specify the name of a method that should be
+    // called on the remote side.
+    optional string token = 3;
+}
+
+// Wraps a protobuf message into a envelope, which defines what is in the
+// message and how to process it. The ruby server send messages that could be
+// one of several different types. However, protocol buffers parsers cannot
+// necessarily determine the type of a message based on the contents alone.
+// This message was defined to ensure that the sent message is correctly
+// decoded/encoded. This message is also used by the ruby service host to
+// deliver the packed message to a specific service. More specifically, it use
+// the service property to find the service which the message must be
+// dispatched.
+message RubyMessagePacket {
+    // Total size of the packet(in bytes), not including the size of this field.
+    optional uint32 size = 1;
+
+    // Total size (in bytes) of the message header(RubyMessageHeader).
+    optional uint32 header_size = 2;
+
+    // The message header.
+    optional RubyMessageHeader header = 4;
+
+    // A string contained the service message serialized using the protobuf
+    // format. The meaning of the value stored into this field is
+    // service-dependant. For example, a service could use the
+    // RubyMessageHeader.MessageType field to define the method name and this
+    // this field to store the parameters of the method call.
+    optional string message = 5;
 }
