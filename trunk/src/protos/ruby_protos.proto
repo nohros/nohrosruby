@@ -34,7 +34,9 @@ option optimize_for = SPEED;
 message RubyMessageHeader {
   // Message ID, used to match request/response. Use the maximum integer
   // allowed to not impose a limit on the number of sequentially requests
-  // that could be generated.
+  // that could be generated. The value of this field is equals to the ID
+  // of the message contained in this packet.
+  // see: RubyMessage.id;
   optional uint64 id = 1;
 
   // The size (in bytes) of the packed message. This is the size of the
@@ -57,13 +59,18 @@ message RubyMessageHeader {
 // service host that decode the header, find the service that should
 // receive the message and them dispatch the message to it.
 message RubyMessage {
+  // Message ID, used to match request/response. We are using the maximum
+  // integer allowed here to not impose a limit on the number of sequentially
+  // requests that could be generated.
+  optional uint64 id = 1;
+  
   // A integer used to identify the type of message. The meaning of the value
   // stored into this field is service-dependant. For example, a service could
   // use this field as a enumeration, so it could switch over it instead of
   // use a expensive string comparison (token field). In anguages that does not
   // support reflective operations, this field could be used to identify the
   // type of operation that should be performed.
-  optional uint32 type = 1;
+  optional uint32 type = 2;
   
   // A string used to identify the message. The meaning of the value stored
   // into this field is service-dependant. For example, a service could use
@@ -73,14 +80,14 @@ message RubyMessage {
   // directly throught reflection(in languages that support it, of course), it
   // could also use this filed to specify the name of a method that should be
   // called on the remote side.
-  optional string token = 2;
+  optional string token = 3;
   
   // A string contained the service message serialized using the protobuf
   // format. The meaning of the value stored into this field is
   // service-dependant. For example, a service could use the
   // RubyMessageHeader.MessageType field to define the method name and this
   // this field to store the parameters of the method call.
-  optional string message = 3;
+  optional string message = 4;
 }
 
 // Wraps a protobuf message into a envelope, which defines what is in the
