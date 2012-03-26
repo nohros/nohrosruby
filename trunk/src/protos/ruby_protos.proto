@@ -87,7 +87,7 @@ message RubyMessage {
   // service-dependant. For example, a service could use the
   // RubyMessageHeader.MessageType field to define the method name and this
   // this field to store the parameters of the method call.
-  optional string message = 4;
+  optional bytes message = 4;
 }
 
 // Wraps a protobuf message into a envelope, which defines what is in the
