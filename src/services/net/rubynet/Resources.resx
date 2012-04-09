@@ -135,4 +135,7 @@
   <data name="log_shell_start_required_args" xml:space="preserve">
     <value>One of the required arguments was not supplied.</value>
   </data>
+  <data name="log_type_load_failed" xml:space="preserve">
+    <value>Failed to load the type:{0}</value>
+  </data>
 </root>
