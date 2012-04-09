@@ -113,5 +113,14 @@ namespace Nohros.Ruby.Service.Net {
                 return ResourceManager.GetString("log_shell_start_required_args", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to load the type:{0}.
+        /// </summary>
+        internal static string log_type_load_failed {
+            get {
+                return ResourceManager.GetString("log_type_load_failed", resourceCulture);
+            }
+        }
     }
 }
