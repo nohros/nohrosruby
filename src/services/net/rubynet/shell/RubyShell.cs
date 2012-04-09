@@ -21,7 +21,6 @@ namespace Nohros.Ruby.Service.Net
     const string kShellPrompt = "rubynet$: ";
     const string kExitCommand = "exit";
 
-    CommandLine command_line_;
     RubySettings settings_;
     RubyServiceHosts service_hosts_;
     MyToolsPackConsole console_;
@@ -50,8 +49,29 @@ namespace Nohros.Ruby.Service.Net
     /// shell will run and the specified service will be started; after that
     /// the shell will runs normally.
     /// </remarks>
-    public void Run() {
-      console_.Run();
+    public void Run(string command_line_string) {
+      // A try-block is used to catch any unhandled exception that
+      // a service raise.
+      try {
+        console_.Run(command_line_string);
+      } catch (Exception ex) {
+        // The ExceptionObject property og the UnhandledExceptionEventArgs class
+        // is not an Excepition because it is posible to throw object in .NET
+        // that do not derive from System.Exception. This is possible in some
+        // CLR based languages but not C#. We can safe cast it to
+        // System.Exception.
+        string message = "";
+        Exception exception = ex;
+        while (exception != null) {
+          // Is unusual to have a great number of inner excpetions and this
+          // piece of code does not impact the application performance, so
+          // using a string concatenation is OK.
+          message += exception.Message;
+          exception = exception.InnerException;
+        }
+        RubyLogger.ForCurrentProcess.Fatal(
+          "[Main   Nohros.Ruby.Service.Net.RubyNet]" + message);
+      }
     }
 
     /// <inheritdoc/>
