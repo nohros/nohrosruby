@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NODE_SERVICE_SERVICE_H_
-#define NODE_SERVICE_SERVICE_H_
+#ifndef NODE_SERVICE_SERVICE_BASE_H_
+#define NODE_SERVICE_SERVICE_BASE_H_
 
 #include <string>
 #include <vector>
@@ -14,6 +14,9 @@
 
 namespace node {
 
+// Provides a base class for a service that will exists as part of a service
+// application. Each service application should instantiate only one
+// ServiceBase class.
 class ServiceBase {
 
  public:
@@ -30,16 +33,19 @@ class ServiceBase {
   // is executed.
   void Run();
 
-  // Executed when a Start command is sent to the service by the ServiceBase
+  // Gets the service's name as seen by the SCM.
+  const std::string& service_name() const { return service_name_; };
+
+ protected:
+  // Executed when a Start command is sent to the service by the Service
   // Control Manager (SCM). OnStart is the method in which you specify the
   // behavior of the service. OnStart can take arugments as a way to pass
   // data, but this usage is rare.
   virtual void OnStart(const std::vector<std::string>& arguments) = 0;
 
+  // Executed when a Stop command is sent to the service by the Service Control
+  // Manager (SCM).
   virtual void OnStop() = 0;
-
-  // Gets the service's name as seen by the SCM.
-  const std::string& service_name() const { return service_name_; };
 
  private:
   static VOID WINAPI ServiceMainCallback(DWORD argc, LPSTR *argv);
@@ -86,4 +92,4 @@ class ServiceBase {
 extern ServiceBase* g_service;
 
 }  // namespace node
-#endif  // NODE_SERVICE_SERVICE_H_
+#endif  // NODE_SERVICE_SERVICE_BASE_H_
