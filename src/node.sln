@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "service", "node\service\service.vcxproj", "{8693F397-86E3-4628-800C-F47E9313CDDD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(service)", "(service)", "{1294F881-2B3B-46CC-95D9-342EF75CE9E3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8693F397-86E3-4628-800C-F47E9313CDDD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8693F397-86E3-4628-800C-F47E9313CDDD}.Debug|Win32.Build.0 = Debug|Win32
+		{8693F397-86E3-4628-800C-F47E9313CDDD}.Release|Win32.ActiveCfg = Release|Win32
+		{8693F397-86E3-4628-800C-F47E9313CDDD}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8693F397-86E3-4628-800C-F47E9313CDDD} = {1294F881-2B3B-46CC-95D9-342EF75CE9E3}
+	EndGlobalSection
+EndGlobal
