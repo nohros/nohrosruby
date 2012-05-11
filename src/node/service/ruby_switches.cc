@@ -12,5 +12,10 @@ namespace switches {
 // all work out.
 // ---------------------------------------------------------------------------
 
+// Specifies the path to the service host executable.
+const char kServiceHost[] = "service-host";
+
+// The contents of this flag are appended to the service host command line.
+const char kServiceHostCmdSuffix[] = "service-host-cmd-suffix";
 
 }  // namespace swicthes
