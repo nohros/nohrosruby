@@ -5,6 +5,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "service", "node\service\ser
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(service)", "(service)", "{1294F881-2B3B-46CC-95D9-342EF75CE9E3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "zeromq", "zeromq", "{ECFD6E7E-6466-406B-BC62-F019BC53A4A4}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zeromq", "node\zeromq\zeromq.vcxproj", "{A994CE0D-CC8C-4BED-8EBB-518EF95C60C2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -15,11 +19,16 @@ Global
 		{8693F397-86E3-4628-800C-F47E9313CDDD}.Debug|Win32.Build.0 = Debug|Win32
 		{8693F397-86E3-4628-800C-F47E9313CDDD}.Release|Win32.ActiveCfg = Release|Win32
 		{8693F397-86E3-4628-800C-F47E9313CDDD}.Release|Win32.Build.0 = Release|Win32
+		{A994CE0D-CC8C-4BED-8EBB-518EF95C60C2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A994CE0D-CC8C-4BED-8EBB-518EF95C60C2}.Debug|Win32.Build.0 = Debug|Win32
+		{A994CE0D-CC8C-4BED-8EBB-518EF95C60C2}.Release|Win32.ActiveCfg = Release|Win32
+		{A994CE0D-CC8C-4BED-8EBB-518EF95C60C2}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{8693F397-86E3-4628-800C-F47E9313CDDD} = {1294F881-2B3B-46CC-95D9-342EF75CE9E3}
+		{A994CE0D-CC8C-4BED-8EBB-518EF95C60C2} = {ECFD6E7E-6466-406B-BC62-F019BC53A4A4}
 	EndGlobalSection
 EndGlobal
