@@ -138,4 +138,7 @@
   <data name="log_type_load_failed" xml:space="preserve">
     <value>Failed to load the type:{0}</value>
   </data>
+  <data name="log_zmq_socket_is_not_of_type" xml:space="preserve">
+    <value>The type of socket {0} should be {1}.</value>
+  </data>
 </root>

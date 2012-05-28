@@ -122,5 +122,14 @@ namespace Nohros.Ruby.Service.Net {
                 return ResourceManager.GetString("log_type_load_failed", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The type of socket {0} should be {1}..
+        /// </summary>
+        internal static string log_zmq_socket_is_not_of_type {
+            get {
+                return ResourceManager.GetString("log_zmq_socket_is_not_of_type", resourceCulture);
+            }
+        }
     }
 }

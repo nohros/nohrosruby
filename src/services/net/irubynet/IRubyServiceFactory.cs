@@ -11,10 +11,7 @@ namespace Nohros.Ruby
   /// <remarks>
   /// <para>
   /// The <see cref="IRubyServiceFactory"/> interface implies a constructor
-  /// with the following signature:
-  /// <para>
-  /// <code>IRubyServiceFactory()</code>
-  /// </para>
+  /// with no parameters.
   /// </para>
   /// This constructor is called by the ruby service host(RSH) in order to
   /// create a new instance of the <see cref="IRubyService"/> interface.
@@ -24,11 +21,12 @@ namespace Nohros.Ruby
     /// <summary>
     /// Creates a instance of the <see cref="IRubyService"/> interface.
     /// </summary>
-    /// <param name="command_line_string">A string representing the command
-    /// line that was received by the ruby service host(RSH) as a parameter to
-    /// the service.</param>
-    /// <returns>An object the implements the <see cref="IRubyService"/>
-    /// interface.</returns>
+    /// <param name="command_line_string">
+    /// A string representing the command line that was received by the ruby
+    /// service host(RSH) as a parameter to the service.</param>
+    /// <returns>
+    /// An object the implements the <see cref="IRubyService"/> interface.
+    /// </returns>
     IRubyService CreateService(string command_line_string);
   }
 }

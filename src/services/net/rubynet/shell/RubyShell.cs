@@ -51,7 +51,7 @@ namespace Nohros.Ruby.Service.Net
     /// </remarks>
     public void Run(string command_line_string) {
       // A try-block is used to catch any unhandled exception that
-      // a service raise.
+      // raised by a service.
       try {
         console_.Run(command_line_string);
       } catch (Exception ex) {
@@ -81,6 +81,11 @@ namespace Nohros.Ruby.Service.Net
     }
 
     /// <inheritdoc/>
+    void IMyToolsPackConsole.SetOption(string key, string value) {
+      console_.SetOption(key, value);
+    }
+
+    /// <inheritdoc/>
     public void Write(string message) {
       console_.Write(message);
     }
@@ -91,7 +96,7 @@ namespace Nohros.Ruby.Service.Net
     }
 
     /// <summary>
-    /// Gets the list of hosts that currently runnning a service.
+    /// Gets the list of hosts that is currently runnning a service.
     /// </summary>
     internal RubyServiceHosts ServiceHosts {
       get { return service_hosts_; }

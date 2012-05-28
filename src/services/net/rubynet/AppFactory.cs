@@ -24,6 +24,8 @@ namespace Nohros.Ruby.Service.Net
     //the name of the root node of the configuration file.
     public const string kConfigRootNodeName = "rubynet";
 
+    const string kLogFileName = "rubynet.log";
+
     public const string kShellPrompt = "rubynet$: ";
 
     RubySettings settings_;
@@ -81,17 +83,15 @@ namespace Nohros.Ruby.Service.Net
 
       // initialize the classes that depends on the running mode.
       if (with_shell) {
+        ILogger log4net_console_logger = new Log4NetConsoleLogger();
         logger = RubyLogger.ForCurrentProcess =
-          new RubyLogger(ColoredConsoleFileLogger.ForCurrentProcess);
-
-        // configures the system console colors
-        System.Console.ForegroundColor = ConsoleColor.DarkGreen;
-        System.Console.Clear();
+          new RubyLogger(log4net_console_logger);
 
         console = new SystemConsole();
       } else {
+        ILogger log4net_file_logger = new Log4NetFileLogger(kLogFileName);
         logger = RubyLogger.ForCurrentProcess =
-          new RubyLogger(FileLogger.ForCurrentProcess);
+          new RubyLogger(log4net_file_logger);
 
         console = new ServiceConsole();
       }
