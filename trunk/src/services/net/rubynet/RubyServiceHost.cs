@@ -2,33 +2,59 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
-using System.IO;
-using System.IO.Pipes;
+using ZMQ;
 
 using Google.ProtocolBuffers;
 
 namespace Nohros.Ruby.Service.Net
 {
   /// <summary>
-  /// .NET implementation of the <see cref="IRubyServiceHost"/>. This class
-  /// is used to host .NET based ruby services.
+  /// .NET implementation of the <see cref="IRubyServiceHost"/> interface. This
+  /// class is used to host a .NET based ruby services.
   /// </summary>
-  internal class RubyServiceHost
+  internal class RubyServiceHost : IRubyServiceHost
   {
     const int kTimeout = 30000;
 
-    string ipc_channel_name_;
-    IRubyService service_;
-    NamedPipeClientStream pipe_stream_;
+    readonly IRubyService service_;
+    readonly Socket socket_;
 
     #region .ctor
+    public RubyServiceHost(IRubyService service) {
+      service_ = service;
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="RubyServiceHost"/> by
-    /// using the specified service and IPC channel name.
+    /// using the specified service and zeromq reply socket.
     /// </summary>
-    public RubyServiceHost(IRubyService service, string ipc_channel_name) {
+    /// <param name="service">
+    /// The service to be hosted by this service host.
+    /// </param>
+    /// <param name="socket">
+    /// A zeromq socket whose type is REP, and is used to handle the
+    /// communication with the service.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    /// <paramref name="service"/> or <paramref name="socket"/> is
+    /// <c>null</c>
+    /// </exception>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// The type of <paramref name="socket"/> is not
+    /// <see cref="SocketType.REP"/>.
+    /// </exception>
+    public RubyServiceHost(IRubyService service, Socket socket) {
+      if (service == null || socket == null) {
+        throw new ArgumentNullException(socket == null ? "socket" : "service");
+      }
+
+      if (!socket.GetSockOpt(SocketOpt.TYPE).Equals(SocketType.REP)) {
+        throw new ArgumentOutOfRangeException(
+          Resources.log_zmq_socket_is_not_of_type);
+      }
+
       service_ = service;
-      ipc_channel_name_ = ipc_channel_name;
+      socket_ = socket;
     }
     #endregion
 
@@ -36,20 +62,21 @@ namespace Nohros.Ruby.Service.Net
     /// Starts the hosted service.
     /// </summary>
     /// <remarks>
-    /// <para>The hosted service runs into a dedicated thread. The thread where
+    /// <para>
+    /// The hosted service runs into a dedicated thread. The thread where
     /// this code is running is used to send/receive messages to/from the
-    /// service.</para>
-    /// <para>This method does not return until the running hosted service have
-    /// finished your execution.</para>
-    /// <para>If the service throws any exception this is propaggated to the
-    /// caller and the service is forced to stop.</para>
+    /// service.
+    /// </para>
+    /// <para>
+    /// This method does not return until the running hosted service have
+    /// finished your execution.
+    /// </para>
+    /// <para>
+    /// If the service throws any exception this is propaggated to the
+    /// caller and the service is forced to stop.
+    /// </para>
     /// </remarks>
     public void StartService() {
-      // attempt to open the IPC channel.
-      if (ipc_channel_name_ != null && ipc_channel_name_ != string.Empty)
-        ConnectPipe(ipc_channel_name_);
-
-      // start the service.
       service_.Start();
     }
 
@@ -60,44 +87,6 @@ namespace Nohros.Ruby.Service.Net
     /// </remarks>
     public void StopService() {
       service_.Stop();
-    }
-
-    /// <summary>
-    /// Connects to a named pipe whose name is <paramref name="pipe_name"/>
-    /// </summary>
-    /// <param name="pipe_name">The name of the pipe to connects.</param>
-    /// <returns>true if the connection is successfull; otherwise,
-    /// false.</returns>
-    /// <remarks>The communication between the service agent and the service
-    /// host is done through a named pipe. The communication link could be
-    /// estabilished/desestablished at any time. This is done by the special
-    /// named-pipe</remarks>
-    bool ConnectPipe(string pipe_name) {
-      try {
-        pipe_stream_ = new NamedPipeClientStream(pipe_name);
-        pipe_stream_.Connect(kTimeout);
-
-        if (pipe_stream_.TransmissionMode == PipeTransmissionMode.Byte) {
-          RubyLogger.ForCurrentProcess.Error(
-            "[ConnectPipe   Nohros.Ruby.Service.Net.RubyServiceHost]   The pipe transmission mode must be message(PIPE_TYPE_MESSAGE).");
-          return false;
-        }
-
-        // we need to read and write to the pipe.
-        if (!pipe_stream_.CanRead || !pipe_stream_.CanWrite) {
-          RubyLogger.ForCurrentProcess.Error("[ConnectPipe   Nohros.Ruby.Service.Net.RubyServiceHost]   The pipe is not writable or readable.");
-          return false;
-        }
-
-        AsyncPipeState state = new AsyncPipeState(pipe_stream_, service_);
-        pipe_stream_.BeginRead(state.Message, 0, state.Message.Length,
-          MessageHandler, state);
-
-        return true;
-      } catch (Exception exception) {
-        RubyLogger.ForCurrentProcess.Error("[ConnectPipe   Nohros.Ruby.Service.Net.RubyServiceHost]", exception);
-      }
-      return false;
     }
 
     /// <summary>

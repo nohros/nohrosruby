@@ -40,25 +40,27 @@
     <DocumentationFile>$(SolutionDir)docs\services\net\nohros.rubynet.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="clrzmq">
+      <HintPath>..\..\..\packages\clrzmq.2.2.3\lib\clrzmq.dll</HintPath>
+    </Reference>
+    <Reference Include="clrzmq-ext">
+      <HintPath>..\..\..\packages\clrzmq.2.2.3\lib\clrzmq-ext.dll</HintPath>
+    </Reference>
     <Reference Include="Google.ProtocolBuffers, Version=0.9.0.0, Culture=neutral, PublicKeyToken=17b3b1f090c3ea48, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\third_party\protobuf-csharp-port\Google.ProtocolBuffers.dll</HintPath>
     </Reference>
-    <Reference Include="mytoolspack.console, Version=0.2.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\third_party\nohros\mytoolspack.console.dll</HintPath>
+    <Reference Include="log4net">
+      <HintPath>..\..\..\packages\log4net.1.2.11\lib\net40-full\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="nohros, Version=0.6.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\third_party\nohros\nohros.dll</HintPath>
+    <Reference Include="mytoolspack.console">
+      <HintPath>..\..\..\packages\nohros.mytoolspack.0.2.4\lib\mytoolspack.console.dll</HintPath>
     </Reference>
-    <Reference Include="nohros.desktop, Version=0.6.0.51, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\third_party\nohros\nohros.desktop.dll</HintPath>
+    <Reference Include="nohros">
+      <HintPath>..\..\..\packages\must.common.0.7.2\lib\nohros.dll</HintPath>
     </Reference>
-    <Reference Include="nohros.resources, Version=0.2.0.2363, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\third_party\nohros\nohros.resources.dll</HintPath>
+    <Reference Include="nohros.desktop">
+      <HintPath>..\..\..\packages\must.desktop.0.6.6\lib\nohros.desktop.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
@@ -78,7 +80,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="RubyMessage.cs" />
-    <Compile Include="RubyMessageHeaderImpl.cs" />
     <Compile Include="RubyServiceHosts.cs" />
     <Compile Include="ServicesFactory.cs" />
     <Compile Include="shell\commands\ClearCommand.cs" />
@@ -117,6 +118,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
     <None Include="rubynet.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -126,6 +128,12 @@
       <Project>{970C40CD-03F5-4761-9AE3-7E358E108E56}</Project>
       <Name>irubyservice</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="libzmq.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Content Include="README.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

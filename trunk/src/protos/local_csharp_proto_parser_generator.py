@@ -8,6 +8,5 @@
 
 import os
 
-protc_dir = os.getcwd()
-os.system('proto_parser_generator.py "'+ protc_dir+'\\protobuf-csharp-port\\protogen.exe --descriptor_set_out=./parsers/csharp/ruby_message_packet.protobin -ignore_google_protobuf=true --include_imports -output_directory=./parsers/csharp/" .')
+os.system('proto_parser_generator.py "protogen.exe --descriptor_set_out=./parsers/csharp/ruby_message_packet.protobin -ignore_google_protobuf=true -namespace=Nohros.Ruby --include_imports -output_directory=./parsers/csharp/" .')
 os.system('pause');
