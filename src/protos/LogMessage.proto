@@ -1,0 +1,23 @@
+// Copyright (c) 2011 Nohros Inc. All rights reserved.
+// Use of this source code is governed by a MIT-style license that can be
+// found in the LICENSE file.
+
+package nohros.ruby;
+
+option optimize_for = SPEED;
+
+// The format of the log message that is sent to the subscribers.
+message LogMessage {
+  // The level of the logging event.
+  optional string level = 1;
+ 
+  // The log message as supplied by the user.
+  optional string message = 2;
+  
+  // The unix time representing the date and time the event was logged.
+  optional int64 time_stamp = 3;
+  
+  // The string representation of the exception that was supplied by the user (if
+  // a exception was supplied).
+  optional string exception = 4;
+}
