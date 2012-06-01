@@ -13,11 +13,37 @@ extern "C" {
 
 #include <base/basictypes.h>
 #include <base/memory/scoped_ptr.h>
+#include <base/memory/ref_counted.h>
 
 #include "node/zeromq/basictypes.h"
 
 namespace zmq {
 class Socket;
+class Context;
+
+// Error delegate defines the interface to implement error handling and
+// recovery for zeromq operations. This allows the rest of the classes to
+// return true or false while the actual error code and failed socket are
+// delivered using the OnError callback.
+//
+// The tipical usage is to centralize the code designed to handle low-level IO
+// errors.
+class ErrorDelegate : public base::RefCounted<ErrorDelegate> {
+ public:
+  ErrorDelegate();
+
+  // |error| is an zeromq result code as seen in zeromq\include\zmq.h
+  // |context| is zeromq context where the error happened and |socket| is
+  // the socket that trigger the error. Do not store these pointers.
+  //
+  // |socket| MAY BE NULL if there is no socket causing the problem (i.e on
+  // initialization).
+  //
+  // If error condition has been fixed an the original operation successfully
+  // re-tried then rturning ZMQ_OK is appropiate; otherwise is recomended
+  // that you return the original |error| or the appropiate error code.
+  virtual int OnError(int error, Context* context, Socket* socket);
+};
 
 class Context {
  friend class Socket;
@@ -39,7 +65,7 @@ class Context {
   // In order to establish a message flow a socket must first be connected to
   // at least one endpoint with Socket::Connect(), or at least one endpoint must
   // be created for accepting incoming connections with Socket::Bind()
-  int CreateSocket(SocketType type, Socket* socket);
+  scoped_refptr<ScoketRef> CreateSocket(SocketType type);
 
  protected:
   // Be carefull with this, it's probaly useful for using the C API
