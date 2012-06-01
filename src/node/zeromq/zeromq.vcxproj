@@ -54,7 +54,7 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>.;..;..\..;..\third_party\chrome\include;..\third_party\zeromq\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalOptions>/wd4310  /wd4100 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/wd4310  /wd4100  /wd4481 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -68,7 +68,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>.;..;..\..;..\third_party\chrome\include;..\third_party\zeromq\include;</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalOptions>/wd4310  /wd4100 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/wd4310  /wd4100  /wd2220 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -83,7 +83,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="context.cc" />
-    <ClCompile Include="socket.cpp" />
+    <ClCompile Include="socket.cc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

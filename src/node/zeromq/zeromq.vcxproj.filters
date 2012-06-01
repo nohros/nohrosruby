@@ -7,6 +7,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="context.cc" />
-    <ClCompile Include="socket.cpp" />
+    <ClCompile Include="socket.cc" />
   </ItemGroup>
 </Project>
