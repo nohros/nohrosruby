@@ -12,9 +12,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(third_party)", "(third_party)", "{2C8041C1-0775-4874-BB1E-2181FCC94361}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(protobuf-csharp-port)", "(protobuf-csharp-port)", "{EC891FEB-20FC-4EA3-985A-56A5A156EF7B}"
-	ProjectSection(SolutionItems) = preProject
-		third_party\protobuf-csharp-port\Google.ProtocolBuffers.dll = third_party\protobuf-csharp-port\Google.ProtocolBuffers.dll
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(tests)", "(tests)", "{E0A2F434-C7FC-4FBA-86B6-128CA4A35178}"
 EndProject

@@ -1,22 +1,22 @@
 ﻿using System;
-
 using System.Net.Sockets;
 using System.Text;
-using Nohros.Concurrent;
+
 using Nohros.Data.Json;
+using Nohros.Ruby.Logging;
 
 namespace Nohros.Ruby.Weblog
 {
   /// <summary>
   /// A class that aggregates log messages published by a
-  /// <see cref="IRubyLogger"/> and outputs then throught a TCP socket.
+  /// <see cref="Aggregator"/> and outputs then throught a TCP socket.
   /// </summary>
   public class Aggregator
   {
-    Socket publisher_;
-    ZMQ.Socket subscriber_;
+    readonly Socket publisher_;
+    readonly ZMQ.Socket subscriber_;
 
-    IWeblogLogger logger = WeblogLogger.ForCurrentProcess;
+    readonly IWeblogLogger logger = WeblogLogger.ForCurrentProcess;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Aggregator"/> class
@@ -35,7 +35,8 @@ namespace Nohros.Ruby.Weblog
     }
 
     /// <summary>
-    /// Subscribes to the zeromq publisher located at <see cref="address"/>.
+    /// Subscribes to the zeromq publisher located at TCP/IP address
+    /// <paramref name="host"/>:<paramref name="port"/>.
     /// </summary>
     /// <param name="host">
     /// The name of the remote publisher host.
@@ -75,7 +76,6 @@ namespace Nohros.Ruby.Weblog
       try {
         byte[] data = subscriber_.Recv();
         LogMessage message = LogMessage.ParseFrom(data);
-
         JsonStringBuilder builder = new JsonStringBuilder()
           .WriteBeginObject()
           .WriteMember("level", message.Level)

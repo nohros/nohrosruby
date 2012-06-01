@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
 
 namespace Nohros.Ruby
 {
@@ -22,11 +19,15 @@ namespace Nohros.Ruby
     /// Ruby service host(RSH) has the ability to run more than one service
     /// within a single process. Services can be stopped any time and its name
     /// is used to locate it.
-    /// <para>The RSH allows services with equals name to run in the same
-    /// process.</para>
-    /// <para>If more than one service with equals name is running within a
-    /// single host process a stop command will stop all the services that has
-    /// the specified name at once.</para>
+    /// <para>
+    /// The RSH allows services with equals name to run in the same
+    /// process.
+    /// </para>
+    /// <para>
+    /// If more than one service with equals name is running within a single
+    /// host process a stop command will stop all the services that has the
+    /// specified name at once.
+    /// </para>
     /// </remarks>
     string Name { get; }
 
@@ -63,9 +64,13 @@ namespace Nohros.Ruby
     /// <summary>
     /// Handle messages sent from ruby server.
     /// </summary>
-    /// <param name="message">The message sent from ruby server.</param>
-    /// <returns>true if the message was successfully processed; otherwise
-    /// false.</returns>
+    /// <param name="message">
+    /// The message sent from ruby server.
+    /// </param>
+    /// <returns>
+    /// <c>true</c> if the message was successfully processed; otherwise,
+    /// <c>false</c>.
+    /// </returns>
     /// <remarks>
     /// The message dispatcher in the main thread of the ruby service process
     /// invokes the service message handler function whenever it receives a
@@ -87,10 +92,10 @@ namespace Nohros.Ruby
     /// the handler function to return before sending additional messages.
     /// The message handler should return as quick as possible, if it does not
     /// return within 30 seconds, the RSH returns an error. If a service must
-    /// do lengthy processing when the service is executing the message handler
-    /// ,it should create a secondary thread to perform the lengthy processing,
-    /// and then return from the message handler. This prevents the service
-    /// from tying up the message dispatcher.
+    /// do lengthy processing when the service is executing the message
+    /// handler, it should create a secondary thread to perform the lengthy
+    /// processing, and then return from the message handler. This prevents
+    /// the service from tying up the message dispatcher.
     /// </para>
     /// </remarks>
     IRubyMessage OnServerMessage(IRubyMessage message);
