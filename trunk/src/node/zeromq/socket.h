@@ -3,42 +3,78 @@
 // in the LICENCE file.
 
 #ifndef NODE_ZEROMQ_SOCKET_H_
-#endif NODE_ZEROMQ_SOCKET_H_
+#define NODE_ZEROMQ_SOCKET_H_
 
-#include <base/memory/scoped_ptr.h>
+#include <base/memory/ref_counted.h>
 
-#include "node/zeromq/basictypes.h"
+#include "node/zeromq/context.h"
 
 namespace zmq {
-class Context;
 
+// Normal usage:
+//   zmq::Socket socket(context_.CreateSocket(...))
+//
+//   If there are errors getting the socket, the socket will be inert; no
+//   mutating or recv/send methods will work. If will need to check for validity,
+//   use:
+//   if (socket.is_valid()) {
+//     return false;
+//   }
+//
+// Socket method just return true to signal success. If you want to handle
+// specific errors, install a error handler in the context object using
+// set_error_delegate().
 class Socket {
  public:
-  Socket(SocketType type);
-
+  explicit Socket(scoped_refptr<Context::SocketRef> ref);
   ~Socket();
 
-  // Gets the type of the socket.
-  SocketType type() {
-   return type_;
-  }
+  // Initializes this object with the given socket, which may or may not
+  // be valid. Use is_valid() to check if it's OK.
+  // void Assign(scoped_refptr<Context::SocketRef> ref);
 
- protected:
-  // Create a zeromq socket. The CreateSocket function shall create a zeromq
-  // socket within the current context and return an opaque handle to the newly
-  // created socket. The type argument specifies the socket type, which
-  // determines the semantics of communication over the socket. The newly
-  // created socket is initially unbound, and not associated with any endpoints.
-  // In order to establish a message flow a socket must first be connected to
-  // at least one endpoint with Socket::Connect(), or at least one endpoint must
-  // be created for accepting incoming connections with Socket::Bind()
-  static int CreateSocket(Context* context, SocketType type);
+  // Destoys the socket. Any oustanding messages physically received from the
+  // network but not yet received by the application with Socket::Receive()
+  // shall be discarded. The behavior for discarding messages sent by the
+  // application with Socket::Send() but not yet physically transfered to the
+  // network depends on the value of the socket linger option.
+  void Close();
+
+  // Connect the socket to the endpoint specified by the |endpoint| argument.
+  //
+  // |endpoint| is a string consisting of two parts as follows:
+  // [transport:address]. The [transport] part specifies the underlying
+  // transport protocol to use. The meaning of [address] part is specific
+  // to the underlying transport protocol selected.
+  //
+  // The following transports are defined:
+  //  * inproc
+  //     local in-process (inter-thread) communication transport.
+  //  * ipc
+  //     local inter-process communication transport.
+  //  * tcp
+  //     unicast transport using TCP.
+  //  * pgm, epgm
+  //     reliable multicast transport using PGM.
+  //
+  // With the exception of SocketType::PAIR sockets, a single socket may be
+  // connected to multiple endpoints using Socket::Connect(), while
+  // simultaneously accepting incoming connections from multiple endpoints
+  // bound to the socket using Socket::Bind().
+  bool Connect(const char* endpoint);
+
+  // Returns true if the socket can be used.
+  bool is_valid() const { return ref_->is_valid(); }
 
  private:
-   SocketType type_;
+  // This is intended to check for errors and report them to the context
+  // object. It takes a zeromq error code, and returns the same code.
+  int CheckError(int err);
 
-   // The RAW zeromq socket.
-   scoped_ptr<void> zmq_socket_;
+  // The actual zeromq socket. This pointer is guarantee non-NULL.
+  scoped_refptr<Context::SocketRef> ref_;
+
+  DISALLOW_COPY_AND_ASSIGN(Socket);
 };
 
 }  // namespace zmq
