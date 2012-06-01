@@ -2,5 +2,11 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClInclude Include="context.h" />
+    <ClInclude Include="basictypes.h" />
+    <ClInclude Include="socket.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="context.cc" />
+    <ClCompile Include="socket.cpp" />
   </ItemGroup>
 </Project>
