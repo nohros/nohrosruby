@@ -20,7 +20,7 @@
 // protocol buffer wire format is not self-delimiting, two integers was added to
 // the begining of the packet. The first integer contains the size of the
 // packet, and the second integer contains the size of the packet header. Only 
-// one field containing the size of the whosle packet cold be used but, the
+// one field containing the size of the whole packet could be used but, the
 // receiver will need to wait the whole packet to come to start processing it.
 // Encoding the header size right after the packet size enable the receiver to
 // start processing the request(ex. creating the deocoder objets, request
@@ -67,7 +67,7 @@ message RubyMessage {
   // A integer used to identify the type of message. The meaning of the value
   // stored into this field is service-dependant. For example, a service could
   // use this field as a enumeration, so it could switch over it instead of
-  // use a expensive string comparison (token field). In anguages that does not
+  // use a expensive string comparison (token field). In languages that does not
   // support reflective operations, this field could be used to identify the
   // type of operation that should be performed.
   optional uint32 type = 2;
@@ -84,9 +84,9 @@ message RubyMessage {
   
   // A string contained the service message serialized using the protobuf
   // format. The meaning of the value stored into this field is
-  // service-dependant. For example, a service could use the
-  // RubyMessageHeader.MessageType field to define the method name and this
-  // this field to store the parameters of the method call.
+  // service-dependant. For example, a service could use the token/type fields
+  // to define the method name/type and this field to store the parameters of
+  // the method call.
   optional bytes message = 4;
 }
 
