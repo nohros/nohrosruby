@@ -8,6 +8,8 @@ extern "C" {
 
 namespace zmq {
 
+#define ZMQ_OK 0;
+
 enum SocketType {
   ExclusivePair = ZMQ_PAIR,
   Publisher = ZMQ_PUB,
