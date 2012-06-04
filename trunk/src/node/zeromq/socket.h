@@ -63,6 +63,25 @@ class Socket {
   // bound to the socket using Socket::Bind().
   bool Connect(const char* endpoint);
 
+  // Send a message on a socket. The Socket::Send() function shall we queue the
+  // message referenced by the |message| argument to be sent to the socket.
+  // |flags| is a combination of the flags defined below:
+  //
+  //  * ZMQ_NOBLOCK
+  //     Specifies that the operation should be performed in non-bloking mode.
+  //     If the message cannot be queued on the socket, the Socket::Send()
+  //     function shall fail with error code EAGAIN.
+  //
+  //  * ZMQ_SNDMORE
+  //     Specifies that the emssage beign sent is a multi-part, and that
+  //     further message parts are follows. Refer to zeromq docs for a detailed
+  //     description.
+  bool Send(const void* message, int size, int flags);
+
+  // Receive a message from a socket. The Socket::Receive() function shall
+  // receive a message from a socket and store it in the 
+  bool Receive();
+
   // Returns true if the socket can be used.
   bool is_valid() const { return ref_->is_valid(); }
 

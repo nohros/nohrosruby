@@ -11,6 +11,7 @@
 #include "node/zeromq/socket.h"
 
 #include "node/zeromq/basictypes.h"
+#include <zmq.hpp>
 
 namespace zmq {
 
