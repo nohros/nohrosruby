@@ -114,7 +114,7 @@ class Context {
   friend class Socket;
 
   // A SocketRef is refcounted wrapper around a zeromq socket pointer.
-  // Refcounting allow us to gibe these sockets out to zmq::Socket
+  // Refcounting allow us to give these sockets out to zmq::Socket
   // objects while also optionally maintaining a refptr to these objetcs.
   //
   // A socket ref can be valid, in which case it can be used, or invalid to
