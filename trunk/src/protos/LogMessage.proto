@@ -15,7 +15,7 @@ message LogMessage {
   optional string message = 2;
   
   // The unix time representing the date and time the event was logged.
-  optional int64 time_stamp = 3;
+  optional sint64 time_stamp = 3;
   
   // The string representation of the exception that was supplied by the user (if
   // a exception was supplied).
