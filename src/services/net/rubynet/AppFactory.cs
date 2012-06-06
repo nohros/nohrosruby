@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Text;
+using System.IO.Pipes;
 using System.Reflection;
-using System.Threading;
-
-using MyToolsPack.Console;
-
+using Nohros.Configuration;
 using Nohros.Desktop;
 using Nohros.Logging;
+using Nohros.MyToolsPack.Console;
+using Nohros.Providers;
 
 namespace Nohros.Ruby.Service.Net
 {
@@ -28,13 +27,12 @@ namespace Nohros.Ruby.Service.Net
 
     public const string kShellPrompt = "rubynet$: ";
 
-    RubySettings settings_;
-
     #region .ctor
     /// <summary>
     /// Initializes a new instance of the <see cref="AppFactory"/> object.
     /// </summary>
-    public AppFactory() { }
+    public AppFactory() {
+    }
     #endregion
 
     /// <summary>
@@ -43,29 +41,35 @@ namespace Nohros.Ruby.Service.Net
     /// </summary>
     /// <returns>A <see cref="RubySettings"/> object contained the application
     /// settings.</returns>
-    public RubySettings RubySettings {
-      get {
-        if (settings_ == null) {
-          Interlocked.CompareExchange<RubySettings>(ref settings_,
-            new RubySettings(), null);
-
-          settings_.Load(GetSettingsFileInfo(), kConfigRootNodeName);
-        }
-        return settings_;
-      }
-    }
-
-    FileInfo GetSettingsFileInfo() {
-      // the rubynet process is started from another process(ruby service)
+    RubySettings CreateRubySettings() {
+      // The rubynet process is started from another process(ruby service)
       // and the directory where the ruby configuration file is stored
       // could be different from the app base directory. So, instead to use
       // the AppDomain.BaseDirectory we need to use the assembly location
       // as the base directory for the configuration file.
-      string config_file_path = Path.Combine(
-        Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-          kConfigurationFileName);
+      RubySettings settings = new RubySettings();
+      settings.Load(
+        Path.Combine(
+          Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+          kConfigurationFileName), kConfigRootNodeName);
+      return settings;
+    }
 
-      return new FileInfo(config_file_path);
+    ServiceConsole CreateServiceConsole() {
+      Process current_process = Process.GetCurrentProcess();
+      string ipc_channel_name = "\\\\.\\pipe\\" + current_process.Id;
+      try {
+        NamedPipeServerStream ipc_channel =
+          new NamedPipeServerStream(ipc_channel_name, PipeDirection.InOut, 1,
+            PipeTransmissionMode.Message, PipeOptions.Asynchronous);
+        return new ServiceConsole(ipc_channel);
+      } catch (IOException) {
+        #region : logging :
+        RubyLogger.ForCurrentProcess.Error(
+          string.Format(Resources.log_pipe_already_exists, ipc_channel_name));
+        #endregion
+      }
+      throw new ApplicationException(Resources.log_console_creation_failed);
     }
 
     /// <summary>
@@ -73,41 +77,36 @@ namespace Nohros.Ruby.Service.Net
     /// </summary>
     /// <param name="command_line">The parsed command line.</param>
     /// <returns>A <see cref="RubyShell"/> object.</returns>
-    public RubyShell CreateShell(CommandLine command_line) {
-      RubySettings settings = RubySettings;
+    public RubyShell CreateShellAsShell(CommandLine command_line) {
+      RubySettings settings = CreateRubySettings();
 
-      bool with_shell = command_line.HasSwitch(ShellSwitches.kWithShell);
+      ConfigureLogger(settings);
 
-      IRubyLogger logger;
-      IConsole console;
+      IMyToolsPackConsole console;
+      console = with_shell
+        ? GetToolsPackConsole(settings)
+        : GetServiceConsole();
 
-      // initialize the classes that depends on the running mode.
-      if (with_shell) {
-        ILogger log4net_console_logger = new Log4NetConsoleLogger();
-        logger = RubyLogger.ForCurrentProcess =
-          new RubyLogger(log4net_console_logger);
+      RubyShell shell = new RubyShell(settings, console);
 
-        console = new SystemConsole();
-      } else {
-        ILogger log4net_file_logger = new Log4NetFileLogger(kLogFileName);
-        logger = RubyLogger.ForCurrentProcess =
-          new RubyLogger(log4net_file_logger);
+      // Tell the tools pack console to send our implementation of
+      // the IMyToolsPackConsole interface when run commands.
+      console.ToolsPackConsole = shell;
 
-        console = new ServiceConsole();
-      }
+      return shell;
+    }
 
-      RubyLogger.ForCurrentProcess = logger;
+    RubyShell CreateShellAsService(CommandLine command_line) {
+      bool with_shell = command_line.HasSwitch(ShellSwitches.kWithShell); 
+    }
 
-      // load the my tools pack configuration object
-      ConsoleSettings console_settings = new ConsoleSettings();
-      console_settings.Load(GetSettingsFileInfo(), kConfigRootNodeName);
-
-      // create an instance of the class that handle the console commands.
+    IMyToolsPackConsole GetToolsPackConsole(RubySettings settings) {
+      // Create an instance of the class that handle the console commands.
       MyToolsPackConsole tools_pack_console =
-        new MyToolsPackConsole(console_settings, console);
+        new MyToolsPackConsole(settings, new SystemConsole());
 
-      // load the my tools pack internal commands in the context of
-      // the ruby console.
+      // Load the my tools pack internal commands in the context of the ruby
+      // console.
       tools_pack_console.LoadInternalCommands();
 
       // load the ruby internal commands
@@ -115,14 +114,15 @@ namespace Nohros.Ruby.Service.Net
       foreach (string name in factory.CommandNames) {
         tools_pack_console.LoadCommand("Nohros.Ruby", name, factory);
       }
+      return tools_pack_console;
+    }
 
-      RubyShell shell = new RubyShell(settings, tools_pack_console);
-
-      // tell the tools pack console to send out implementation of
-      // the IMyToolsPackConsole interface when run commands.
-      tools_pack_console.ToolsPackConsole = shell;
-
-      return shell;
+    void ConfigureLogger(RubySettings settings) {
+      IProviderNode provider = settings.Providers[Strings.kLoggingProviderNode];
+      RubyLogger.ForCurrentProcess = new RubyLogger(
+        ProviderFactory<ILoggerFactory>
+          .CreateProviderFactory(provider)
+          .CreateLogger(provider.Options, settings));
     }
   }
 }

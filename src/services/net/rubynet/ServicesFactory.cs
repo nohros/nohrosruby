@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO.Pipes;
 
 namespace Nohros.Ruby.Service.Net
 {
@@ -10,12 +8,12 @@ namespace Nohros.Ruby.Service.Net
   /// </summary>
   internal class ServicesFactory
   {
-
     #region .ctor
     /// <summary>
     /// Initializes a new instance of the <see cref="ServicesFactory"/> class.
     /// </summary>
-    public ServicesFactory() { }
+    public ServicesFactory() {
+    }
     #endregion
 
     /// <summary>
@@ -42,8 +40,8 @@ namespace Nohros.Ruby.Service.Net
       string service_command_line) {
       // checks if the service type is assignable from  the IRubyService
       // interface.
-        if (!typeof(IRubyServiceFactory).IsAssignableFrom(
-          service_factory_class_type))
+      if (!typeof (IRubyServiceFactory).IsAssignableFrom(
+        service_factory_class_type))
         throw new TypeLoadException(
           string.Format(
             Resources.log_irubyservice_load_error,
@@ -66,7 +64,7 @@ namespace Nohros.Ruby.Service.Net
       IRubyService service;
       try {
         service = service_factory.CreateService(service_command_line);
-      } catch(Exception exception) {
+      } catch (Exception exception) {
         throw new TypeLoadException(string.Format(
           Resources.log_irubyservice_load_error,
           service_factory_class_type.FullName
@@ -84,15 +82,21 @@ namespace Nohros.Ruby.Service.Net
 
     /// <summary>
     /// Creates a new instance of the <see cref="IRubyServiceHost"/> class
-    /// by using the specified service and IPC channel name.
+    /// by using the specified service and IPC channel.
     /// </summary>
-    /// <param name="service">The service to host</param>
-    /// <param name="pipe_channel_name">The name of the IPC channel used
-    /// for server/client communication.</param>
-    /// <returns></returns>
+    /// <param name="service">
+    /// The service to host.
+    /// </param>
+    /// <param name="ipc_channel">
+    /// A <see cref="NamedPipeServerStream"/> object that is used to
+    /// communicate with the service node.
+    /// </param>
+    /// <returns>
+    /// The newly created <see cref="RubyServiceHost"/> object.
+    /// </returns>
     public RubyServiceHost CreateServiceHost(IRubyService service,
-      string pipe_channel_name) {
-      RubyServiceHost host = new RubyServiceHost(service, pipe_channel_name);
+      NamedPipeServerStream ipc_channel) {
+      RubyServiceHost host = new RubyServiceHost(service, ipc_channel);
       return host;
     }
   }

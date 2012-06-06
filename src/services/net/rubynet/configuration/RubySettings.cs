@@ -1,31 +1,35 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
 using System.Xml;
-
 using Nohros.Configuration;
+using Nohros.MyToolsPack.Console;
 
 namespace Nohros.Ruby.Service.Net
 {
   /// <summary>
   /// A class used to parse and manage the configuration settings file.
   /// </summary>
-  class RubySettings: NohrosConfiguration
+  internal class RubySettings : MustConfiguration, IConsoleSettings
   {
-    #region settings key names
     public const string kStopServiceTimeout = "stop-service-timeout";
-    #endregion
 
-    int stop_service_timeout_;
+    string prompt_;
     RunningMode running_mode_;
+    long stop_service_timeout_;
 
     #region .ctor
     /// <summary>
     /// Initializes a new instance of the <see cref="RubySettings"/> class.
     /// </summary>
     public RubySettings() {
+      running_mode_ = RunningMode.Service;
       stop_service_timeout_ = 3000;
+      prompt_ = "rubynet$:";
+    }
+    #endregion
+
+    #region IConsoleSettings Members
+    string IConsoleSettings.Prompt {
+      get { return prompt_; }
     }
     #endregion
 
@@ -33,23 +37,23 @@ namespace Nohros.Ruby.Service.Net
     /// Set the values of some elements that can not be set directly by the
     /// base class.
     /// </summary>
-    /// <param name="e"></param>
-    protected override void OnLoadComplete(EventArgs e) {
-      base.OnLoadComplete(e);
+    protected override void OnLoadComplete() {
+      base.OnLoadComplete();
+      running_mode_ = GetRunningMode();
+    }
 
-      foreach (XmlAttribute attribute in element_.Attributes) {
+    RunningMode GetRunningMode() {
+      RunningMode running_mode = RunningMode.Service;
+      foreach (XmlAttribute attribute in element.Attributes) {
         if (string.Compare(attribute.Name, "running-mode",
           StringComparison.OrdinalIgnoreCase) == 0) {
-
-            if (string.Compare(attribute.Value, "interactive",
-              StringComparison.OrdinalIgnoreCase) == 0) {
-                running_mode_ = RunningMode.Interactive;
-            } else {
-              // The default running mode is "service".
-              running_mode_ = RunningMode.Service;
-            }
+          if (string.Compare(attribute.Value, "interactive",
+            StringComparison.OrdinalIgnoreCase) == 0) {
+            running_mode = RunningMode.Interactive;
+          }
         }
       }
+      return running_mode;
     }
 
     /// <summary>
@@ -62,7 +66,17 @@ namespace Nohros.Ruby.Service.Net
     /// </remarks>
     public RunningMode RunningMode {
       get { return running_mode_; }
-      internal set { running_mode_ = value; } // could be set to the app factory
+    }
+
+    /// <summary>
+    /// Gets the maximum time duration that the service host waits a service to
+    /// finish its execution.
+    /// </summary>
+    public long StopServerTimeout {
+      get {
+        return stop_service_timeout_;
+      }
+      protected set { stop_service_timeout_ = value; }
     }
   }
 }

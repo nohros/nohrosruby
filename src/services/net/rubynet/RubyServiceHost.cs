@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using ZMQ;
-
+using System.IO;
+using System.IO.Pipes;
 using Google.ProtocolBuffers;
+using Nohros.Concurrent;
 
 namespace Nohros.Ruby.Service.Net
 {
@@ -15,13 +13,30 @@ namespace Nohros.Ruby.Service.Net
   internal class RubyServiceHost : IRubyServiceHost
   {
     const int kTimeout = 30000;
+    const int kMessageBufferSize = 4096;
 
+    readonly NamedPipeServerStream ipc_channel_;
+    readonly Mailbox<IRubyMessage> mailbox_;
+    readonly byte[] message_buffer_;
     readonly IRubyService service_;
-    readonly Socket socket_;
 
     #region .ctor
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RubyServiceHost"/> class
+    /// by using the specified ipc channel and service to host.
+    /// </summary>
+    /// <param name="service">
+    /// The service to host.
+    /// </param>
     public RubyServiceHost(IRubyService service) {
+#if DEBUG
+      if (service == null) {
+        throw new ArgumentNullException("service");
+      }
+#endif
       service_ = service;
+      message_buffer_ = new byte[kMessageBufferSize];
+      mailbox_ = new Mailbox<IRubyMessage>(OnMessage);
     }
 
     /// <summary>
@@ -31,32 +46,29 @@ namespace Nohros.Ruby.Service.Net
     /// <param name="service">
     /// The service to be hosted by this service host.
     /// </param>
-    /// <param name="socket">
-    /// A zeromq socket whose type is REP, and is used to handle the
-    /// communication with the service.
+    /// <param name="ipc_channel">
+    /// A <see cref="NamedPipeServerStream"/> object that is used on IPC
+    /// communication.
     /// </param>
     /// <exception cref="ArgumentNullException">
-    /// <paramref name="service"/> or <paramref name="socket"/> is
+    /// <paramref name="service"/> or <paramref name="ipc_channel"/> is
     /// <c>null</c>
     /// </exception>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// The type of <paramref name="socket"/> is not
-    /// <see cref="SocketType.REP"/>.
-    /// </exception>
-    public RubyServiceHost(IRubyService service, Socket socket) {
-      if (service == null || socket == null) {
-        throw new ArgumentNullException(socket == null ? "socket" : "service");
+    public RubyServiceHost(IRubyService service,
+      NamedPipeServerStream ipc_channel) : this(service) {
+#if DEBUG
+      if (ipc_channel == null) {
+        throw new ArgumentNullException("ipc_channel");
       }
-
-      if (!socket.GetSockOpt(SocketOpt.TYPE).Equals(SocketType.REP)) {
-        throw new ArgumentOutOfRangeException(
-          Resources.log_zmq_socket_is_not_of_type);
-      }
-
+#endif
       service_ = service;
-      socket_ = socket;
+      ipc_channel_ = ipc_channel;
     }
     #endregion
+
+    void OnMessage(IRubyMessage message) {
+      throw new NotImplementedException();
+    }
 
     /// <summary>
     /// Starts the hosted service.
@@ -77,6 +89,10 @@ namespace Nohros.Ruby.Service.Net
     /// </para>
     /// </remarks>
     public void StartService() {
+      // We need to start reading the named pipe before the service to ensure
+      // that we peek all messages.
+      ipc_channel_.BeginRead(message_buffer_, 0, kMessageBufferSize,
+        MessageHandler, null);
       service_.Start();
     }
 
@@ -90,60 +106,69 @@ namespace Nohros.Ruby.Service.Net
     }
 
     /// <summary>
-    /// Handle service messages sent from the Ruby Service Host.
+    /// Handle service messages sent from the Ruby Service Host (RSH).
     /// </summary>
     /// <remarks>
-    /// The ruby agent communicates with the service host through a named pipe.
-    /// Each service host must create a pipe with the name that was specified
-    /// by the ruby agent service and wait for the connection of the agent.
+    /// The ruby service node communicates with the service host through a
+    /// named pipe.The named pipe should be created by the ruby service host
+    /// and must have a name with the has the form: \\.\pipe\{PID}, where PID
+    /// is the ID of the process that is running the service host. If the
+    /// ruby service cannot connect to the named pipe in about 30 seconds, the
+    /// service is forced to exit.
     /// <para>
-    /// This method receives a message from the ruby server, parse it, packet
-    /// it into a new <see cref="IRubyService"/> object and send it to the
-    /// hosted service.
+    /// This method receives a message from the ruby server (through the
+    /// ruby service node), parse it, and send it to the hosted service.
     /// </para>
     /// </remarks>
     void MessageHandler(IAsyncResult result) {
-      AsyncPipeState async_state = result.AsyncState as AsyncPipeState;
-      NamedPipeClientStream pipe_stream = async_state.PipeStream;
-
       IRubyLogger logger = RubyLogger.ForCurrentProcess;
 
-      // ends the asynchronous operation and get the results.
+      // Finish the asynchronous operation and get the message.
       int readed = 0;
       try {
-        readed = pipe_stream_.EndRead(result);
+        readed = ipc_channel_.EndRead(result);
       } catch (IOException io_exception) {
-        logger.Error("[MessageHandler   Nohros.Ruby.Service.Net.RubyNet]   " +
-            ((pipe_stream.IsConnected) ? "The stream is closed" : "an internal error has occured while reading data from the server."), io_exception);
+        #region : logging :
+        logger.Error(ipc_channel_.IsConnected
+          ? "The stream is closed"
+          : "An internal error has occured while reading data from the server.",
+          io_exception);
+        #endregion
       } catch (Exception exception) {
-        // handle exceptions that has occurred during the asynchronous read
+        #region : logging :
+        // Handle exceptions that has occurred during the asynchronous read
         // operation.
-        logger.Error("[MessageHandler   Nohros.Ruby.Service.Net.RubyNet]", exception);
+        logger.Error("", exception);
+        #endregion
       }
 
-      // the pipe has been disconnected
+      // The pipe has been disconnected.
       if (readed == 0) return;
 
-      // convert the readed data to an instance of a IRubyMessagePacket and
+      // Convert the readed data to an instance of a IRubyMessagePacket and
       // pass them to the service.
       try {
-        RubyMessagePacket message_packet =
-          RubyMessagePacket.ParseFrom(async_state.Message);
+        RubyMessagePacket packet =
+          RubyMessagePacket.ParseFrom(
+            ByteString.CopyFrom(message_buffer_, 0, readed));
 
-        if (message_packet.HasHeader && message_packet.HasMessage &&
-          message_packet.HasService) {
-
-            RubyMessage message = new RubyMessage(message_packet.Header,
-              message_packet.Message);
-
-            service_.OnServerMessage(message);
+        if (packet.HasHeader && packet.Header.HasService) {
+          if (string.Compare(packet.Header.Service, service_.Name,
+              StringComparison.OrdinalIgnoreCase) == 0) {
+            service_.OnServerMessage(packet.Message);
+          }
         }
       } catch (InvalidProtocolBufferException iex) {
-        logger.Error("[MessageHandler   Nohros.Ruby.Service.Net.RubyNet]   The received protocol buffer message is could not be parsed into a ruby message packet.", iex);
+        #region : logging :
+        logger.Error(
+          "The received protocol buffer message is could not be parsed into a" +
+            "ruby message packet.", iex);
+        #endregion
       } catch (Exception ex) {
-        // handle exceptions that may occur while the service is handling a
-        // message.
-        RubyLogger.ForCurrentProcess.Error("[MessageHandler   Nohros.Ruby.Service.Net.RubyNet]   The service " + service_.Name + " was not capable to handle the received message", ex);
+        #region : logging :
+        logger.Error(
+          "The service was not capable to handle the received message", ex);
+        #endregion
       }
     }
 

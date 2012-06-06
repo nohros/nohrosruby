@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading;
 using System.Reflection;
 using System.IO;
 
-using MyToolsPack.Console;
-
 using Nohros.Desktop;
+using Nohros.MyToolsPack.Console;
 
 namespace Nohros.Ruby.Service.Net
 {
@@ -17,7 +14,8 @@ namespace Nohros.Ruby.Service.Net
   internal class InternalCommandsFactory : AbstractCommandFactory
   {
     /// <summary>
-    /// Initializes a new instance of the <see cref="ShellCommandFactory"/>
+    /// Initializes a new instance of the <see cref="InternalCommandsFactory"/>
+    /// class.
     /// </summary>
     public InternalCommandsFactory() {
       dispatch_table_.Add(ShellSwitches.kStartCommand, CreateStartCommand);
@@ -29,9 +27,13 @@ namespace Nohros.Ruby.Service.Net
     /// Creates a <see cref="StartCommand"/> object by parsing the command line
     /// arguments.
     /// </summary>
-    /// <param name="command_line">A <see cref="CommandLine"/> object
-    /// containing the command line arguments.</param>
-    /// <returns></returns>
+    /// <param name="command_line_args">
+    /// A <see cref="CommandLine"/> object containing the command line
+    /// arguments.
+    /// </param>
+    /// <returns>
+    /// The newly created <see cref="StartCommand"/> object.
+    /// </returns>
     public StartCommand CreateStartCommand(string command_line_args) {
       CommandLine command_line = CommandLine.FromString(command_line_args);
 
@@ -55,11 +57,6 @@ namespace Nohros.Ruby.Service.Net
         throw new ArgumentException(
           string.Format(Resources.log_assembly_not_found, assembly_path));
 
-      // atempt to get the IPC channel name, if it is not specified the service
-      // comunication will be done only through the shell.
-      string pipe_channel_name = command_line.GetSwitchValue(
-        ShellSwitches.kPipeSwitch);
-
       // builds a command line to pass to the assembly. The command line
       // program argument will be set to the class_type_name. So, the
       // service could use a single instance of the service factory to create
@@ -80,9 +77,7 @@ namespace Nohros.Ruby.Service.Net
           string.Format(Resources.log_type_load_failed,
             service_assembly == null ? assembly_path : class_type_name));
       }
-
-      return new StartCommand(service_class_type,
-        pipe_channel_name, service_command_line);
+      return new StartCommand(service_class_type, service_command_line);
     }
 
     /// <summary>

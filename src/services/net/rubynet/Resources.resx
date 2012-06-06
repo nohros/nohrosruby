@@ -120,6 +120,9 @@
   <data name="log_assembly_not_found" xml:space="preserve">
     <value>Could not find a assembly at the path: {0}</value>
   </data>
+  <data name="log_console_creation_failed" xml:space="preserve">
+    <value>The console could not be created.</value>
+  </data>
   <data name="log_irubyservice_factory_constructor_error" xml:space="preserve">
     <value>An instance of the {0} type could not be created. Check the constructor implied by the IRubyServiceFactory interface.</value>
   </data>
@@ -128,6 +131,9 @@
   </data>
   <data name="log_max_number_services" xml:space="preserve">
     <value>The system has rached the maximum number of threads allowed to run simultaneously.</value>
+  </data>
+  <data name="log_pipe_already_exists" xml:space="preserve">
+    <value>A pipe named {0} already exists.</value>
   </data>
   <data name="log_service_not_running" xml:space="preserve">
     <value>The service {0} is not running.</value>
