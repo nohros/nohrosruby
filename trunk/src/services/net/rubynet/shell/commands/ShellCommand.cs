@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using MyToolsPack.Console;
 
 using Nohros.Desktop;
+using Nohros.MyToolsPack.Console;
 
 namespace Nohros.Ruby.Service.Net
 {
@@ -14,7 +10,7 @@ namespace Nohros.Ruby.Service.Net
   /// </summary>
   internal abstract class ShellCommand: IShellCommand, ICommand
   {
-    string name_;
+    readonly string name_;
     CommandLine command_line_switches_;
 
     #region .ctor
@@ -22,12 +18,25 @@ namespace Nohros.Ruby.Service.Net
     /// Initializes a new instance of the <see cref="ShellCommand"/> by using
     /// the specified command name.
     /// </summary>
-    /// <param name="name">The name of the command</param>
-    public ShellCommand(string name) {
+    /// <param name="name">
+    /// The name of the command.
+    /// </param>
+    protected ShellCommand(string name) {
       name_ = name;
     }
 
-    public ShellCommand(string name, CommandLine switches) {
+    /// <summary>
+    /// Intializes a new instance of the <see cref="ShellCommand"/> by using
+    /// the specified command name.
+    /// </summary>
+    /// <param name="name">
+    /// The command's name.
+    /// </param>
+    /// <param name="switches">
+    /// A <see cref="CommandLine"/> containing the command switches that was
+    /// specified by the user.
+    /// </param>
+    protected ShellCommand(string name, CommandLine switches) : this(name) {
       command_line_switches_ = switches;
     }
     #endregion

@@ -23,7 +23,7 @@ namespace Nohros.Ruby
     /// A string representing the command line that was received by the ruby
     /// service host(RSH) as a parameter to the service.</param>
     /// <returns>
-    /// An object the implements the <see cref="IRubyService"/> interface.
+    /// An object that implements the <see cref="IRubyService"/> interface.
     /// </returns>
     IRubyService CreateService(string command_line_string);
   }
