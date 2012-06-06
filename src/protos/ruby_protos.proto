@@ -12,7 +12,8 @@
 // The basic structure of the message is:
 //
 // [RubyMessagePacket]
-//   [TotalPacketSize][HeaderSize][RubyMessageHeader][Message]
+//   [TotalPacketSize][HeaderSize][RubyMessageHeader][RubyMessage]
+//
 //
 // A TCP message could be fragmented over a number of data chunks and a chunk
 // could have more than one message fragment. We cannot assume we always
@@ -35,9 +36,11 @@ message RubyMessageHeader {
   // Message ID, used to match request/response. Use the maximum integer
   // allowed to not impose a limit on the number of sequentially requests
   // that could be generated. The value of this field is equals to the ID
-  // of the message contained in this packet.
+  // of the message contained in this packet. We cannot use a unsigned type
+  // because some languages, such as java and php does not support unsigned
+  // values.
   // see: RubyMessage.id;
-  optional uint64 id = 1;
+  optional sint64 id = 1;
 
   // The size (in bytes) of the packed message. This is the size of the
   // service specific message(RubyMessagePacket.Message). This information
@@ -47,8 +50,10 @@ message RubyMessageHeader {
   // server and possibly discarded. Accordingly to the documentation
   // "Protocol buffers are not designed to handle larger messages and as a
   // general rule of thumb a message should be not greather than one megabyte
-  // each". So, a unsigned integer is more than sufficient.
-  optional uint32 size = 2;
+  // each"; So, a 32-bit integer is more than sufficient. We cannot use a
+  // unsigned type because some languages, such as java and php does not support
+  // unsigned values.
+  optional int32 size = 2;
 
   // The name of the service related with the packed message.
   optional string service = 3;
@@ -61,8 +66,9 @@ message RubyMessageHeader {
 message RubyMessage {
   // Message ID, used to match request/response. We are using the maximum
   // integer allowed here to not impose a limit on the number of sequentially
-  // requests that could be generated.
-  optional uint64 id = 1;
+  // requests that could be generated. We cannot use a unsigned type because
+  // some languages, such as java and php does not support unsigned values.
+  optional sint64 id = 1;
   
   // A integer used to identify the type of message. The meaning of the value
   // stored into this field is service-dependant. For example, a service could
@@ -70,7 +76,7 @@ message RubyMessage {
   // use a expensive string comparison (token field). In languages that does not
   // support reflective operations, this field could be used to identify the
   // type of operation that should be performed.
-  optional uint32 type = 2;
+  optional sint32 type = 2;
   
   // A string used to identify the message. The meaning of the value stored
   // into this field is service-dependant. For example, a service could use
@@ -97,14 +103,26 @@ message RubyMessage {
 // This message was defined to ensure that the sent message is correctly
 // decoded/encoded. This message is also used by the ruby service host to
 // deliver the packed message to a specific service. More specifically, it use
-// the service property to find the service which the message must be
+// the service field of the header to find the service which the message must be
 // dispatched.
 message RubyMessagePacket {
-  // Total size of the packet(in bytes), not including the size of this field.
-  optional uint32 size = 1;
+  // The size (in bytes) of the packet, not including the size of this field.
+  // This is the size of the whole packet and is used to ensure that the whole
+  // packet was received from the network stack. Accordingly to the
+  // documentation "Protocol buffers are not designed to handle larger messages
+  // and as a general rule of thumb a message should be not greather than one
+  // megabyte each"; So, a 32-bit integer is more than sufficient. We cannot
+  // use a unsigned because some languages, such as java and php does not
+  // support unsigned values.
+  optional int32 size = 1;
 
-  // Total size (in bytes) of the message header(RubyMessageHeader).
-  optional uint32 header_size = 2;
+  // Total size (in bytes) of the message header(see header below).Accordingly
+  // to the documentation "Protocol buffers are not designed to handle larger
+  // messages and as a general rule of thumb a message should be not greather
+  // than one megabyte each"; So, a 32-bit integer is more than sufficient. We
+  // cannot use a unsigned because some languages, such as java and php does not
+  // support unsigned values.
+  optional int32 header_size = 2;
 
   // The message header. Contains metadata about the service message.
   optional RubyMessageHeader header = 3;
@@ -112,6 +130,6 @@ message RubyMessagePacket {
   // The service message. This is the message that is usually sent to the
   // service. The ruby message packet is generally processed by the ruby
   // service host that decode the header, find the service that should
-  // receive the message and them dispatch the message to it.
+  // receive the message and dispatch the message to it.
   optional RubyMessage message = 4;
 }
