@@ -35,7 +35,7 @@ bool Socket::Connect(const char* endpoint) {
 }
 
 int Socket::CheckError(int err) {
-  // Don't add DCHECKs herem OnZeromqError() already has them.
+  // Don't add DCHECKs here OnZeromqError() already has them.
   if (is_valid()) {
     return ref_->context()->OnZeromqError(err, this);
   }
