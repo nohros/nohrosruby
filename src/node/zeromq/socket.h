@@ -11,6 +11,8 @@
 
 namespace zmq {
 
+class Message;
+
 // Normal usage:
 //   zmq::Socket socket(context_.CreateSocket(...))
 //
@@ -76,11 +78,11 @@ class Socket {
   //     Specifies that the emssage beign sent is a multi-part, and that
   //     further message parts are follows. Refer to zeromq docs for a detailed
   //     description.
-  bool Send(const void* message, int size, int flags);
+  bool Send(Message* message, int size, int flags);
 
   // Receive a message from a socket. The Socket::Receive() function shall
   // receive a message from a socket and store it in the 
-  bool Receive();
+  scoped_refptr<Message> Receive(int flags);
 
   // Returns true if the socket can be used.
   bool is_valid() const { return ref_->is_valid(); }

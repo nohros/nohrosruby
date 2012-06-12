@@ -24,7 +24,7 @@ class Context;
 //
 // The tipical usage is to centralize the code designed to handle low-level IO
 // errors.
-class ErrorDelegate : public base::RefCounted<ErrorDelegate> {
+class ErrorDelegate : public base::RefCountedThreadSafe<ErrorDelegate> {
  public:
   ErrorDelegate();
 
@@ -41,7 +41,7 @@ class ErrorDelegate : public base::RefCounted<ErrorDelegate> {
   virtual int OnError(int error, Context* context, Socket* socket);
 
  protected:
-  friend class base::RefCounted<ErrorDelegate>;
+  friend class base::RefCountedThreadSafe<ErrorDelegate>;
 
   virtual ~ErrorDelegate();
 };
@@ -123,7 +123,7 @@ class Context {
   //
   // The context may revoke a SocketRef in some error cases, so callers
   // should always check the validity before using.
-  class SocketRef : public base::RefCounted<SocketRef> {
+  class SocketRef : public base::RefCountedThreadSafe<SocketRef> {
    public:
     // Default constructor initializes to an invalid socket.
     SocketRef();
@@ -145,7 +145,7 @@ class Context {
     void Close();
 
    private:
-    friend class base::RefCounted<SocketRef>;
+    friend class base::RefCountedThreadSafe<SocketRef>;
 
     ~SocketRef();
 
