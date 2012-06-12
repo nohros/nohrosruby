@@ -79,10 +79,12 @@
   <ItemGroup>
     <ClInclude Include="basictypes.h" />
     <ClInclude Include="context.h" />
+    <ClInclude Include="message.h" />
     <ClInclude Include="socket.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="context.cc" />
+    <ClCompile Include="message.cc" />
     <ClCompile Include="socket.cc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

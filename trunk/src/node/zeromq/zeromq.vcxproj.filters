@@ -4,9 +4,11 @@
     <ClInclude Include="context.h" />
     <ClInclude Include="basictypes.h" />
     <ClInclude Include="socket.h" />
+    <ClInclude Include="message.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="context.cc" />
     <ClCompile Include="socket.cc" />
+    <ClCompile Include="message.cc" />
   </ItemGroup>
 </Project>
