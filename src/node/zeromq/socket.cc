@@ -10,8 +10,8 @@
 
 #include "node/zeromq/socket.h"
 
+#include "node/zeromq/message.h"
 #include "node/zeromq/basictypes.h"
-#include <zmq.hpp>
 
 namespace zmq {
 
@@ -40,6 +40,20 @@ int Socket::CheckError(int err) {
     return ref_->context()->OnZeromqError(err, this);
   }
   return err;
+}
+
+bool Socket::Send(Message* message, int size, int flags) {
+  return CheckError(
+    zmq_send(ref_->socket(), message->message(), flags)) == ZMQ_OK;
+}
+
+scoped_refptr<Message> Socket::Receive(int flags) {
+  zmq_msg_t message;
+  zmq_msg_init(&message);
+  CheckError(zmq_recv(ref_->socket(), &message, flags));
+  
+  return new WrappedMessage(
+    static_cast<char*>(zmq_msg_data(&message)), zmq_msg_size(&message));
 }
 
 }  // namespace zmq

@@ -6,6 +6,8 @@
 
 #include <base/logging.h>
 
+#include "node/zeromq/basictypes.h"
+
 namespace zmq {
 
 Message::Message()
@@ -13,10 +15,12 @@ Message::Message()
     size_(0) {
 }
 
-Message::Message(int buffer_size)
-  : size_(buffer_size) {
-  DCHECK(buffer_size > 0);
-  data_ = new char[buffer_size];
+Message::Message(int size)
+  : size_(size) {
+  DCHECK(size > 0);
+  AddRef();  // Released in Release()
+  data_ = new char[size];
+  zmq_msg_init_data(&message_, data_, size, ReleaseMessage, this);
 }
 
 Message::Message(char* data, int size)
@@ -27,6 +31,21 @@ Message::Message(char* data, int size)
 Message::~Message() {
   delete[] data_;
   data_ = NULL;
+  zmq_msg_close(&message_);
+}
+
+// static
+void Message::ReleaseMessage(void* data, void* hint) {
+  static_cast<Message*>(hint)->Release();
+}
+
+WrappedMessage::WrappedMessage(const char* data, int size)
+  : Message(const_cast<char*>(data), size) {
+}
+
+WrappedMessage::~WrappedMessage() {
+  data_ = NULL;
+  zmq_msg_close(message());
 }
 
 }  // namespace zmq
