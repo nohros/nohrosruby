@@ -5,9 +5,18 @@
 #ifndef NODE_ZEROMQ_MESSAGE_H_
 #define NODE_ZEROMQ_MESSAGE_H_
 
+// "ref_counted.h" indirectly includes "windows.h" that includes "winsock.h" and
+// "zmq.h" uses "winsock2.h" which redefines most of the structures defined in
+// "winsock.h" so we need to include "winsock2.h" before any inclusion of
+// "windows.h"
+#include <winsock2.h>
+
 #include <base/memory/ref_counted.h>
+#include <zmq.h>
 
 namespace zmq {
+
+class Socket;
 
 // Messages are reference counted data buffers used as destination buffers for
 // Read() operations, or as the source buffers for Write() operations.
@@ -50,26 +59,56 @@ namespace zmq {
 // from must remain alive. Using reference counting we can add a reference to
 // the Message and make sure it is not destroyed until after send the operation
 // has completed.
-class Message : base::RefCountedThreadSafe<Message> {
+class Message : public base::RefCountedThreadSafe<Message> {
  public:
   Message();
   explicit Message(int buffer_size);
 
   char* data() { return data_; }
 
+  // The underlying buffer size.
   int size() const { return size_; }
 
+  // A pointer to the raw zeromq message.
+  zmq_msg_t* message() { return &message_; }
+
  protected:
-  friend class base::RefCountedThreadSafe<Message>;
+  friend class base::RefCountedThreadSafe<Message>;  
 
   // Only allow derived classes to specify data_.
   // In all other cases, we own data_, and must delete it at destruction time.
-  explicit Message(char* data, int size);
+  Message(char* data, int size);
 
   virtual ~Message();
 
   char* data_;
   int size_;
+
+ private:
+  // Release the message referenced by the |hint| argument. This method is
+  // called by zeromq lirary once the message buffer is no longer required. We
+  // just decrement the reference count of the message referenced by |hint|,
+  // the resources are freed by the destructor.
+  static void ReleaseMessage(void* data, void* hint);
+
+  // The raw zeromq message.
+  zmq_msg_t message_;
+};
+
+// This class allows the creation of a temporary Message that doesn't really
+// own the underlying buffer. This is used strictly by the Socket::Receive().
+// ZeroMQ does not provide a way to do zero-copy on receive, the library
+// delivers us a buffer that we can store as long as we wish, but it will not
+// write data directly into application buffer.
+class WrappedMessage : public Message {
+ protected:
+  // Sockets accesses WrapperMessage(char*, int) which we don't want to
+  // expose to everybody.
+  friend class Socket;
+
+  WrappedMessage(const char* data, int size);
+
+  virtual ~WrappedMessage();
 };
 
 }  // namespace zmq

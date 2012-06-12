@@ -76,12 +76,24 @@ class Socket {
   //
   //  * ZMQ_SNDMORE
   //     Specifies that the emssage beign sent is a multi-part, and that
-  //     further message parts are follows. Refer to zeromq docs for a detailed
-  //     description.
+  //     further message parts are follows.
+  //
+  // Refer to zeromq docs for a detailed description.
   bool Send(Message* message, int size, int flags);
 
   // Receive a message from a socket. The Socket::Receive() function shall
-  // receive a message from a socket and store it in the 
+  // receive a message from a socket and return a pointer to the received
+  // message. If there are no messages available the Socket::Receive() function
+  // shall block until the request can be satisfied. The flags argument is a
+  // combination of the flags defined below:
+  //
+  // * ZMQ_NOBLOCK
+  //     Specifies that the operation should be performed in non-blocking mode.
+  //     If there are no messages available on the specified socket, the
+  //     Socket::Receive() function shall fail and |message| should contain no
+  //     data.
+  //
+  // Refer to zeromq docs for a detailed description.
   scoped_refptr<Message> Receive(int flags);
 
   // Returns true if the socket can be used.
