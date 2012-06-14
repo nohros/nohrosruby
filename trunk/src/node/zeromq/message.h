@@ -5,14 +5,8 @@
 #ifndef NODE_ZEROMQ_MESSAGE_H_
 #define NODE_ZEROMQ_MESSAGE_H_
 
-// "ref_counted.h" indirectly includes "windows.h" that includes "winsock.h" and
-// "zmq.h" uses "winsock2.h" which redefines most of the structures defined in
-// "winsock.h" so we need to include "winsock2.h" before any inclusion of
-// "windows.h"
-#include <winsock2.h>
-
-#include <base/memory/ref_counted.h>
 #include <zmq.h>
+#include <base/memory/ref_counted.h>
 
 namespace zmq {
 

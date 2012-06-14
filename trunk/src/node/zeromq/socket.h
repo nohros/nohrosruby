@@ -35,6 +35,18 @@ class Socket {
   // be valid. Use is_valid() to check if it's OK.
   // void Assign(scoped_refptr<Context::SocketRef> ref);
 
+  // Create an endpoint for accepting connections on the socket.
+  // |endpoint| is a string consisting of two parts as follows:
+  // [transport:address]. The [transport] part specifies the underlying
+  // transport protocol to use. The meaning of [address] part is specific
+  // to the underlying transport protocol selected.
+  //
+  // With the exception of SocketType::kPair sockets, a single socket may be
+  // connected to multiple endpoints using Socket::Connect(), while
+  // simultaneously accepting incoming connections from multiple endpoints
+  // bound to the socket using Socket::Bind().
+  bool Bind(const char* endpooint);
+
   // Destoys the socket. Any oustanding messages physically received from the
   // network but not yet received by the application with Socket::Receive()
   // shall be discarded. The behavior for discarding messages sent by the
@@ -48,16 +60,6 @@ class Socket {
   // [transport:address]. The [transport] part specifies the underlying
   // transport protocol to use. The meaning of [address] part is specific
   // to the underlying transport protocol selected.
-  //
-  // The following transports are defined:
-  //  * inproc
-  //     local in-process (inter-thread) communication transport.
-  //  * ipc
-  //     local inter-process communication transport.
-  //  * tcp
-  //     unicast transport using TCP.
-  //  * pgm, epgm
-  //     reliable multicast transport using PGM.
   //
   // With the exception of SocketType::PAIR sockets, a single socket may be
   // connected to multiple endpoints using Socket::Connect(), while

@@ -2,17 +2,15 @@
 // Use of this source code is governed by BSD-style license that can be found
 // in the LICENCE file.
 
-// "context.h" indirectly includes "windows.h" that includes "winsock.h" and
-// "zmq.h" uses "winsock2.h" which redefines most of the structures defined in
-// "winsock.h" so we need to include "winsock2.h" before any inclusion of
-// "windows.h"
-#include <winsock2.h>
+// Should be included first to avoid conflicts with the "windows.h" indirectly
+// included by the "context.h"
+#include <zmq.h>
 
 #include "node/zeromq/context.h"
 
-#include <zmq.h>
 #include <base/logging.h>
 
+#include "node/zeromq/socket.h"
 
 namespace zmq {
 

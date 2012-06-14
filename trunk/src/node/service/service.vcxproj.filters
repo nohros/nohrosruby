@@ -2,15 +2,16 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClInclude Include="ruby_switches.h" />
-    <ClInclude Include="service_main.h" />
     <ClInclude Include="service_logging.h" />
     <ClInclude Include="ruby_service.h" />
     <ClInclude Include="service_base.h" />
+    <ClInclude Include="constants.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="service_main.cc" />
     <ClCompile Include="ruby_switches.cc" />
     <ClCompile Include="ruby_service.cc" />
     <ClCompile Include="service_base.cc" />
+    <ClCompile Include="constants.cc" />
   </ItemGroup>
 </Project>

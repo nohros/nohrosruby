@@ -52,13 +52,17 @@
       <Optimization>Disabled</Optimization>
       <TreatWarningAsError>true</TreatWarningAsError>
       <ExceptionHandling>Sync</ExceptionHandling>
-      <AdditionalIncludeDirectories>.;..;..\..;..\third_party\chrome\include;</AdditionalIncludeDirectories>
-      <AdditionalOptions>/wd4310  /wd4100 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>.;..;..\..;..\third_party\chrome\include;..\third_party\zeromq\include;</AdditionalIncludeDirectories>
+      <AdditionalOptions>/wd4310  /wd4100  /wd4481 %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <UndefinePreprocessorDefinitions>
+      </UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;base.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\third_party\chrome\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;base.lib;base_static.lib;zeromq.lib;libzmq.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\third_party\chrome\lib;..\third_party\zeromq\builds\msvc\$(Configuration);$(SolutionDir)bin\$(Configuration)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -70,15 +74,16 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <ExceptionHandling>Sync</ExceptionHandling>
       <AdditionalIncludeDirectories>.;..;..\..;..\third_party\chrome\include;..\third_party\zeromq\include;</AdditionalIncludeDirectories>
-      <AdditionalOptions>/wd4310  /wd4100 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/wd4310  /wd4100  /wd4481 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PreprocessorDefinitions>_MBCS;OFFICIAL_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;base.lib;base_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\third_party\chrome\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;base.lib;base_static.lib;zeromq.lib;libzmq.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\third_party\chrome\lib;..\third_party\zeromq\builds\msvc\$(Configuration);$(SolutionDir)bin\$(Configuration)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -86,9 +91,12 @@
     <ClInclude Include="ruby_switches.h" />
     <ClInclude Include="service_base.h" />
     <ClInclude Include="service_logging.h" />
-    <ClInclude Include="service_main.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="constants.cc" />
+    <ClInclude Include="constants.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
     <ClCompile Include="ruby_service.cc" />
     <ClCompile Include="ruby_switches.cc" />
     <ClCompile Include="service_base.cc" />

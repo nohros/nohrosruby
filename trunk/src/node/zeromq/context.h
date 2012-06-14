@@ -11,9 +11,18 @@
 #include <base/memory/scoped_ptr.h>
 #include <base/memory/ref_counted.h>
 
-#include "node/zeromq/basictypes.h"
-
 namespace zmq {
+
+// Possible values for type in CreateSocket(). These should match the values
+// in zmq.h
+enum SocketType {
+  kExclusivePair = 0,
+  kPublisher = 1,
+  kSubscriber = 2,
+  kRequest = 3,
+  kReply = 4
+};
+
 class Socket;
 class Context;
 
@@ -38,7 +47,7 @@ class ErrorDelegate : public base::RefCountedThreadSafe<ErrorDelegate> {
   // If error condition has been fixed an the original operation successfully
   // re-tried then rturning ZMQ_OK is appropiate; otherwise is recomended
   // that you return the original |error| or the appropiate error code.
-  virtual int OnError(int error, Context* context, Socket* socket);
+  virtual int OnError(int error, Context* context, Socket* socket) = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<ErrorDelegate>;

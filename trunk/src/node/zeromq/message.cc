@@ -6,8 +6,6 @@
 
 #include <base/logging.h>
 
-#include "node/zeromq/basictypes.h"
-
 namespace zmq {
 
 Message::Message()

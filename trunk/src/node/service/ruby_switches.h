@@ -13,8 +13,8 @@ namespace switches {
 // All switches in alphabetical order. The switches should be documented
 // alongside the definition of their values in the .cc file.
 
-extern const char kServiceHost[];
-extern const char kServiceHostCmdSuffix[];
+extern const char kRequestReplyPort[];
+extern const char kWaitDebugger[];
 }
 
-#endif
+#endif  // NODE_SERVICE_RUBY_SWITCHES_H_

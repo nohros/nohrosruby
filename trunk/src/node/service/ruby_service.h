@@ -4,34 +4,53 @@
 
 #ifndef NODE_SERVICE_RUBY_SERVICE_H_
 #define NODE_SERVICE_RUBY_SERVICE_H_
+#pragma once
 
 #include <vector>
-#include <string>
 
-#include <base/basictypes.h>
+#include <base/compiler_specific.h>
 
 #include "node/service/service_base.h"
+#include <base/threading/platform_thread.h>
 
-namespace base {
-class FilePath;
+namespace zmq {
+class Context;
 }
 
 namespace node {
 
-class RubyService : ServiceBase {
+class RubyService
+    : public ServiceBase,
+      public base::PlatformThread::Delegate {
  public:
-  RubyService(const char* service_name);
+  RubyService(zmq::Context* context);
+
   ~RubyService();
 
+  // Pre-Init configuration ------------------------------------------------
+
+  // Sets the port number that is used by socket that receives commands
+  // from outside.
+  void set_request_reply_port(int port) { port_ = port; }
+
+ protected:
   // Implementation of the SeviceBase methods.
   void OnStart(const std::vector<std::string>& arguments) OVERRIDE;
   void OnStop() OVERRIDE;
 
-  // Creates a new process that runs the application that can communicate with
-  // the external word and host service-like applications.
-  //void CreateServiceHostProcess(const FilePath& service_host_path);
+  // PlatformThread::Delegate implementation.
+  virtual void ThreadMain() OVERRIDE;
 
  private:
+  zmq::Context* context_;
+  int port_;
+
+  bool is_running_;
+
+  // Worker thread handle.
+  base::PlatformThreadHandle thread_;
+
+  DISALLOW_COPY_AND_ASSIGN(RubyService);
 };
 
 }  // namespace node
