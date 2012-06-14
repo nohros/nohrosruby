@@ -12,6 +12,8 @@
 #include <base/basictypes.h>
 #include <base/synchronization/waitable_event.h>
 
+class CommandLine;
+
 namespace node {
 
 // Provides a base class for a service that will exists as part of a service
@@ -22,7 +24,7 @@ class ServiceBase {
  public:
   explicit ServiceBase(const char* service_name);
 
-  ~ServiceBase();
+  virtual ~ServiceBase();
 
   // Register the executable for a service with the ServiceBase Control
   // Manager (SCM). THis method shoul be called in the main() funtion of
@@ -60,7 +62,7 @@ class ServiceBase {
   // Directs a wait thread in the thread pool to wait for the service to
   // terminate and finilize the service start process by putting it in the
   // Running state.
-  void ServiceQueuedMainCallback(const std::vector<std::string>& arguemnts);
+  void ServiceQueuedMainCallback(const std::vector<std::string>& arguments);
 
   // Updates the service state of the ServiceBase Control Manager's status
   // information for the service.
@@ -87,6 +89,8 @@ class ServiceBase {
   // An handle that identifies the object that is waiting the |shutdown_event_|
   // to be signaled.
   HANDLE stop_wait_handle_;
+
+  DISALLOW_COPY_AND_ASSIGN(ServiceBase);
 };
 
 extern ServiceBase* g_service;

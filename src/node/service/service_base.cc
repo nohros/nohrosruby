@@ -4,8 +4,8 @@
 
 #include "node/service/service_base.h"
 
-#include <string>
 #include <vector>
+#include <string>
 
 #include <base/memory/scoped_ptr.h>
 #include <base/string_util.h>
@@ -20,8 +20,10 @@ ServiceBase* g_service = NULL;
 ServiceBase::ServiceBase(const char* service_name)
   : service_name_(service_name),
     service_status_handle_(0),
-    stop_event_(true, false),
+    stop_event_(false, false),
     stop_wait_handle_(0) {
+
+  // set up the initial service state
   service_status_.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
   service_status_.dwCurrentState = SERVICE_START_PENDING;
   service_status_.dwControlsAccepted = SERVICE_ACCEPT_PAUSE_CONTINUE
@@ -30,13 +32,14 @@ ServiceBase::ServiceBase(const char* service_name)
   service_status_.dwServiceSpecificExitCode = 0;
   service_status_.dwCheckPoint = 0;
   service_status_.dwWaitHint = 0;
+
+  DCHECK(!g_service);
+  g_service = this;
 }
 
 void ServiceBase::Run() {
-  scoped_ptr<char> service_name(base::strdup(service_name_.c_str()));
   SERVICE_TABLE_ENTRY entry[] = {
-    { service_name.get(), ServiceMainCallback },
-    { NULL, NULL }
+    { "", ServiceMainCallback }, { NULL, NULL }
   };
 
   BOOL ok = StartServiceCtrlDispatcher(entry);
@@ -45,31 +48,33 @@ void ServiceBase::Run() {
     return;
   }
 
-  VLOG(1) << "ServiceBase process launched: " << service_name.get();
+  VLOG(1) << "ServiceBase process launched";
 }
 
 // static
 VOID WINAPI ServiceBase::ServiceMainCallback(DWORD argc, LPSTR *argv) {
-  scoped_ptr<char> service_name(
-    base::strdup(g_service->service_name().c_str()));
-
-  SERVICE_STATUS_HANDLE service_status_handle = RegisterServiceCtrlHandlerEx(
-    service_name.get(), ServiceCommandCallback, static_cast<LPVOID>(&g_service));
+  const char* service_name = g_service->service_name().c_str();
+  SERVICE_STATUS_HANDLE service_status_handle =
+    RegisterServiceCtrlHandlerEx(service_name, ServiceCommandCallback,
+      static_cast<LPVOID>(g_service));
 
   if (service_status_handle == 0) {
-    LOG_SERVICE_START(ERROR, service_name.get());
+    LOG_SERVICE_START(ERROR, service_name);
 
-    VLOG(1) << "The control handler for the service " << service_name.get()
+    VLOG(1) << "The control handler for the service "
+            << service_name
             << " fails to be registered with error code "
             << logging::GetLastSystemErrorCode();
     return;
   }
 
+  VLOG(1) << "Control handler has been registered";
+
   g_service->service_status_handle_ = service_status_handle;
   if (g_service->SetServiceState(SERVICE_START_PENDING)) {
-    std::vector<std::string> arguments(argc);
-    for (DWORD i = 0; i < argc; ++i) {
-      arguments[i] = std::string(argv[i]);
+    std::vector<std::string> arguments;
+    for (DWORD i = 0; i < argc; i++) {
+      arguments.push_back(std::string(argv[i]));
     }
     g_service->ServiceQueuedMainCallback(arguments);
   }
@@ -91,8 +96,6 @@ void ServiceBase::ServiceQueuedMainCallback(
     return;
   }
 
-  OnStart(arguments);
-
   service_status_.dwCheckPoint = 0;
   service_status_.dwWaitHint = 0;
   if (!SetServiceState(SERVICE_RUNNING)) {
@@ -106,12 +109,14 @@ void ServiceBase::ServiceQueuedMainCallback(
     SetServiceState(SERVICE_STOPPED);
     return;
   }
+
+  OnStart(arguments);
 }
 
 // static
 DWORD WINAPI ServiceBase::ServiceCommandCallback(DWORD command, DWORD event_type,
   LPVOID event_data, LPVOID context) {
-
+  DCHECK(context);
   ServiceBase* service = static_cast<ServiceBase*>(context);
   switch (command) {
     case SERVICE_CONTROL_STOP:
@@ -123,15 +128,15 @@ DWORD WINAPI ServiceBase::ServiceCommandCallback(DWORD command, DWORD event_type
 // static
 VOID CALLBACK ServiceBase::ServiceStopCallback(PVOID context,
   BOOLEAN time_or_wait_fired) {
-  DCHECK(!context);
+  DCHECK(context);
 
   ServiceBase* service = static_cast<ServiceBase*>(context);
   UnregisterWait(service->stop_wait_handle_);
+
+  service->SetServiceState(SERVICE_STOPPED);
 }
 
 bool ServiceBase::SetServiceState(DWORD service_state) {
-  DCHECK(!service_status_handle_);
-
   service_status_.dwCurrentState = service_state;
   BOOL status_was_set = SetServiceStatus(service_status_handle_,
     &service_status_);
@@ -148,6 +153,7 @@ bool ServiceBase::SetServiceState(DWORD service_state) {
 }
 
 void ServiceBase::Terminate() {
+  OnStop();
   stop_event_.Signal();
 }
 
