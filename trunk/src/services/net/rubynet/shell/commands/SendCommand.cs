@@ -1,10 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
-
 using Nohros.Desktop;
 
-namespace Nohros.Ruby.Service.Net
+namespace Nohros.Ruby
 {
   internal class SendCommand: ShellCommand
   {
@@ -23,7 +20,7 @@ namespace Nohros.Ruby.Service.Net
     public SendCommand() : base(kCommandName) { }
     #endregion
 
-    public override void Run(RubyShell shell) {
+    public override void Run(ShellRubyProcess process) {
       throw new NotImplementedException();
     }
   }

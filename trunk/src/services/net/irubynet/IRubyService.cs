@@ -34,19 +34,18 @@ namespace Nohros.Ruby
     /// <summary>
     /// Starts the service.
     /// </summary>
-    void Start();
+    /// <param name="service_host">
+    /// A <see cref="IRubyServiceHost"/> object associated with the service
+    /// beign created.
+    /// </param>
+    void Start(IRubyServiceHost service_host);
 
     /// <summary>
-    /// Stops the service, shut in it down.
+    /// Shuts the service down.
     /// </summary>
     /// <remarks>
-    /// A service could be stopped at any time by using a stop command at the
-    /// command line or by sending a stop command through the ruby service
-    /// host(RSH) IPC channel. If the RSH receives a stop command request for a
-    /// service, it instructs the service to stop by calling the
-    /// <see cref="Stop"/> method. The service name is used to locate the
-    /// service that must be stopped. All the services that is found with a
-    /// given name will be stopped.
+    /// A service could be shutted down at any time, but usually it happens
+    /// when the machine that is running the service is shutting down.
     /// <para>
     /// By default, a service has approximately 20 seconds to perform cleanup
     /// tasks. After this time expires the RSH forces the service shutdown
@@ -58,46 +57,88 @@ namespace Nohros.Ruby
     /// basis, keeping track of the data that is saved, and only saving your
     /// unsaved data on shutdown.
     /// </para>
+    /// <para>
+    /// <see cref="Shutdown"/> is used only to shut the service down, not for
+    /// stop the service.
+    /// </para>
     /// </remarks>
-    void Stop();
+    void Shutdown();
 
     /// <summary>
-    /// Handle messages sent from ruby server.
+    /// Instructs the service to pause the work that it is doing.
     /// </summary>
     /// <param name="message">
-    /// The message sent from ruby server.
+    /// The pause message. The service should use it to check if the pause
+    /// request is associated with the executing instance.
+    /// </param>
+    /// <remarks>
+    /// If a service could not be paused it should do nothing.
+    /// <para>
+    /// <see cref="Pause"/> a service can conserve system resources because
+    /// <see cref="Pause"/> need not to release all system resources. For
+    /// example, if threads have been opened by the service, pausing it rather
+    /// than stopping it can allow threads to remain open, obviating the need
+    /// to reallocate then when the service continues.
+    /// </para>
+    /// </remarks>
+    void Pause(IRubyMessage message);
+
+    /// <summary>
+    /// Instructs the service to continue the work that it was doing when
+    /// it was paused.
+    /// </summary>
+    /// <param name="message">
+    /// The continue message. The service should use it to check if the continue
+    /// request is associated with the executing instance.
+    /// </param>
+    /// <remarks>
+    /// <see cref="Continue"/> mirrors the service's response to
+    /// <see cref="Pause"/>. When a service is continued, the work that it was
+    /// doing when it was paused should becomes active again.
+    /// </remarks>
+    void Continue(IRubyMessage message);
+
+    /// <summary>
+    /// Stops the executing service.
+    /// </summary>
+    /// <param name="message">
+    /// The stop message. The service should use it to check if the stop
+    /// request is associated with the executing instance.
+    /// </param>
+    void Stop(IRubyMessage message);
+
+    /// <summary>
+    /// Handle messages sent from clients.
+    /// </summary>
+    /// <param name="message">
+    /// The message sent from a client.
     /// </param>
     /// <returns>
-    /// <c>true</c> if the message was successfully processed; otherwise,
-    /// <c>false</c>.
+    /// <c>true</c> if the message was can be processed by the running
+    /// instance; otherwise, <c>false</c>.
     /// </returns>
     /// <remarks>
     /// The message dispatcher in the main thread of the ruby service process
     /// invokes the service message handler function whenever it receives a
-    /// message from the ruby server to a specific service. After receiving the
-    /// message, the message handler function must return true if the message
-    /// was succesfully processed or false if not.
-    /// <para>
-    /// The message handler function is intended to receive messages and return
-    /// immediately. The callback function should save its parameters and
-    /// create other threads to perform additional work. The ruby service must
-    /// ensure that such threads have exited before stopping the service. For
-    /// this reason, it is very recommended the use of background threads. In
-    /// particular, a message handler should avoid operations that might block,
-    /// such taking a lock, because this could result in a deadlock or cause
-    /// the system to stop responding.
-    /// </para>
+    /// message from a client directed to a service.
     /// <para>
     /// When the ruby service host sends a message to a service, it waits for
-    /// the handler function to return before sending additional messages.
-    /// The message handler should return as quick as possible, if it does not
-    /// return within 30 seconds, the RSH returns an error. If a service must
-    /// do lengthy processing when the service is executing the message
-    /// handler, it should create a secondary thread to perform the lengthy
-    /// processing, and then return from the message handler. This prevents
-    /// the service from tying up the message dispatcher.
+    /// the handler function to return before sending additional messages. The
+    /// ruby service host queue up messages that is sent to service while it
+    /// is processing another message. When a queue is full, RSH automatically
+    /// throws away messages.
+    /// </para>
+    /// <para>
+    /// The message handler should return as soon as possible to avoid losing
+    /// messages because the receiving queue is full.
+    /// </para>
+    /// <para>
+    /// The ruby service host (RSH) sends all the messages that is associated
+    /// with the service name. The service should check if the received
+    /// message should be processed by the running instance and sent back a
+    /// response indicating if the message can be processed or not.
     /// </para>
     /// </remarks>
-    IRubyMessage OnServerMessage(IRubyMessage message);
+    bool OnMessage(IRubyMessage message);
   }
 }

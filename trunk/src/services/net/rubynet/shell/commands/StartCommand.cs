@@ -1,6 +1,6 @@
 using System;
 
-namespace Nohros.Ruby.Service.Net
+namespace Nohros.Ruby
 {
   /// <summary>
   /// Initializes a new service instance.
@@ -84,15 +84,15 @@ namespace Nohros.Ruby.Service.Net
     /// If the hosted service throws an exception, it will be propagated to the
     /// caller.
     /// </remarks>
-    public override void Run(RubyShell shell) {
+    public override void Run(ShellRubyProcess shell_process) {
       ServicesFactory factory = new ServicesFactory();
       IRubyService service = factory.CreateService(
         service_factory_class_type_, service_command_line_);
 
       RubyServiceHost host =
-        factory.CreateServiceHost(service, shell.IPCChannel);
+        factory.CreateServiceHost(service, shell_process.IPCChannel);
 
-      shell.ServiceHosts.HostService(host);
+      shell_process.ServiceHosts.HostService(host);
     }
   }
 }

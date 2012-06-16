@@ -17,11 +17,13 @@ namespace Nohros.Ruby
   public interface IRubyServiceFactory
   {
     /// <summary>
-    /// Creates a instance of the <see cref="IRubyService"/> interface.
+    /// Creates a instance of the <see cref="IRubyService"/> interface by using
+    /// the specified command line string and ruby service host..
     /// </summary>
     /// <param name="command_line_string">
     /// A string representing the command line that was received by the ruby
-    /// service host(RSH) as a parameter to the service.</param>
+    /// service host(RSH) as a parameter to the service.
+    /// </param>
     /// <returns>
     /// An object that implements the <see cref="IRubyService"/> interface.
     /// </returns>

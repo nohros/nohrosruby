@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace Nohros.Ruby.Service.Net
+namespace Nohros.Ruby
 {
   internal sealed class ShellSwitches
   {

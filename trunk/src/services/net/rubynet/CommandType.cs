@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Nohros.Ruby.Service.Net
+namespace Nohros.Ruby
 {
     public enum CommandType
     {

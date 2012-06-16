@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 using Nohros.Logging;
 
-namespace Nohros.Ruby.Service.Net
+namespace Nohros.Ruby
 {
   /// <summary>
   /// A simple logging interface abstracting logging APIs.

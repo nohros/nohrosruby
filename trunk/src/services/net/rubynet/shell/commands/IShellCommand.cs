@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 using Nohros.Desktop;
 
-namespace Nohros.Ruby.Service.Net
+namespace Nohros.Ruby
 {
   /// <summary>
-  /// Defines a interface that all ruby shell commands must follow
+  /// Defines a interface that all ruby process commands must follow
   /// </summary>
   internal interface IShellCommand
   {
@@ -26,8 +24,8 @@ namespace Nohros.Ruby.Service.Net
     /// <summary>
     /// Runs the commmand.
     /// </summary>
-    /// <param name="shell">The <see cref="RubyShell"/> object that is related
+    /// <param name="process">The <see cref="ShellRubyProcess"/> object that is related
     /// with the command.</param>
-    void Run(RubyShell shell);
+    void Run(ShellRubyProcess process);
   }
 }

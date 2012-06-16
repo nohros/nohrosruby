@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 
 using Nohros.Desktop;
-using Nohros.Resources;
 
-namespace Nohros.Ruby.Service.Net
+namespace Nohros.Ruby
 {
   static class RubyNet
   {
@@ -88,18 +87,18 @@ Usage: nohros.rubynet -assembly=ASSEMBLYNAME -type=TYPENAME [-help] -- ARGS
       AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
       // Legacy version of this app was used to start a single service without
-      // a shell. For compatbility with this legacy app we need to send the
+      // a process. For compatbility with this legacy app we need to send the
       // command line to the run method simulating the start command.
       string legacy_command_line_string = GetLegacyCommandLine(command_line);
 
-      // Checks if the shell should runs as a service or shell.
+      // Checks if the process should runs as a service or process.
       bool run_as_shell = command_line.HasSwitch(ShellSwitches.kWithShell);
 
-      AppFactory factory = new AppFactory();
-      RubyShell shell = run_as_shell
-        ? factory.CreateShellAsShell(command_line)
-        : factory.CreateShellAsService();
-      shell.Run();
+      AppFactory factory = new AppFactory(command_line);
+      IRubyProcess process = run_as_shell
+        ? factory.CreateShellRubyProcess() as IRubyProcess
+        : factory.CreateServiceRubyProcess() as IRubyProcess;
+      process.Run(legacy_command_line_string);
     }
 
     /// <summary>

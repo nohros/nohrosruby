@@ -3,7 +3,7 @@
 using Nohros.Desktop;
 using Nohros.MyToolsPack.Console;
 
-namespace Nohros.Ruby.Service.Net
+namespace Nohros.Ruby
 {
   /// <summary>
   /// A generic implementation of the <see cref="IShellCommand"/> interface.
@@ -43,13 +43,13 @@ namespace Nohros.Ruby.Service.Net
 
     /// <inherithdoc/>
     void ICommand.Run(IMyToolsPackConsole console) {
-      Run(console as RubyShell);
+      Run(console as ShellRubyProcess);
     }
 
     /// <summary>
     /// Runs the command.
     /// </summary>
-    public abstract void Run(RubyShell shell);
+    public abstract void Run(ShellRubyProcess process);
 
     /// <summary>
     /// Gets the name of the command.

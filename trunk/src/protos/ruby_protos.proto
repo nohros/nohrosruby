@@ -70,13 +70,29 @@ message RubyMessage {
   // some languages, such as java and php does not support unsigned values.
   optional sint64 id = 1;
   
+  // Facts is a discrete bits of information about a service. Ruby allows the
+  // smae service to run more than once in a single machine. When more than one
+  // instance of a service is running on the same machine with distinct
+  // configuration values, the service name will not be sufficient to
+  // communicate with this service. The facts field is used to distinghuish
+  // two distincts instance of a service that is running in a single machine
+  // with diferrent configurations. Facts is a collection of strings consisting
+  // of two parts as follows: name=value. The "name" part is a string that
+  // uniquely identifies the encoded fact and the "value" part is the value of
+  // the fact associated with the name "name".
+  message Fact {
+    optional string name = 1;
+    optional string value = 2;
+  }
+  repeated Fact facts = 2;
+  
   // A integer used to identify the type of message. The meaning of the value
   // stored into this field is service-dependant. For example, a service could
   // use this field as a enumeration, so it could switch over it instead of
   // use a expensive string comparison (token field). In languages that does not
   // support reflective operations, this field could be used to identify the
   // type of operation that should be performed.
-  optional sint32 type = 2;
+  optional sint32 type = 3;
   
   // A string used to identify the message. The meaning of the value stored
   // into this field is service-dependant. For example, a service could use
@@ -86,14 +102,14 @@ message RubyMessage {
   // directly throught reflection(in languages that support it, of course), it
   // could also use this filed to specify the name of a method that should be
   // called on the remote side.
-  optional string token = 3;
+  optional string token = 4;
   
   // A string contained the service message serialized using the protobuf
   // format. The meaning of the value stored into this field is
   // service-dependant. For example, a service could use the token/type fields
   // to define the method name/type and this field to store the parameters of
   // the method call.
-  optional bytes message = 4;
+  optional bytes message = 5;
 }
 
 // Wraps a protobuf message into a envelope, which defines what is in the
