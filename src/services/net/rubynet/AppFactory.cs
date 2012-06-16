@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
-using System.IO.Pipes;
 using System.Reflection;
 using Nohros.Configuration;
 using Nohros.Desktop;
 using Nohros.Logging;
 using Nohros.MyToolsPack.Console;
 using Nohros.Providers;
+using Nohros.Ruby.Service.Net;
+using ZMQ;
 
-namespace Nohros.Ruby.Service.Net
+namespace Nohros.Ruby
 {
   /// <summary>
   /// The application factory. Used to build the main application objects
@@ -27,11 +27,14 @@ namespace Nohros.Ruby.Service.Net
 
     public const string kShellPrompt = "rubynet$: ";
 
+    readonly CommandLine switches_;
+
     #region .ctor
     /// <summary>
     /// Initializes a new instance of the <see cref="AppFactory"/> object.
     /// </summary>
-    public AppFactory() {
+    public AppFactory(CommandLine switches) {
+      switches_ = switches;
     }
     #endregion
 
@@ -55,52 +58,65 @@ namespace Nohros.Ruby.Service.Net
       return settings;
     }
 
-    ServiceConsole CreateServiceConsole() {
-      Process current_process = Process.GetCurrentProcess();
-      string ipc_channel_name = "\\\\.\\pipe\\" + current_process.Id;
-      try {
-        NamedPipeServerStream ipc_channel =
-          new NamedPipeServerStream(ipc_channel_name, PipeDirection.InOut, 1,
-            PipeTransmissionMode.Message, PipeOptions.Asynchronous);
-        return new ServiceConsole(ipc_channel);
-      } catch (IOException) {
-        #region : logging :
-        RubyLogger.ForCurrentProcess.Error(
-          string.Format(Resources.log_pipe_already_exists, ipc_channel_name));
-        #endregion
-      }
-      throw new ApplicationException(Resources.log_console_creation_failed);
-    }
-
     /// <summary>
-    /// Creates and configures the shell application.
+    /// Creates an instacne of the <see cref="ShellRubyProcess"/> class.
     /// </summary>
-    /// <param name="command_line">The parsed command line.</param>
-    /// <returns>A <see cref="RubyShell"/> object.</returns>
-    public RubyShell CreateShellAsShell(CommandLine command_line) {
+    /// <returns>
+    /// A <see cref="ShellRubyProcess"/> object.
+    /// </returns>
+    public ShellRubyProcess CreateShellRubyProcess() {
       RubySettings settings = CreateRubySettings();
-
       ConfigureLogger(settings);
 
-      IMyToolsPackConsole console;
-      console = with_shell
-        ? GetToolsPackConsole(settings)
-        : GetServiceConsole();
-
-      RubyShell shell = new RubyShell(settings, console);
+      MyToolsPackConsole console = GetToolsPackConsole(settings);
+      IPCChannel ipc_channel = GetIPCChannel(settings);
+      ShellRubyProcess process = new ShellRubyProcess(console, ipc_channel);
 
       // Tell the tools pack console to send our implementation of
       // the IMyToolsPackConsole interface when run commands.
-      console.ToolsPackConsole = shell;
+      console.ToolsPackConsole = process;
 
-      return shell;
+      return process;
     }
 
-    RubyShell CreateShellAsService(CommandLine command_line) {
-      bool with_shell = command_line.HasSwitch(ShellSwitches.kWithShell); 
+    /// <summary>
+    /// Creates an instance of the <see cref="ServiceRubyProcess"/> class.
+    /// </summary>
+    /// <returns></returns>
+    public ServiceRubyProcess CreateServiceRubyProcess() {
+      RubySettings settings = CreateRubySettings();
+      ConfigureLogger(settings);
+      IPCChannel channel = GetIPCChannel(settings);
+      return new ServiceRubyProcess(channel);
     }
 
-    IMyToolsPackConsole GetToolsPackConsole(RubySettings settings) {
+    IPCChannel GetIPCChannel(RubySettings settings) {
+      IRubyMessageSender sender;
+      IRubyMessageReceiver receiver;
+      Context context = null;
+      if (switches_.HasSwitch(Strings.kMessageListenerEndpoint)) {
+        context = new Context(Context.DefaultIOThreads);
+        Socket socket = context.Socket(SocketType.PUB);
+        socket.Connect(switches_.GetSwitchValue(Strings.kMessageListenerEndpoint));
+        sender = new RubyMessageSender(socket);
+      } else {
+        sender = new LoggerMessageSender();
+      }
+
+      if (switches_.HasSwitch(Strings.kMessageSenderEndpoint)) {
+        if (context == null) {
+          context = new Context(Context.DefaultIOThreads);
+        }
+        Socket socket = context.Socket(SocketType.SUB);
+        socket.Connect(switches_.GetSwitchValue(Strings.kMessageSenderEndpoint));
+        receiver = new RubyMessageReceiver(socket);
+      } else {
+        receiver = new BlockedMessageReceiver();
+      }
+      return new IPCChannel(sender, receiver);
+    }
+
+    MyToolsPackConsole GetToolsPackConsole(RubySettings settings) {
       // Create an instance of the class that handle the console commands.
       MyToolsPackConsole tools_pack_console =
         new MyToolsPackConsole(settings, new SystemConsole());

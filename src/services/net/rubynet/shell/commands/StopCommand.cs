@@ -1,10 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-using Nohros.Desktop;
-
-namespace Nohros.Ruby.Service.Net
+namespace Nohros.Ruby
 {
   /// <summary>
   /// Stops a running service.
@@ -35,8 +31,8 @@ namespace Nohros.Ruby.Service.Net
     /// <summary>
     /// Runs the stop command.
     /// </summary>
-    public override void Run(RubyShell shell) {
-      RubyServiceHosts hosts = shell.ServiceHosts;
+    public override void Run(ShellRubyProcess process) {
+      RubyServiceHosts hosts = process.ServiceHosts;
       hosts.UnhostService(service_name_);
     }
   }

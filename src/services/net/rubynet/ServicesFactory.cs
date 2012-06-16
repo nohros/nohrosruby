@@ -1,7 +1,7 @@
 ﻿using System;
-using System.IO.Pipes;
+using Exception = System.Exception;
 
-namespace Nohros.Ruby.Service.Net
+namespace Nohros.Ruby
 {
   /// <summary>
   /// A factory used to build instance of the classes related to services.
@@ -88,16 +88,15 @@ namespace Nohros.Ruby.Service.Net
     /// The service to host.
     /// </param>
     /// <param name="ipc_channel">
-    /// A <see cref="NamedPipeServerStream"/> object that is used to
-    /// communicate with the service node.
+    /// A <see cref="IPCChannel"/> object that is used to communicate with the
+    /// service node.
     /// </param>
     /// <returns>
     /// The newly created <see cref="RubyServiceHost"/> object.
     /// </returns>
     public RubyServiceHost CreateServiceHost(IRubyService service,
-      NamedPipeServerStream ipc_channel) {
-      RubyServiceHost host = new RubyServiceHost(service, ipc_channel);
-      return host;
+      IPCChannel ipc_channel) {
+      return new RubyServiceHost(service, ipc_channel);
     }
   }
 }

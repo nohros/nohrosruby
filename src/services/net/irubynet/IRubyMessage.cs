@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Nohros.Ruby
 {
@@ -48,6 +49,12 @@ namespace Nohros.Ruby
     string Token { get; }
 
     /// <summary>
+    /// Gets an array of <see cref="IFact"/> containg the facts for the service
+    /// should handle the message.
+    /// </summary>
+    IFact[] Facts { get; }
+
+    /// <summary>
     /// Gets a sequence of bytes containing the service specific message
     /// encoded accordingly to the google protobuf format.
     /// </summary>
@@ -55,5 +62,10 @@ namespace Nohros.Ruby
     /// The meaning of the value stored in this property is service-dependant.
     /// </remarks>
     byte[] Message { get; }
+
+    /// <summary>
+    /// Serializes a <see cref="IRubyMessage"/> object into a byte array.
+    /// </summary>
+    byte[] ToByteArray();
   }
 }

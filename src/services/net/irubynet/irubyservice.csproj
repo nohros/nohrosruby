@@ -46,7 +46,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IFact.cs" />
     <Compile Include="IRubyMessage.cs" />
+    <Compile Include="IRubyMessageSender.cs" />
     <Compile Include="IRubyService.cs" />
     <Compile Include="IRubyServiceFactory.cs" />
     <Compile Include="IRubyServiceHost.cs">

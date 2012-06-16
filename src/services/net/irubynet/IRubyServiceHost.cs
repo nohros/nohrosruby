@@ -3,7 +3,8 @@ using System;
 namespace Nohros.Ruby
 {
   /// <summary>
-  /// A <see cref="IRubyServiceHost"/> is used to host a ruby service.
+  /// A <see cref="IRubyServiceHost"/> is used to host a ruby service and acts
+  /// as a communication channel betwwen a service and the external world.
   /// </summary>
   /// <remarks>
   /// A <see cref="IRubyServiceHost"/> provides the common structure used to
@@ -11,7 +12,7 @@ namespace Nohros.Ruby
   /// <see cref="IRubyServiceHost"/> manages the service lifecycle, starting,
   /// stoping and handling the communication with the external world.
   /// </remarks>
-  public interface IRubyServiceHost
+  public interface IRubyServiceHost: IRubyMessageSender
   {
   }
 }

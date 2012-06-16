@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 
-namespace Nohros.Ruby.Service.Net
+namespace Nohros.Ruby
 {
   /// <summary>
   /// A collection of <see cref="RubyServiceHost"/> objects.
@@ -16,27 +15,11 @@ namespace Nohros.Ruby.Service.Net
     Dictionary<string, RubyServiceHost> hosts_;
     Mutex host_dictionary_mutex_;
 
-    /// <summary>
-    /// Class used to group the running thread, the host and the
-    /// service objects, allowing their to be stored into a dictionary
-    /// </summary>
-    struct HostDictionaryValue {
-      /// <summary>
-      /// The host that is hosting a service
-      /// </summary>
-      public RubyServiceHost ServiceHost;
-
-      /// <summary>
-      /// The thread where the service is running.
-      /// </summary>
-      public Thread RunningThread;
-    }
-
     #region .ctor
     /// <summary>
     /// Initializes a new instance of the <see cref="RubyServiceHosts"/>.
     /// </summary>
-    public RubyServiceHosts():this(0) { }
+    public RubyServiceHosts() : this(0) { }
 
     /// <summary>
     /// Initializes a new instabnce of the <see cref="RubyServiceHosts"/> by
@@ -62,7 +45,7 @@ namespace Nohros.Ruby.Service.Net
     /// <returns></returns>
     public bool TryGetHost(string service_name,
       out RubyServiceHost host) {
-        return hosts_.TryGetValue(service_name, out host);
+      return hosts_.TryGetValue(service_name, out host);
     }
 
     /// <summary>
@@ -89,8 +72,7 @@ namespace Nohros.Ruby.Service.Net
       }
 
       // create the Thread that will run the service code
-      ParameterizedThreadStart parameterized_thread_start =
-        new ParameterizedThreadStart(ServiceThreadRoutine);
+      ParameterizedThreadStart parameterized_thread_start = ServiceThreadRoutine;
 
       Thread service_thread = new Thread(ServiceThreadRoutine);
       service_thread.IsBackground = true;
@@ -114,7 +96,7 @@ namespace Nohros.Ruby.Service.Net
       service_is_running = hosts_.TryGetValue(service_name, out host);
       if (!service_is_running && logger.IsDebugEnabled) {
         logger.Debug(string.Concat(
-          "[Nohros.Ruby.Service.Net.RubyServiceHosts   HostService]",
+          "[Nohros.Ruby.RubyServiceHosts   HostService]",
           string.Format(
             Resources.log_service_not_running, service_name)));
       }
@@ -152,17 +134,17 @@ namespace Nohros.Ruby.Service.Net
         // before the service starts, because the service blocks the current
         // thread until it finish you work.
         host_dictionary_mutex_.WaitOne();
-          hosts_.Add(service_name, service_host);
+        hosts_.Add(service_name, service_host);
         host_dictionary_mutex_.ReleaseMutex();
 
         #region debugging
         if (logger.IsDebugEnabled)
-          logger.Debug("[StartService   Nohros.Ruby.Service.Net]   The service " + service_name + " has been started.");
+          logger.Debug("[StartService   Nohros.Ruby]   The service " + service_name + " has been started.");
         #endregion
 
-        service_host.StartService();
+        service_host.Start();
       } catch (Exception e) {
-        logger.Error("[StartService   Nohros.Ruby.Service.Net]", e);
+        logger.Error("[StartService   Nohros.Ruby]", e);
       }
 
       // the service has been finished your work, we can remove it from the
@@ -170,7 +152,7 @@ namespace Nohros.Ruby.Service.Net
       hosts_.Remove(service_name);
 
       if (logger.IsDebugEnabled)
-        logger.Debug("[StartService   Nohros.Ruby.Service.Net]   The service " + service_name + " has been finished.");
+        logger.Debug("[StartService   Nohros.Ruby]   The service " + service_name + " has been finished.");
     }
 
     /// <summary>
@@ -186,7 +168,7 @@ namespace Nohros.Ruby.Service.Net
     public RubyServiceHost this[string service_name] {
       get {
         host_dictionary_mutex_.WaitOne();
-          RubyServiceHost host = hosts_[service_name];
+        RubyServiceHost host = hosts_[service_name];
         host_dictionary_mutex_.ReleaseMutex();
 
         return host;

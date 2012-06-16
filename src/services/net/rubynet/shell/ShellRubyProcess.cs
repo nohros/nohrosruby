@@ -1,42 +1,29 @@
 using System;
-using System.IO.Pipes;
-
 using Nohros.Desktop;
 using Nohros.MyToolsPack.Console;
 
-namespace Nohros.Ruby.Service.Net
+namespace Nohros.Ruby
 {
-  internal class RubyShell : IMyToolsPackConsole
+  internal class ShellRubyProcess : IMyToolsPackConsole, IRubyProcess
   {
     readonly IMyToolsPackConsole console_;
+    readonly IPCChannel ipc_channel_;
     readonly RubyServiceHosts service_hosts_;
-    readonly RubySettings settings_;
-    readonly NamedPipeServerStream ipc_channel_;
 
     #region .ctor
     /// <summary>
-    /// Initializes a new instance of the <see cref="RubyShell"/> class by
+    /// Initializes a new instance of the <see cref="ShellRubyProcess"/> class by
     /// using the specified <see cref="CommandLine"/> and
     /// <see cref="RubySettings"/> objects.
     /// </summary>
-    public RubyShell(RubySettings settings, IMyToolsPackConsole console)
-      : this(settings, console, null) {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RubyShell"/> class by
-    /// using the specified command line, shell console and IPC channel.
-    /// </summary>
-    public RubyShell(RubySettings settings, IMyToolsPackConsole console,
-      NamedPipeServerStream ipc_channel) {
+    public ShellRubyProcess(IMyToolsPackConsole console,
+      IPCChannel ipc_channel) {
       service_hosts_ = new RubyServiceHosts(10);
-      settings_ = settings;
       console_ = console;
       ipc_channel_ = ipc_channel;
     }
     #endregion
 
-    #region IMyToolsPackConsole Members
     /// <inheritdoc/>
     void IMyToolsPackConsole.LoadCommand(string nspace, string command_name,
       ICommandFactory factory) {
@@ -57,7 +44,6 @@ namespace Nohros.Ruby.Service.Net
     public void WriteLine(string message) {
       console_.WriteLine(message);
     }
-    #endregion
 
     /// <summary>
     /// Runs the shell.
@@ -103,16 +89,8 @@ namespace Nohros.Ruby.Service.Net
       get { return service_hosts_; }
     }
 
-    /// <summary>
-    /// Gets a <see cref="NamedPipeServerStream"/> object that is used to
-    /// communicate with the service node.
-    /// </summary>
-    /// <remarks>
-    /// This property is only valid only when we are running without a OS
-    /// shell attached(service-mode). When a OS shell is attached, this
-    /// property return <c>null</c>.
-    /// </remarks>
-    public NamedPipeServerStream IPCChannel {
+    /// <inheitdoc/>
+    public IPCChannel IPCChannel {
       get { return ipc_channel_; }
     }
   }

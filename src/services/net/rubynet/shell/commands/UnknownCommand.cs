@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Nohros.Ruby.Service.Net
+namespace Nohros.Ruby
 {
   internal class UnknownCommand: ShellCommand
   {
@@ -19,7 +17,7 @@ namespace Nohros.Ruby.Service.Net
     /// <remarks>
     /// This class is used like a place holder, so this command does nothing.
     /// </remarks>
-    public override void Run(RubyShell shell) { }
+    public override void Run(ShellRubyProcess process) { }
 
     /// <summary>
     /// Gets the name of the command.
