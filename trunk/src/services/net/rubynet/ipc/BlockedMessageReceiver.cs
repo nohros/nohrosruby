@@ -27,6 +27,8 @@ namespace Nohros.Ruby
       return new RubyMessagePacket.Builder().SetSize(0).Build();
     }
 
+    public void AddFilter(string filter) { }
+
     public void Dispose() {
       waiter_.Set();
     }

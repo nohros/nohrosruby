@@ -20,7 +20,7 @@ namespace Nohros.Ruby
     /// </summary>
     public RubySettings() {
       running_mode_ = RunningMode.Service;
-      prompt_ = "rubynet$:";
+      prompt_ = Strings.kShellPrompt;
     }
     #endregion
 

@@ -1,6 +1,6 @@
 using System;
 
-namespace Nohros.Ruby
+namespace Nohros.Ruby.Shell
 {
   /// <summary>
   /// Stops a running service.
