@@ -6,7 +6,7 @@ using System.IO;
 using Nohros.Desktop;
 using Nohros.MyToolsPack.Console;
 
-namespace Nohros.Ruby
+namespace Nohros.Ruby.Shell
 {
   /// <summary>
   /// A class used to instantiate the shell commands.

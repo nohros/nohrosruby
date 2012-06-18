@@ -1,13 +1,13 @@
 ﻿using System;
+using System.Threading;
+using Nohros.Concurrent;
 
 namespace Nohros.Ruby
 {
   /// <summary>
   /// A <see cref="IRubyProcess"/> that runs as a pseudo windows service.
   /// </summary>
-  internal class ServiceRubyProcess : IRubyProcess
-  {
-    readonly IRubyMessageSender message_sender_;
+  internal class ServiceRubyProcess : IRubyProcess, IRubyMessageListener {
     readonly IPCChannel ipc_channel_;
 
     #region .ctor
@@ -25,15 +25,20 @@ namespace Nohros.Ruby
     #endregion
 
     public void Run() {
-      throw new NotImplementedException();
+      Run(string.Empty);
     }
 
     public void Run(string command_line_string) {
-      throw new NotImplementedException();
+      ipc_channel_.AddListener(this, Executors.SameThreadExecutor());
     }
 
-    public IRubyMessageSender MessageSender {
-      get { throw new NotImplementedException(); }
+    /// <inheritdoc/>
+    void IRubyMessageListener.OnMessagePacketReceived(RubyMessagePacket packet) {
+    }
+
+    /// <inheritdoc/>
+    string[] IRubyMessageListener.Filters {
+      get { return new string[] { "RSH" }; }
     }
 
     /// <inheritdoc/>

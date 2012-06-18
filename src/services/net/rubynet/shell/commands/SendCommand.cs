@@ -1,7 +1,7 @@
 using System;
 using Nohros.Desktop;
 
-namespace Nohros.Ruby
+namespace Nohros.Ruby.Shell
 {
   internal class SendCommand: ShellCommand
   {

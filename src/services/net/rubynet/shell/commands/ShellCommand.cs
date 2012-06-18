@@ -3,7 +3,7 @@
 using Nohros.Desktop;
 using Nohros.MyToolsPack.Console;
 
-namespace Nohros.Ruby
+namespace Nohros.Ruby.Shell
 {
   /// <summary>
   /// A generic implementation of the <see cref="IShellCommand"/> interface.

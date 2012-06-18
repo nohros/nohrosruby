@@ -1,5 +1,6 @@
 using System;
 using Nohros.Concurrent;
+using Nohros.Resources;
 
 namespace Nohros.Ruby
 {
@@ -7,15 +8,12 @@ namespace Nohros.Ruby
   /// .NET implementation of the <see cref="IRubyServiceHost"/> interface. This
   /// class is used to host a .NET based ruby services.
   /// </summary>
-  internal class RubyServiceHost : IRubyServiceHost
+  internal class RubyServiceHost : IRubyServiceHost, IRubyMessageListener
   {
-    const int kTimeout = 30000;
-    const int kMessageBufferSize = 4096;
     const string kClassName = "Nohros.Ruby.RubyServiceHost";
     readonly IRubyLogger logger = RubyLogger.ForCurrentProcess;
 
-    readonly Mailbox<IRubyMessage> mailbox_;
-    readonly IRubyMessageSender message_sender_;
+    readonly IPCChannel ipc_channel_;
     readonly IRubyService service_;
 
     #region .ctor
@@ -37,25 +35,20 @@ namespace Nohros.Ruby
       }
 #endif
       service_ = service;
-      message_sender_ = channel;
-      mailbox_ = new Mailbox<IRubyMessage>(OnMessage);
+      ipc_channel_ = channel;
     }
     #endregion
 
-    void OnMessage(IRubyMessage message) {
-      service_.OnMessage(message);
-    }
-
-    public void OnMessagePacket(RubyMessagePacket packet) {
+    public void OnMessagePacketReceived(RubyMessagePacket packet) {
       if (string.Compare(packet.Header.Service, service_.Name,
         StringComparison.OrdinalIgnoreCase) == 0) {
-        mailbox_.Send(packet.Message);
+        service_.OnMessage(packet.Message);
       }
     }
 
     /// <inheritdoc/>
     public bool Send(IRubyMessage message) {
-      return message_sender_.Send(message);
+      return ipc_channel_.Send(message);
     }
 
     /// <summary>
@@ -77,12 +70,17 @@ namespace Nohros.Ruby
     /// </para>
     /// </remarks>
     public void Start() {
+      ipc_channel_.AddListener(this, Executors.SameThreadExecutor());
       service_.Start(this);
     }
 
     /// <inherithdoc/>
     public IRubyService Service {
       get { return service_; }
+    }
+
+    string[] IRubyMessageListener.Filters {
+      get { return new string[] { service_.Name }; }
     }
   }
 }

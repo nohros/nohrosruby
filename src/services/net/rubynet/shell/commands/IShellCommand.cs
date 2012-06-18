@@ -2,7 +2,7 @@
 
 using Nohros.Desktop;
 
-namespace Nohros.Ruby
+namespace Nohros.Ruby.Shell
 {
   /// <summary>
   /// Defines a interface that all ruby process commands must follow

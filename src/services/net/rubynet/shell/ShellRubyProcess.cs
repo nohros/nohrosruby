@@ -2,7 +2,7 @@ using System;
 using Nohros.Desktop;
 using Nohros.MyToolsPack.Console;
 
-namespace Nohros.Ruby
+namespace Nohros.Ruby.Shell
 {
   internal class ShellRubyProcess : IMyToolsPackConsole, IRubyProcess
   {

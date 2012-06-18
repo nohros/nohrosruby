@@ -7,6 +7,7 @@ using Nohros.Logging;
 using Nohros.MyToolsPack.Console;
 using Nohros.Providers;
 using Nohros.Ruby.Service.Net;
+using Nohros.Ruby.Shell;
 using ZMQ;
 
 namespace Nohros.Ruby

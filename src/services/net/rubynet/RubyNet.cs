@@ -5,80 +5,18 @@ using Nohros.Desktop;
 
 namespace Nohros.Ruby
 {
-  static class RubyNet
-  {
-    const string kVersion = @"
-RubyNet Version 0.3.0
-";
-
-    internal const string kHeader = kVersion + @"
-Copyright (c) 2010 Nohros Systems Inc. All Rights Reserved.
-
-Use of this software code is governed by a MIT license.
-
-";
-
-    internal const string kUsageCommon = @"
-  -assembly      specifes the assembly to load and run. This value must be
-                 an absolute path or a path relative to the base directory.
-
-  -type          specifies the fully qualified type name of a class
-                 that implements the IRubyService interface.
-
-   ARGS          A list of arguments to pass to the loaded assembly. The
-                 list of arguments must be preceded by a '-- ' argument
-                 (without quotes).
-";
-
-    const string kUsage = kHeader + @"
-Runs a .NET assembly like a console application.
-
-Usage: nohros.rubynet -assembly=ASSEMBLYNAME -type=TYPENAME [-help] -- ARGS
-"
-        + kUsageCommon +
-@"
-  -with-shell    specifies that the a command line language interpreter
-                 must be started. With a shell users can stop and start
-                 services directly from the command line and without
-                 the intervention of a ruby net agent. It can to send
-                 commands to a running service. Check out the full
-                 documentation to know how to do it.
-
-  -help          Displays this help and exit.
-  
-  -version       Displays the version and exit.
-
-   Examples:
-     nohros.rubynet -assembly=my.assembly.dll -type=my.type, my.namespace
-                    -- -debug -path=c:\\path\\
-
-     The my.assembly will be loaded into the rubynet domain and a new
-     instance of the my.type will be created. If the type instantiation is
-     successful then the Run method will be called and the program control
-     will be transfered to the loaded assembly.
-
-     Do not attempt to start a nohros.rubynet program using the nohros.rubynet.
-";
-
-    const string kAssemblyNameSwitch = "assembly";
-    const string kTypeNameSwitch = "type";
-    const string kHelpSwitch = "help";
-    const string kDebugSwitch = "debug";
-    const string kWithShellSwitch = "with-shell";
-
-    internal const string kPipeSwitch = "pipe";
-
+  static class RubyNet {
     static void Main(string[] args) {
       CommandLine command_line = CommandLine.ForCurrentProcess;
 
       // Check if the debug is enabled first, so the caller has the chance
       // to debug everything.
-      if (command_line.HasSwitch(kDebugSwitch))
+      if (command_line.HasSwitch(Strings.kWaitForDebugger))
         System.Diagnostics.Debugger.Launch();
 
       // Show the usage tips if desired.
-      if (command_line.HasSwitch(kHelpSwitch))
-        Console.WriteLine(kHelpSwitch);
+      if (command_line.HasSwitch(Strings.kHelp))
+        Console.WriteLine(Strings.kHelp);
 
       // We cannot control the behavior of the service. For, logger purposes,
       // we will monitor all the unhandled application exception. Note that

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Nohros.Ruby
+namespace Nohros.Ruby.Shell
 {
   /// <summary>
   /// A command used to clear the console.
