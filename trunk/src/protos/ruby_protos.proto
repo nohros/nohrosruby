@@ -27,7 +27,7 @@
 // start processing the request(ex. creating the deocoder objets, request
 // processor, etc.) while the rest of the message is comming.
 
-import "google/protobuf/csharp_options.proto"
+import "google/protobuf/csharp_options.proto";
 
 package protocol;
 
