@@ -27,8 +27,11 @@
 // start processing the request(ex. creating the deocoder objets, request
 // processor, etc.) while the rest of the message is comming.
 
-package nohros.ruby;
+import "google/protobuf/csharp_options.proto"
 
+package protocol;
+
+option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby.Protocol";
 option optimize_for = SPEED;
 
 // The message header. Contains information about the packed message.
