@@ -2,8 +2,11 @@
 // Use of this source code is governed by a MIT-style license that can be
 // found in the LICENSE file.
 
-package nohros.ruby.logging;
+import "google/protobuf/csharp_options.proto";
 
+package protocol;
+
+option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby.Protocol";
 option optimize_for = SPEED;
 
 // The format of the log message that is sent to the subscribers.
