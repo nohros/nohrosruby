@@ -61,10 +61,11 @@ Stops a service.
     /// Initializes a new instance of the <see cref="HelpCommand"/> by using
     /// the specified command name.
     /// </summary>
-    /// <param name="help_command_type">The type of the command whose help
-    /// information should be displayed.</param>
+    /// <param name="command_name">
+    /// The name of the command whose help information should be displayed.
+    /// </param>
     /// <remarks>
-    /// If <paramref name="help_command_type"/> is an unregognized command this
+    /// If <paramref name="command_name"/> is an unregognized command this
     /// command display the list of known commands with a brief description
     /// about them.
     /// </remarks>

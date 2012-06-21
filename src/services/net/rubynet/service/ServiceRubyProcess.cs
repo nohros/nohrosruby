@@ -1,49 +1,35 @@
 ﻿using System;
-using System.Threading;
 using Nohros.Concurrent;
+using Nohros.Ruby.Protocol;
 
 namespace Nohros.Ruby
 {
   /// <summary>
   /// A <see cref="IRubyProcess"/> that runs as a pseudo windows service.
   /// </summary>
-  internal class ServiceRubyProcess : IRubyProcess, IRubyMessageListener {
-    readonly IPCChannel ipc_channel_;
-
+  internal class ServiceRubyProcess : AbstractRubyProcess, IRubyProcess,
+                                      IRubyMessageListener
+  {
     #region .ctor
     /// <summary>
     /// Initializes a new instance of the <see cref="ServiceRubyProcess"/>
     /// class.
     /// </summary>
-    /// <param name="ipc_channel">
-    /// A <see cref="IPCChannel"/> object that is used to handle the
+    /// <param name="ruby_message_channel">
+    /// A <see cref="RubyMessageChannel"/> object that is used to handle the
     /// communication with the external world.
     /// </param>
-    public ServiceRubyProcess(IPCChannel ipc_channel) {
-      ipc_channel_ = ipc_channel;
+    public ServiceRubyProcess(IRubyMessageChannel ruby_message_channel)
+      : base(ruby_message_channel) {
     }
     #endregion
-
-    public void Run() {
-      Run(string.Empty);
-    }
-
-    public void Run(string command_line_string) {
-      ipc_channel_.AddListener(this, Executors.SameThreadExecutor());
-    }
 
     /// <inheritdoc/>
     void IRubyMessageListener.OnMessagePacketReceived(RubyMessagePacket packet) {
     }
 
-    /// <inheritdoc/>
-    string[] IRubyMessageListener.Filters {
-      get { return new string[] { "RSH" }; }
-    }
-
-    /// <inheritdoc/>
-    public IPCChannel IPCChannel {
-      get { return ipc_channel_; }
+    public override void Run(string command_line_string) {
+      RubyMessageChannel.AddListener(this, Executors.SameThreadExecutor());
     }
   }
 }

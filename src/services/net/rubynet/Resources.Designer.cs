@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Nohros.Ruby {
+namespace Nohros.Ruby.Service.Net {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Nohros.Ruby {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Nohros.Ruby.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Nohros.Ruby.Service.Net.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,6 +57,15 @@ namespace Nohros.Ruby {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot perform this operation on a closed channel..
+        /// </summary>
+        internal static string InvalidOperation_ClosedChannel {
+            get {
+                return ResourceManager.GetString("InvalidOperation_ClosedChannel", resourceCulture);
             }
         }
         

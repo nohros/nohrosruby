@@ -3,7 +3,7 @@ using Nohros.Concurrent;
 
 namespace Nohros.Ruby
 {
-  internal partial class IPCChannel
+  internal partial class RubyMessageChannel
   {
     class ListenerExecutorPair {
       readonly IRubyMessageListener listener_;

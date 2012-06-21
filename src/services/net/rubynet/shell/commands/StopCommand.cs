@@ -7,7 +7,7 @@ namespace Nohros.Ruby.Shell
   /// </summary>
   internal class StopCommand: ShellCommand
   {
-    string service_name_;
+    readonly string service_name_;
 
     #region .ctor
     /// <summary>
@@ -32,8 +32,7 @@ namespace Nohros.Ruby.Shell
     /// Runs the stop command.
     /// </summary>
     public override void Run(ShellRubyProcess process) {
-      RubyServiceHosts hosts = process.ServiceHosts;
-      hosts.UnhostService(service_name_);
+      process.UnhostService(service_name_);
     }
   }
 }

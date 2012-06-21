@@ -1,6 +1,7 @@
 using System;
 using Nohros.Concurrent;
 using Nohros.Resources;
+using Nohros.Ruby.Protocol;
 
 namespace Nohros.Ruby
 {
@@ -13,7 +14,7 @@ namespace Nohros.Ruby
     const string kClassName = "Nohros.Ruby.RubyServiceHost";
     readonly IRubyLogger logger = RubyLogger.ForCurrentProcess;
 
-    readonly IPCChannel ipc_channel_;
+    readonly IRubyMessageChannel ruby_message_channel_;
     readonly IRubyService service_;
 
     #region .ctor
@@ -28,27 +29,28 @@ namespace Nohros.Ruby
     /// A <see cref="IRubyMessageSender"/> that can be used to send messages to
     /// the ruby service node.
     /// </param>
-    public RubyServiceHost(IRubyService service, IPCChannel channel) {
+    public RubyServiceHost(IRubyService service, IRubyMessageChannel channel) {
 #if DEBUG
       if (service == null || channel == null) {
         throw new ArgumentNullException(service == null ? "service" : "sender");
       }
 #endif
       service_ = service;
-      ipc_channel_ = channel;
+      ruby_message_channel_ = channel;
     }
     #endregion
 
     public void OnMessagePacketReceived(RubyMessagePacket packet) {
       if (string.Compare(packet.Header.Service, service_.Name,
         StringComparison.OrdinalIgnoreCase) == 0) {
+        // TODO(sender): track the sender and reply back
         service_.OnMessage(packet.Message);
       }
     }
 
     /// <inheritdoc/>
     public bool Send(IRubyMessage message) {
-      return ipc_channel_.Send(message);
+      return ruby_message_channel_.Send(message);
     }
 
     /// <summary>
@@ -70,17 +72,13 @@ namespace Nohros.Ruby
     /// </para>
     /// </remarks>
     public void Start() {
-      ipc_channel_.AddListener(this, Executors.SameThreadExecutor());
+      ruby_message_channel_.AddListener(this, Executors.SameThreadExecutor());
       service_.Start(this);
     }
 
     /// <inherithdoc/>
     public IRubyService Service {
       get { return service_; }
-    }
-
-    string[] IRubyMessageListener.Filters {
-      get { return new string[] { service_.Name }; }
     }
   }
 }

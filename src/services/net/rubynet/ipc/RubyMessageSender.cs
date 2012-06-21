@@ -1,5 +1,6 @@
 ﻿using System;
 using Nohros.Resources;
+using Nohros.Ruby.Protocol;
 using ZMQ;
 
 namespace Nohros.Ruby

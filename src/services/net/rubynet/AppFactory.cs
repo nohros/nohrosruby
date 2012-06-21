@@ -70,8 +70,8 @@ namespace Nohros.Ruby
       ConfigureLogger(settings);
 
       MyToolsPackConsole console = GetToolsPackConsole(settings);
-      IPCChannel ipc_channel = GetIPCChannel(settings);
-      ShellRubyProcess process = new ShellRubyProcess(console, ipc_channel);
+      RubyMessageChannel ruby_message_channel = GetIPCChannel(settings);
+      ShellRubyProcess process = new ShellRubyProcess(console, ruby_message_channel);
 
       // Tell the tools pack console to send our implementation of
       // the IMyToolsPackConsole interface when run commands.
@@ -87,34 +87,25 @@ namespace Nohros.Ruby
     public ServiceRubyProcess CreateServiceRubyProcess() {
       RubySettings settings = CreateRubySettings();
       ConfigureLogger(settings);
-      IPCChannel channel = GetIPCChannel(settings);
+      IRubyMessageChannel channel = GetIPCChannel(settings);
       return new ServiceRubyProcess(channel);
     }
 
-    IPCChannel GetIPCChannel(RubySettings settings) {
-      IRubyMessageSender sender;
-      IRubyMessageReceiver receiver;
-      Context context = null;
-      if (switches_.HasSwitch(Strings.kMessageListenerEndpoint)) {
-        context = new Context(Context.DefaultIOThreads);
-        Socket socket = context.Socket(SocketType.PUB);
-        socket.Connect(switches_.GetSwitchValue(Strings.kMessageListenerEndpoint));
-        sender = new RubyMessageSender(socket);
-      } else {
-        sender = new LoggerMessageSender();
-      }
+    IRubyMessageChannel GetIPCChannel(RubySettings settings) {
+      if (switches_.HasSwitch(Strings.kIPCChannelAddress)) {
+        string ipc_channel_address =
+          switches_.GetSwitchValue(Strings.kIPCChannelAddress);
+        Context context = new Context(Context.DefaultIOThreads);
+        Socket sender = context.Socket(SocketType.REQ);
+        sender.Connect(ipc_channel_address);
 
-      if (switches_.HasSwitch(Strings.kMessageSenderEndpoint)) {
-        if (context == null) {
-          context = new Context(Context.DefaultIOThreads);
-        }
-        Socket socket = context.Socket(SocketType.SUB);
-        socket.Connect(switches_.GetSwitchValue(Strings.kMessageSenderEndpoint));
-        receiver = new RubyMessageReceiver(socket);
-      } else {
-        receiver = new BlockedMessageReceiver();
+        Socket socket = context.Socket(SocketType.DEALER);
+        socket.Connect(ipc_channel_address);
+
+        return new RubyMessageChannel(socket);
       }
-      return new IPCChannel(sender, receiver);
+      // TODO(neylor.silva): Implement a dummy channel.
+      throw new NotImplementedException();
     }
 
     MyToolsPackConsole GetToolsPackConsole(RubySettings settings) {

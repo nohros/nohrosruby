@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using Nohros.Ruby.Protocol;
 
 namespace Nohros.Ruby
 {

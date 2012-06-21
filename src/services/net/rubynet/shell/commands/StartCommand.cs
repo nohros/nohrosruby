@@ -84,15 +84,11 @@ namespace Nohros.Ruby.Shell
     /// If the hosted service throws an exception, it will be propagated to the
     /// caller.
     /// </remarks>
-    public override void Run(ShellRubyProcess shell_process) {
+    public override void Run(ShellRubyProcess process) {
       ServicesFactory factory = new ServicesFactory();
       IRubyService service = factory.CreateService(
         service_factory_class_type_, service_command_line_);
-
-      RubyServiceHost host =
-        factory.CreateServiceHost(service, shell_process.IPCChannel);
-
-      shell_process.ServiceHosts.HostService(host);
+      process.HostService(service);
     }
   }
 }
