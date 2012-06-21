@@ -79,24 +79,5 @@ namespace Nohros.Ruby
       }
       return service;
     }
-
-    /// <summary>
-    /// Creates a new instance of the <see cref="IRubyServiceHost"/> class
-    /// by using the specified service and IPC channel.
-    /// </summary>
-    /// <param name="service">
-    /// The service to host.
-    /// </param>
-    /// <param name="ipc_channel">
-    /// A <see cref="IPCChannel"/> object that is used to communicate with the
-    /// service node.
-    /// </param>
-    /// <returns>
-    /// The newly created <see cref="RubyServiceHost"/> object.
-    /// </returns>
-    public RubyServiceHost CreateServiceHost(IRubyService service,
-      IPCChannel ipc_channel) {
-      return new RubyServiceHost(service, ipc_channel);
-    }
   }
 }

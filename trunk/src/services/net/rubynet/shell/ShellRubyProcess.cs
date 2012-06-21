@@ -4,11 +4,11 @@ using Nohros.MyToolsPack.Console;
 
 namespace Nohros.Ruby.Shell
 {
-  internal class ShellRubyProcess : IMyToolsPackConsole, IRubyProcess
+  internal class ShellRubyProcess : AbstractRubyProcess, IMyToolsPackConsole,
+                                    IRubyProcess
   {
     readonly IMyToolsPackConsole console_;
-    readonly IPCChannel ipc_channel_;
-    readonly RubyServiceHosts service_hosts_;
+    readonly RubyMessageChannel ruby_message_channel_;
 
     #region .ctor
     /// <summary>
@@ -16,11 +16,10 @@ namespace Nohros.Ruby.Shell
     /// using the specified <see cref="CommandLine"/> and
     /// <see cref="RubySettings"/> objects.
     /// </summary>
-    public ShellRubyProcess(IMyToolsPackConsole console,
-      IPCChannel ipc_channel) {
-      service_hosts_ = new RubyServiceHosts(10);
+    public ShellRubyProcess(IMyToolsPackConsole console, RubyMessageChannel ruby_message_channel)
+      : base(ruby_message_channel) {
       console_ = console;
-      ipc_channel_ = ipc_channel;
+      ruby_message_channel_ = ruby_message_channel;
     }
     #endregion
 
@@ -48,13 +47,6 @@ namespace Nohros.Ruby.Shell
     /// <summary>
     /// Runs the shell.
     /// </summary>
-    public void Run() {
-      Run(string.Empty);
-    }
-
-    /// <summary>
-    /// Runs the shell.
-    /// </summary>
     /// <remarks>
     /// Legacy version of this app was used to start a single service without
     /// a shell. For compatbility with this legacy softwares this method allows
@@ -63,7 +55,7 @@ namespace Nohros.Ruby.Shell
     /// shell will run and the specified service will be started; after that
     /// the shell will runs normally.
     /// </remarks>
-    public void Run(string command_line_string) {
+    public override void Run(string command_line_string) {
       // A try-block is used to catch any unhandled exception that is raised
       // by a service.
       try {
@@ -80,18 +72,6 @@ namespace Nohros.Ruby.Shell
         }
         RubyLogger.ForCurrentProcess.Error(message);
       }
-    }
-
-    /// <summary>
-    /// Gets the list of hosts that is currently runnning a service.
-    /// </summary>
-    public RubyServiceHosts ServiceHosts {
-      get { return service_hosts_; }
-    }
-
-    /// <inheitdoc/>
-    public IPCChannel IPCChannel {
-      get { return ipc_channel_; }
     }
   }
 }

@@ -16,10 +16,10 @@ namespace Nohros.Ruby
     public const string kMyToolsPackNode = "mytoolspack";
 
     /// <summary>
-    /// The zeromq socket's endopint that listen for messages sent for a
-    /// service.
+    /// The address of th IPC channel tha hadnles the communication between
+    /// the services and clients.
     /// </summary>
-    public const string kMessageListenerEndpoint = "message-listener-endpoint";
+    public const string kIPCChannelAddress = "ipc-channel-address";
 
     /// <summary>
     /// The zeromq socket's endpoint that send messages to services.

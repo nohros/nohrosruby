@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using Nohros.Resources;
+using Nohros.Ruby.Protocol;
 using ZMQ;
 
 namespace Nohros.Ruby
@@ -42,10 +43,6 @@ namespace Nohros.Ruby
           kClassName, "GetMessagePacket"), exception);
       }
       return new RubyMessagePacket.Builder().SetSize(0).Build();
-    }
-
-    public void AddFilter(string filter) {
-      receiver_.Subscribe(filter, Encoding.ASCII);
     }
 
     public void Dispose() {

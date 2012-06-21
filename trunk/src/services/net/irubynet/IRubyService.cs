@@ -1,4 +1,5 @@
 using System;
+using Nohros.Ruby.Protocol;
 
 namespace Nohros.Ruby
 {
@@ -139,6 +140,6 @@ namespace Nohros.Ruby
     /// response indicating if the message can be processed or not.
     /// </para>
     /// </remarks>
-    bool OnMessage(IRubyMessage message);
+    IRubyMessage OnMessage(IRubyMessage message);
   }
 }

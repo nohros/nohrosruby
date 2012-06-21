@@ -46,9 +46,6 @@
     <Reference Include="clrzmq, Version=2.2.0.0, Culture=neutral, processorArchitecture=x86">
       <HintPath>..\..\..\packages\clrzmq.2.2.3\lib\clrzmq.dll</HintPath>
     </Reference>
-    <Reference Include="clrzmq-ext, Version=2.2.0.0, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\..\..\packages\clrzmq.2.2.3\lib\clrzmq-ext.dll</HintPath>
-    </Reference>
     <Reference Include="Google.ProtocolBuffers, Version=2.4.1.473, Culture=neutral, PublicKeyToken=55f7125234beb589, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Google.ProtocolBuffers.2.4.1.473\lib\net20\Google.ProtocolBuffers.dll</HintPath>
     </Reference>
@@ -72,6 +69,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbstractRubyProcess.cs" />
     <Compile Include="AppFactory.cs" />
     <Compile Include="configuration\ConsoleSettings.cs" />
     <Compile Include="configuration\IRubyLogger.cs" />
@@ -94,9 +92,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="RubyMessage.cs" />
+    <Compile Include="ipc\RubyMessage.cs" />
     <Compile Include="ipc\RubyMessageSender.cs" />
-    <Compile Include="RubyServiceHosts.cs" />
     <Compile Include="ServicesFactory.cs" />
     <Compile Include="service\ServiceRubyProcess.cs" />
     <Compile Include="shell\commands\ClearCommand.cs" />
@@ -146,14 +143,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="libzmq.dll">
+    <None Include="nohros.logging.log4net.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="nohros.logging.log4net.dll">
+    <None Include="libzmq.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

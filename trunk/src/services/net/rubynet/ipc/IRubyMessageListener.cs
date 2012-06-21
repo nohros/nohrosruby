@@ -1,4 +1,5 @@
 ﻿using System;
+using Nohros.Ruby.Protocol;
 
 namespace Nohros.Ruby
 {
@@ -16,23 +17,5 @@ namespace Nohros.Ruby
     /// The message packet that was received.
     /// </param>
     void OnMessagePacketReceived(RubyMessagePacket packet);
-
-    /// <summary>
-    /// Gets an array of strings that is used to filter the packets that is
-    /// delivered to the listener.
-    /// </summary>
-    /// <remarks>
-    /// The filter is based on the service name. The listener receive
-    /// notifications only for the packets destinated to the services that is
-    /// in the <see cref="Filters"/> array. A <see cref="IRubyMessageListener"/>
-    /// that have an empty <see cref="Filters"/> of length zero should shall
-    /// receive all incoming messages. A non-empty <see cref="Filters"/> shall
-    /// subscribe to all messages destinated to a service that is in the
-    /// <see cref="Filters"/> array.
-    /// <para>
-    /// <see cref="Filters"/> should never return <c>null</c>.
-    /// </para>
-    /// </remarks>
-    string[] Filters { get; }
   }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Nohros.Ruby
+namespace Nohros.Ruby.Protocol
 {
   /// <summary>
   /// An implementation of the <see cref="IRubyMessage"/> interface.

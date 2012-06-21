@@ -1,4 +1,5 @@
 ﻿using System;
+using Nohros.Ruby.Protocol;
 
 namespace Nohros.Ruby
 {

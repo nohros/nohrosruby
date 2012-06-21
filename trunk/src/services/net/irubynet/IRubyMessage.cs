@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Nohros.Ruby
+namespace Nohros.Ruby.Protocol
 {
   /// <summary>
   /// Defines the messages that is used in the ruby server/client

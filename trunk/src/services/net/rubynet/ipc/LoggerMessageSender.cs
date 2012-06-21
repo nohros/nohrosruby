@@ -1,5 +1,6 @@
 ﻿using System;
 using Nohros.Data.Json;
+using Nohros.Ruby.Protocol;
 
 namespace Nohros.Ruby.Service.Net
 {
