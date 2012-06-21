@@ -6,8 +6,11 @@
 
 namespace node {
 
-// The port used by the request/reply socket.
-const long kRequestReplyPort = 8520;
+// The port used to listen for commands from clients.
+const long kFrontendPort = 8520;
+
+// The port used to listen for commands from services.
+const long kBackendPort = 8521;
 
 const char kRubyServiceName[] = "NohrosRuby";
 
