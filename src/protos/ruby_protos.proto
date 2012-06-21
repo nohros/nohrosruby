@@ -58,8 +58,13 @@ message RubyMessageHeader {
   // unsigned values.
   optional int32 size = 2;
 
-  // The name of the service related with the packed message.
+  // The name of the service associated with the message.
   optional string service = 3;
+  
+  // A seguence of bytes that identifies the message sender. This could be the
+  // sender name, the sende IP address, the sender UUID or anything else that
+  // could be serialized as a sequence of bytes and identifies the sender.
+  optional bytes sender = 4;
 }
 
 // The service message. This is the message that is usually sent to the
