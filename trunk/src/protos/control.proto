@@ -1,0 +1,24 @@
+// Copyright (c) 2011 Nohros Inc. All rights reserved.
+// Use of this source code is governed by a MIT-style license that can be
+// found in the LICENSE file.
+//
+// Define the service control messages.
+//
+
+import "google/protobuf/csharp_options.proto";
+
+package protocol;
+
+option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby.Protocol";
+option optimize_for = SPEED;
+
+// Starts the service named StartService.Name.
+message RequestMessage {
+  // The name of the service associated with the request.
+  optional string name = 1;
+}
+
+message ResponseMessage {
+  // The name of the service associated with the request.
+  optional string name = 1;
+}
