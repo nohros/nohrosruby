@@ -15,6 +15,7 @@
 
 namespace zmq {
 class Context;
+class Socket;
 }
 
 namespace node {
@@ -29,9 +30,10 @@ class RubyService
 
   // Pre-Init configuration ------------------------------------------------
 
-  // Sets the port number that is used by socket that receives commands
-  // from outside.
-  void set_request_reply_port(int port) { port_ = port; }
+  // Sets the ports numbers that is used by sockets to receives commands
+  // from clients and services.
+  void set_frontend_port(int port) { frontend_port_ = port; }
+  void set_backend_port(int port) { backend_port_ = port; }
 
  protected:
   // Implementation of the SeviceBase methods.
@@ -42,8 +44,12 @@ class RubyService
   virtual void ThreadMain() OVERRIDE;
 
  private:
+  // Creates a socket object and bind it to the given |port|.Returns true
+  // if the socket was created succesfully; otherwise, false.
+  zmq::Socket* CreateSocket(int port);
   zmq::Context* context_;
-  int port_;
+  int frontend_port_;
+  int backend_port_;
 
   bool is_running_;
 

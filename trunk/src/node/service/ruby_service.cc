@@ -13,6 +13,7 @@
 #include <base/memory/ref_counted.h>
 #include <base/threading/platform_thread.h>
 #include <base/string_number_conversions.h>
+#include <base/memory/scoped_ptr.h>
 
 #include "node/zeromq/context.h"
 #include "node/zeromq/socket.h"
@@ -24,7 +25,8 @@ namespace node {
 RubyService::RubyService(zmq::Context* context)
   : ServiceBase(node::kRubyServiceName),
     context_(context),
-    port_(node::kRequestReplyPort),
+    frontend_port_(node::kFrontendPort),
+    backend_port_(node::kBackendPort)
     thread_(NULL),
     is_running_(false) {
 }
@@ -41,18 +43,30 @@ void RubyService::OnStart(const std::vector<std::string>& arguments) {
 
 // PlatformThread::Delegate() implementation
 void RubyService::ThreadMain() {
-  std::string endpoint("tcp://*:");
-  endpoint.append(base::IntToString(port_));
+  // create out frontend and backend socket to receive commands from clients
+  // and services.
+  scoped_ptr<zmq::Socket> frontend(CreateSocket(frontend_port_));
+  scoped_ptr<zmq::Socket> backend(CreateSocket(backend_port_));
 
-  zmq::Socket socket(context_->CreateSocket(zmq::kReply));
-  if (socket.Bind(endpoint.c_str())) {
+  if (frontend.get() && backend.get()) {
     while (is_running_) {
-      zmq::Message* message = socket.Receive(0).get();
+      zmq::Message* message = socket.Receive(zmq::kNoFlags).get();
       if (message->size() > 0) {
         LOG(INFO) << message->data();
       }
     }
   }
+}
+
+zmq::Socket* RubyService::CreateSocket(int port) {
+  std::string endpoint("tcp://*");
+  endpoint.append(base::IntToString(port));
+  scoped_ptr<zmq::Socket> router (new zmq::Socket(
+    context_->CreateSocket(zmq::kRouter)));
+  if (router.get()->Bind(endpoint.c_str())) {
+    return router.release();
+  }
+  return NULL;
 }
 
 void RubyService::OnStop() {
