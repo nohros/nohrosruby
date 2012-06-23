@@ -25,8 +25,7 @@ namespace node {
 RubyService::RubyService(zmq::Context* context)
   : ServiceBase(node::kRubyServiceName),
     context_(context),
-    frontend_port_(node::kFrontendPort),
-    backend_port_(node::kBackendPort)
+    message_channel_port_(node::kIPCChannelPort),
     thread_(NULL),
     is_running_(false) {
 }
@@ -45,12 +44,10 @@ void RubyService::OnStart(const std::vector<std::string>& arguments) {
 void RubyService::ThreadMain() {
   // create out frontend and backend socket to receive commands from clients
   // and services.
-  scoped_ptr<zmq::Socket> frontend(CreateSocket(frontend_port_));
-  scoped_ptr<zmq::Socket> backend(CreateSocket(backend_port_));
-
-  if (frontend.get() && backend.get()) {
+  scoped_ptr<zmq::Socket> router(CreateSocket(message_channel_port_));
+  if (router.get()) {
     while (is_running_) {
-      zmq::Message* message = socket.Receive(zmq::kNoFlags).get();
+      zmq::Message* message = router.get()->Receive(zmq::kNoFlags);
       if (message->size() > 0) {
         LOG(INFO) << message->data();
       }
