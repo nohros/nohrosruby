@@ -10,9 +10,7 @@
 
 namespace node {
 
-extern const long kRequestReplyPort;
-extern const long kFrontendPort;
-extern const long kBackendPort;
+extern const long kMessageChannelPort;
 extern const char kRubyServiceName[];
 
 }

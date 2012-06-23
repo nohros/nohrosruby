@@ -32,8 +32,7 @@ class RubyService
 
   // Sets the ports numbers that is used by sockets to receives commands
   // from clients and services.
-  void set_frontend_port(int port) { frontend_port_ = port; }
-  void set_backend_port(int port) { backend_port_ = port; }
+  void set_message_channel_port (int port) { message_channel_port_ = port; }
 
  protected:
   // Implementation of the SeviceBase methods.
@@ -48,8 +47,7 @@ class RubyService
   // if the socket was created succesfully; otherwise, false.
   zmq::Socket* CreateSocket(int port);
   zmq::Context* context_;
-  int frontend_port_;
-  int backend_port_;
+  int message_channel_port_;
 
   bool is_running_;
 
