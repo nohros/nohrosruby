@@ -14,4 +14,9 @@
     <ClCompile Include="service_base.cc" />
     <ClCompile Include="constants.cc" />
   </ItemGroup>
+  <ItemGroup>
+    <Filter Include="protos">
+      <UniqueIdentifier>{7bca6f2c-a816-4f14-8a27-d6f31d1719de}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
 </Project>

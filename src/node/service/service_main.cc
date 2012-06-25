@@ -28,16 +28,16 @@ int main(int argc, char** argv) {
   zmq::Context context;
   context.Open(1);
 
-  int request_reply_port = node::kRequestReplyPort;
-  if (switches.HasSwitch(switches::kRequestReplyPort)) {
+  int message_channel_port = node::kMessageChannelPort;
+  if (switches.HasSwitch(switches::kMessageChannelPort)) {
     std::string value =
-      switches.GetSwitchValueASCII(switches::kRequestReplyPort);
-    if (!base::StringToInt(value, &request_reply_port)) {
+      switches.GetSwitchValueASCII(switches::kMessageChannelPort);
+    if (!base::StringToInt(value, &message_channel_port)) {
       LOG(ERROR) << "Failed to parse the request reply port" << value;
     }
   }
 
   node::RubyService service(&context);
-  service.set_request_reply_port(request_reply_port);
+  service.set_message_channel_port(message_channel_port);
   service.Run();
 }

@@ -13,7 +13,7 @@ namespace switches {
 // ---------------------------------------------------------------------------
 
 // Overrides the default port used for commands delivery.
-const char kRequestReplyPort[] = "request-reply-socket";
+const char kMessageChannelPort[] = "message-channel-port";
 const char kWaitDebugger[] = "wait-debugger";
 
 }  // namespace swicthes

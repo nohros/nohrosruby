@@ -9,21 +9,15 @@
 namespace zmq {
 
 Message::Message()
-  : data_(NULL),
-    size_(0) {
+  : data_(NULL) {
+  zmq_msg_init(&message_);
 }
 
-Message::Message(int size)
-  : size_(size) {
+Message::Message(int size) {
   DCHECK(size > 0);
-  AddRef();  // Released in Release()
   data_ = new char[size];
+  AddRef(); // Released in ReleaseMessage()
   zmq_msg_init_data(&message_, data_, size, ReleaseMessage, this);
-}
-
-Message::Message(char* data, int size)
-  : data_(data),
-    size_(size) {
 }
 
 Message::~Message() {
@@ -35,15 +29,6 @@ Message::~Message() {
 // static
 void Message::ReleaseMessage(void* data, void* hint) {
   static_cast<Message*>(hint)->Release();
-}
-
-WrappedMessage::WrappedMessage(const char* data, int size)
-  : Message(const_cast<char*>(data), size) {
-}
-
-WrappedMessage::~WrappedMessage() {
-  data_ = NULL;
-  zmq_msg_close(message());
 }
 
 }  // namespace zmq

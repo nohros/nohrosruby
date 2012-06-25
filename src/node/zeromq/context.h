@@ -20,7 +20,9 @@ enum SocketType {
   kPublisher = 1,
   kSubscriber = 2,
   kRequest = 3,
-  kReply = 4
+  kReply = 4,
+  kDealer = 5,
+  kRouter = 6
 };
 
 class Socket;

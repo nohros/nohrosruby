@@ -12,17 +12,20 @@
 
 #include "node/service/service_base.h"
 #include <base/threading/platform_thread.h>
+#include "node/zeromq/context.h"
 
-namespace zmq {
+/*namespace zmq {
 class Context;
 class Socket;
-}
+class ErrorDelegate;
+}*/
 
 namespace node {
 
 class RubyService
     : public ServiceBase,
-      public base::PlatformThread::Delegate {
+      public base::PlatformThread::Delegate,
+      public zmq::ErrorDelegate {
  public:
   RubyService(zmq::Context* context);
 
@@ -41,6 +44,9 @@ class RubyService
 
   // PlatformThread::Delegate implementation.
   virtual void ThreadMain() OVERRIDE;
+
+  // zmq::ErrorDelegate implementation
+  int OnError(int error, zmq::Context* context, zmq::Socket* socket);
 
  private:
   // Creates a socket object and bind it to the given |port|.Returns true
