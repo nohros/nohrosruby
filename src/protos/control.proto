@@ -10,7 +10,7 @@ import "google/protobuf/csharp_options.proto";
 package protocol;
 
 option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby.Protocol";
-option optimize_for = SPEED;
+option optimize_for = LITE_RUNTIME;
 
 // Starts the service named StartService.Name.
 message RequestMessage {
