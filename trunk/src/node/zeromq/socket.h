@@ -11,6 +11,14 @@
 
 namespace zmq {
 
+// Possible values for flags in Send()/Receive(). These should match the values
+// in zmq.h
+enum SocketFlags {
+  kNoFlags = 0,
+  kNoBlock = 1,
+  kSendMore = 2,
+};
+
 class Message;
 
 // Normal usage:
@@ -46,6 +54,7 @@ class Socket {
   // simultaneously accepting incoming connections from multiple endpoints
   // bound to the socket using Socket::Bind().
   bool Bind(const char* endpooint);
+  bool Bind(const std::string& endpoint);
 
   // Destoys the socket. Any oustanding messages physically received from the
   // network but not yet received by the application with Socket::Receive()
@@ -81,7 +90,7 @@ class Socket {
   //     further message parts are follows.
   //
   // Refer to zeromq docs for a detailed description.
-  bool Send(Message* message, int size, int flags);
+  bool Send(Message* message, int size, SocketFlags flags);
 
   // Receive a message from a socket. The Socket::Receive() function shall
   // receive a message from a socket and return a pointer to the received
@@ -96,7 +105,7 @@ class Socket {
   //     data.
   //
   // Refer to zeromq docs for a detailed description.
-  scoped_refptr<Message> Receive(int flags);
+  scoped_refptr<Message> Receive(SocketFlags flags);
 
   // Returns true if the socket can be used.
   bool is_valid() const { return ref_->is_valid(); }

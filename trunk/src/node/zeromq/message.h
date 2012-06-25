@@ -56,12 +56,12 @@ class Socket;
 class Message : public base::RefCountedThreadSafe<Message> {
  public:
   Message();
-  explicit Message(int buffer_size);
+  explicit Message(int size);
 
-  char* data() { return data_; }
+  const void* data() { return zmq_msg_data(&message_); }
 
   // The underlying buffer size.
-  int size() const { return size_; }
+  size_t size() { return zmq_msg_size(&message_); }
 
   // A pointer to the raw zeromq message.
   zmq_msg_t* message() { return &message_; }
@@ -71,12 +71,9 @@ class Message : public base::RefCountedThreadSafe<Message> {
 
   // Only allow derived classes to specify data_.
   // In all other cases, we own data_, and must delete it at destruction time.
-  Message(char* data, int size);
+  //Message(void* data, int size);
 
   virtual ~Message();
-
-  char* data_;
-  int size_;
 
  private:
   // Release the message referenced by the |hint| argument. This method is
@@ -84,6 +81,8 @@ class Message : public base::RefCountedThreadSafe<Message> {
   // just decrement the reference count of the message referenced by |hint|,
   // the resources are freed by the destructor.
   static void ReleaseMessage(void* data, void* hint);
+
+  void* data_;
 
   // The raw zeromq message.
   zmq_msg_t message_;
@@ -94,16 +93,16 @@ class Message : public base::RefCountedThreadSafe<Message> {
 // ZeroMQ does not provide a way to do zero-copy on receive, the library
 // delivers us a buffer that we can store as long as we wish, but it will not
 // write data directly into application buffer.
-class WrappedMessage : public Message {
+/*class WrappedMessage : public Message {
  protected:
   // Sockets accesses WrapperMessage(char*, int) which we don't want to
   // expose to everybody.
   friend class Socket;
 
-  WrappedMessage(const char* data, int size);
+  WrappedMessage(const void* data, int size);
 
   virtual ~WrappedMessage();
-};
+};*/
 
 }  // namespace zmq
 

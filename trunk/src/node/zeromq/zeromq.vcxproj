@@ -56,6 +56,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>/wd4310  /wd4100  /wd4481</AdditionalOptions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PreprocessorDefinitions>_MBCS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

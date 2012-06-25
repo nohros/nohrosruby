@@ -52,17 +52,20 @@
       <Optimization>Disabled</Optimization>
       <TreatWarningAsError>true</TreatWarningAsError>
       <ExceptionHandling>Sync</ExceptionHandling>
-      <AdditionalIncludeDirectories>.;..;..\..;..\third_party\chrome\include;..\third_party\zeromq\include;</AdditionalIncludeDirectories>
-      <AdditionalOptions>/wd4310  /wd4100  /wd4481 %(AdditionalOptions)</AdditionalOptions>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..;..\..;..\third_party\chrome\include;..\third_party\zeromq\include;..\third_party\protobuf\src;..\..\protos\parsers\c;</AdditionalIncludeDirectories>
+      <AdditionalOptions>/wd4310  /wd4100  /wd4481 /wd4512 /wd4244  /wd4127 </AdditionalOptions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PreprocessorDefinitions>_MBCS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;base.lib;base_static.lib;zeromq.lib;libzmq.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\third_party\chrome\lib;..\third_party\zeromq\builds\msvc\$(Configuration);$(SolutionDir)bin\$(Configuration)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;base.lib;base_static.lib;zeromq.lib;libzmq.lib;libprotobuf-lite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\third_party\chrome\lib;..\third_party\zeromq\builds\msvc\$(Configuration);$(SolutionDir)bin\$(Configuration)\lib;..\third_party\protobuf\vsprojects\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>
+      </IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>LIBCMTD</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -73,17 +76,17 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <TreatWarningAsError>true</TreatWarningAsError>
       <ExceptionHandling>Sync</ExceptionHandling>
-      <AdditionalIncludeDirectories>.;..;..\..;..\third_party\chrome\include;..\third_party\zeromq\include;</AdditionalIncludeDirectories>
-      <AdditionalOptions>/wd4310  /wd4100  /wd4481 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>.;..;..\..;..\third_party\chrome\include;..\third_party\zeromq\include;..\third_party\protobuf\src;..\..\protos\parsers\c;</AdditionalIncludeDirectories>
+      <AdditionalOptions>/wd4310  /wd4100  /wd4481 /wd4512 /wd4244  /wd4127 </AdditionalOptions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <PreprocessorDefinitions>_MBCS;OFFICIAL_BUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_MBCS;OFFICIAL_BUILD;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;base.lib;base_static.lib;zeromq.lib;libzmq.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\third_party\chrome\lib;..\third_party\zeromq\builds\msvc\$(Configuration);$(SolutionDir)bin\$(Configuration)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;base.lib;base_static.lib;zeromq.lib;libzmq.lib;libprotobuf-lite.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\third_party\chrome\lib;..\third_party\zeromq\builds\msvc\$(Configuration);$(SolutionDir)bin\$(Configuration)\lib;..\third_party\protobuf\vsprojects\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -25,7 +25,7 @@ namespace node {
 RubyService::RubyService(zmq::Context* context)
   : ServiceBase(node::kRubyServiceName),
     context_(context),
-    message_channel_port_(node::kIPCChannelPort),
+    message_channel_port_(node::kMessageChannelPort),
     thread_(NULL),
     is_running_(false) {
 }
@@ -34,6 +34,7 @@ void RubyService::OnStart(const std::vector<std::string>& arguments) {
   VLOG(1) << "Service has been started";
 
   is_running_ = true ;
+  context_->set_error_delegate(this);
 
   if (!base::PlatformThread::Create(0, this, &thread_)) {
     NOTREACHED() << "Service worker thread creation failed.";
@@ -42,21 +43,20 @@ void RubyService::OnStart(const std::vector<std::string>& arguments) {
 
 // PlatformThread::Delegate() implementation
 void RubyService::ThreadMain() {
-  // create out frontend and backend socket to receive commands from clients
-  // and services.
+  // Create our router socket to receive commands from clients and services.
   scoped_ptr<zmq::Socket> router(CreateSocket(message_channel_port_));
   if (router.get()) {
     while (is_running_) {
-      zmq::Message* message = router.get()->Receive(zmq::kNoFlags);
+      scoped_refptr<zmq::Message> message = router.get()->Receive(zmq::kNoFlags);
       if (message->size() > 0) {
-        LOG(INFO) << message->data();
+        LOG(INFO) << static_cast<const char*>(message->data());
       }
     }
   }
 }
 
 zmq::Socket* RubyService::CreateSocket(int port) {
-  std::string endpoint("tcp://*");
+  std::string endpoint("tcp://*:");
   endpoint.append(base::IntToString(port));
   scoped_ptr<zmq::Socket> router (new zmq::Socket(
     context_->CreateSocket(zmq::kRouter)));
@@ -73,6 +73,13 @@ void RubyService::OnStop() {
   if (thread_) {
     base::PlatformThread::Join(thread_);
   }
+}
+
+int RubyService::OnError(int error, zmq::Context* context, zmq::Socket* socket) {
+  LOG(ERROR) << "zmq error " << error
+             << ", errno " << context->GetErrorCode()
+             << ": " << context->GetErrorMessage();
+  return error;
 }
 
 RubyService::~RubyService() {
