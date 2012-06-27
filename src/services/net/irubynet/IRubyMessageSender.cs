@@ -10,16 +10,19 @@ namespace Nohros.Ruby
   public interface IRubyMessageSender
   {
     /// <summary>
-    /// Sends a message over the service host to all clients connected on the
-    /// other end.
+    /// Sends a ruby message to the service identified by
+    /// <paramref name="service"/>.
     /// </summary>
     /// <param name="message">
     /// The message to send.
+    /// </param>
+    /// <param name="service">
+    /// The name of the service to which the message is destinated.
     /// </param>
     /// <returns>
     /// <c>true</c> is the message was succesfully sent; otherwise,
     /// <c>false</c>.
     /// </returns>
-    bool Send(IRubyMessage message);
+    bool Send(IRubyMessage message, string service);
   }
 }

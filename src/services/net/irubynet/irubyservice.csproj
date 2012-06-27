@@ -9,8 +9,8 @@
     <ProjectGuid>{970C40CD-03F5-4761-9AE3-7E358E108E56}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Nohros.Ruby.IRubyService</RootNamespace>
-    <AssemblyName>nohros.rubynet.irubyservice</AssemblyName>
+    <RootNamespace>Nohros.Ruby</RootNamespace>
+    <AssemblyName>nohros.ruby.net</AssemblyName>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbstractRubyService.cs" />
     <Compile Include="IFact.cs" />
     <Compile Include="IRubyMessage.cs" />
     <Compile Include="IRubyMessageSender.cs" />
