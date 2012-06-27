@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-
+using Nohros.Concurrent;
 using Nohros.Resources;
+using Nohros.Ruby.Protocol;
+using Nohros.Ruby.Protocol.Control;
 
 namespace Nohros.Ruby
 {
@@ -16,11 +18,10 @@ namespace Nohros.Ruby
 
     const int kMaxRunningServices = 10;
 
-    readonly IRubyMessageChannel ruby_message_channel_;
-    readonly Dictionary<string, RubyServiceHost> hosted_services_;
     readonly object hosted_service_mutex_;
-
-    readonly IRubyLogger logger = RubyLogger.ForCurrentProcess;
+    readonly Dictionary<string, RubyServiceHost> hosted_services_;
+    readonly IRubyLogger logger_;
+    readonly IRubyMessageChannel ruby_message_channel_;
 
     #region .ctor
     /// <summary>
@@ -35,6 +36,7 @@ namespace Nohros.Ruby
       ruby_message_channel_ = ruby_message_channel;
       hosted_services_ = new Dictionary<string, RubyServiceHost>();
       hosted_service_mutex_ = new object();
+      logger_ = RubyLogger.ForCurrentProcess;
     }
     #endregion
 
@@ -44,14 +46,43 @@ namespace Nohros.Ruby
     }
 
     /// <inheritdoc/>
-    public abstract void Run(string command_line_string);
+    public virtual void Run(string command_line_string) {
+      RubyMessageChannel.AddListener(this, Executors.SameThreadExecutor(),
+        Strings.kRubyHostServiceName);
+    }
+
+    /// <inheritdoc/>
+    public void OnMessagePacketReceived(RubyMessagePacket packet) {
+      try {
+        ServiceControlMessage service_control_message =
+          ServiceControlMessage.ParseFrom(packet.Message.Message);
+        switch (packet.Message.Type) {
+          case (int) ServiceControlEventType.kServiceControlEventStart:
+            StartService(service_control_message);
+            break;
+
+          case (int) ServiceControlEventType.kServiceControlEventStop:
+            StopService(service_control_message);
+            break;
+        }
+      } catch (Exception exception) {
+        logger_.Error(string.Format(StringResources.Log_MethodThrowsException,
+          kClassName, "OnMessagePacketReceived"), exception);
+      }
+    }
+
+    /// <inheritdoc/>
+    public virtual IRubyMessageChannel RubyMessageChannel {
+      get { return ruby_message_channel_; }
+    }
 
     /// <summary>
-    /// Hosts a <see cref="IRubyService"/> implementation as represented by
-    /// <paramref name="service"/> in the running process.
+    /// Hosts a <see cref="IRubyService"/> implementation in the running
+    /// process.
     /// </summary>
-    /// <param name="service">
-    /// The service to host.
+    /// <param name="message">
+    /// A <see cref="ServiceControlMessage"/> object containing the arguments
+    /// to start the service.
     /// </param>
     /// <returns>
     /// <c>true</c> if the service was successfully hosted; otherwise,
@@ -71,20 +102,18 @@ namespace Nohros.Ruby
     /// has been reached.
     /// </para>
     /// </remarks>
-    public bool HostService(IRubyService service) {
+    void StartService(ServiceControlMessage message) {
       if (hosted_services_.Count > kMaxRunningServices) {
-        logger.Warn(
+        logger_.Warn(
           "The limit of simultaneous running services has been reached");
-        return false;
+        return;
       }
 
-      RubyServiceHost host = new RubyServiceHost(service, ruby_message_channel_);
-      if (hosted_services_.ContainsKey(service.Name)) {
-        logger.Warn("The service " + service.Name + " is already running");
-        return false;
-      }
+      var factory = new ServicesFactory();
+      var service = factory.CreateService(message);
+      var host = new RubyServiceHost(service, ruby_message_channel_);
 
-      // Keep hosted_services_ thread safe, since it is manipulated by more
+      // Keep |hosted_services_| thread safe, since it is manipulated by more
       // than one thread (This thread and the thread that is running the
       // service).
       lock (hosted_service_mutex_) {
@@ -94,22 +123,22 @@ namespace Nohros.Ruby
       // A try/catch block is used here to ensure the consistence of the
       // list of running services.
       try {
-        Thread thread = new Thread(ThreadMain);
-        thread.IsBackground = true;
+        var thread = new Thread(ThreadMain) {IsBackground = true};
         thread.Start(host);
-        return true;
       } catch (Exception exception) {
         lock (hosted_service_mutex_) {
           hosted_services_.Remove(service.Name);
-        }        
-        logger.Error(string.Format(StringResources.Log_MethodThrowsException,
+        }
+        logger_.Error(string.Format(StringResources.Log_MethodThrowsException,
           kClassName, "HostService"), exception);
-        return false;
       }
     }
 
+    void StopService(ServiceControlMessage message) {
+    }
+
     void ThreadMain(object o) {
-      RubyServiceHost host = o as RubyServiceHost;
+      var host = o as RubyServiceHost;
 #if DEBUG
       if (host == null) {
         throw new ArgumentException(
@@ -120,19 +149,14 @@ namespace Nohros.Ruby
       // list of running services and to isolate one service from another.
       try {
         host.Start();
-      } catch(Exception exception) {
-        logger.Error(string.Format(StringResources.Log_MethodThrowsException,
-          kClassName, "ThreadMain"));
+      } catch (Exception exception) {
+        logger_.Error(string.Format(StringResources.Log_MethodThrowsException,
+          kClassName, "ThreadMain"), exception);
       }
 
-      lock(hosted_service_mutex_) {
+      lock (hosted_service_mutex_) {
         hosted_services_.Remove(host.Service.Name);
       }
-    }
-
-    /// <inheritdoc/>
-    public virtual IRubyMessageChannel RubyMessageChannel {
-      get { return ruby_message_channel_; }
     }
   }
 }

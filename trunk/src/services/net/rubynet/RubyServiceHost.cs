@@ -1,4 +1,5 @@
 using System;
+using Google.ProtocolBuffers;
 using Nohros.Concurrent;
 using Nohros.Resources;
 using Nohros.Ruby.Protocol;
@@ -12,7 +13,7 @@ namespace Nohros.Ruby
   internal class RubyServiceHost : IRubyServiceHost, IRubyMessageListener
   {
     const string kClassName = "Nohros.Ruby.RubyServiceHost";
-    readonly IRubyLogger logger = RubyLogger.ForCurrentProcess;
+    readonly IRubyLogger logger_ = RubyLogger.ForCurrentProcess;
 
     readonly IRubyMessageChannel ruby_message_channel_;
     readonly IRubyService service_;
@@ -41,16 +42,34 @@ namespace Nohros.Ruby
     #endregion
 
     public void OnMessagePacketReceived(RubyMessagePacket packet) {
-      if (string.Compare(packet.Header.Service, service_.Name,
-        StringComparison.OrdinalIgnoreCase) == 0) {
-        // TODO(sender): track the sender and reply back
-        service_.OnMessage(packet.Message);
+      // send the message to the service for processing.
+      IRubyMessage message = service_.OnMessage(packet.Message);
+      RubyMessage response = message as RubyMessage ??
+        RubyMessage.ParseFrom(message.ToByteArray());
+
+      // Create the repy packed using the service processing result.
+      int message_size = message.ToByteArray().Length;
+      RubyMessageHeader header = new RubyMessageHeader.Builder()
+        .SetSize(message_size)
+        .Build();
+
+      int header_size = header.SerializedSize;
+      RubyMessagePacket reply = new RubyMessagePacket.Builder()
+        .SetHeader(header)
+        .SetHeaderSize(header.SerializedSize)
+        .SetMessage(response)
+        .SetSize(header_size + 2 + message_size)
+        .Build();
+
+      if (!ruby_message_channel_.Send(reply)) {
+        logger_.Warn("Reply message cannot be sent: " +
+          response.ToByteString().ToBase64());
       }
     }
 
     /// <inheritdoc/>
-    public bool Send(IRubyMessage message) {
-      return ruby_message_channel_.Send(message);
+    public bool Send(IRubyMessage message, string service) {
+      return ruby_message_channel_.Send(message, service);
     }
 
     /// <summary>
@@ -72,7 +91,8 @@ namespace Nohros.Ruby
     /// </para>
     /// </remarks>
     public void Start() {
-      ruby_message_channel_.AddListener(this, Executors.SameThreadExecutor());
+      ruby_message_channel_.AddListener(this, Executors.ThreadPoolExecutor(),
+        service_.Name);
       service_.Start(this);
     }
 

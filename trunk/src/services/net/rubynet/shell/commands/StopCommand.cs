@@ -16,7 +16,7 @@ namespace Nohros.Ruby.Shell
     /// </summary>
     /// <param name="service_name">The name of the service to stop.</param>
     public StopCommand(string service_name)
-      : base(ShellSwitches.kStopCommand) {
+      : base(ShellStrings.kStopCommand) {
 #if DEBUG
       if (service_name == null)
         throw new ArgumentNullException("service_name");
@@ -32,7 +32,6 @@ namespace Nohros.Ruby.Shell
     /// Runs the stop command.
     /// </summary>
     public override void Run(ShellRubyProcess process) {
-      process.UnhostService(service_name_);
     }
   }
 }

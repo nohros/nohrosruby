@@ -5,15 +5,15 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Ruby .NET process starter")]
-[assembly: AssemblyDescription("Ruby .NET process starter")]
+[assembly: AssemblyTitle(".NET ruby service host")]
+[assembly: AssemblyDescription(".NET ruby service host")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Nohros Systems Inc")]
 [assembly: AssemblyProduct("Nohros Ruby")]
 [assembly: AssemblyCopyright("Copyright ©  2010 by Nohros Systems Inc")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: InternalsVisibleTo("Nohros.Ruby.Tests.Net")]
+[assembly: InternalsVisibleTo("nohros.ruby.net.tests")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 

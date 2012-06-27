@@ -17,5 +17,11 @@ namespace Nohros.Ruby
     /// assume that we are running as a service.
     /// </remarks>
     RunningMode RunningMode { get; }
+
+    /// <summary>
+    /// Gets the path to the folder that is used to store the services
+    /// binaries.
+    /// </summary>
+    string ServicesFolder { get; }
   }
 }

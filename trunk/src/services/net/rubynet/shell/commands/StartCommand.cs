@@ -1,4 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
+using Google.ProtocolBuffers;
+using Nohros.Desktop;
+using Nohros.Ruby.Protocol;
+using Nohros.Ruby.Protocol.Control;
 
 namespace Nohros.Ruby.Shell
 {
@@ -21,59 +27,18 @@ namespace Nohros.Ruby.Shell
   /// </remarks>
   internal class StartCommand : ShellCommand
   {
-    readonly string service_command_line_;
-    readonly Type service_factory_class_type_;
+    readonly IRubySettings settings_;
+    readonly CommandLine switches_;
 
     #region .ctor
     /// <summary>
     /// Initializes a new instance of the <see cref="StartCommand"/> by using
-    /// the specified service factory type.
+    /// the specified command line switches.
     /// </summary>
-    /// <param name="service_factory_class_type">
-    /// The assembly's fully qualified name of the class that is used to
-    /// instantiate a new services.
-    /// </param>
-    /// <remarks>
-    /// The <paramref name="service_factory_class_type"/> must implements
-    /// the <see cref="IRubyServiceFactory"/> interface.
-    /// </remarks>
-    public StartCommand(Type service_factory_class_type)
-      : base(ShellSwitches.kStartCommand) {
-#if DEBUG
-        if (service_factory_class_type == null)
-          throw new ArgumentNullException("service_factory_class_type");
-#endif
-      service_factory_class_type_ = service_factory_class_type;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="StartCommand"/> by using
-    /// the specified service factory type.
-    /// </summary>
-    /// <param name="service_factory_class_type">
-    /// The assembly's fully qualified name of the class that is used to
-    /// instantiate a new services.
-    /// </param>
-    /// <param name="service_command_line">
-    /// The command line string to pass to the service.
-    /// </param>
-    /// <remarks>
-    /// The <paramref name="service_factory_class_type"/> must implements
-    /// the <see cref="IRubyServiceFactory"/> interface.
-    /// </remarks>
-    public StartCommand(Type service_factory_class_type, string service_command_line)
-      : base(ShellSwitches.kStartCommand) {
-
-#if DEBUG
-        if (service_factory_class_type == null ||
-          service_command_line == null) {
-          throw new ArgumentNullException(
-            (service_factory_class_type == null)
-              ? "service_factory_class_type" : "service_command_line");
-        }
-#endif
-      service_factory_class_type_ = service_factory_class_type;
-      service_command_line_ = service_command_line;
+    public StartCommand(CommandLine switches, IRubySettings settings)
+      : base(ShellStrings.kStartCommand) {
+      switches_ = switches;
+      settings_ = settings;
     }
     #endregion
 
@@ -85,10 +50,97 @@ namespace Nohros.Ruby.Shell
     /// caller.
     /// </remarks>
     public override void Run(ShellRubyProcess process) {
-      ServicesFactory factory = new ServicesFactory();
-      IRubyService service = factory.CreateService(
-        service_factory_class_type_, service_command_line_);
-      process.HostService(service);
+      string service_assembly_location = GetServiceLocation();
+      string service_factory_type_name = GetServiceFactoryTypeName();
+      string service_switches = GetServiceSwicthes(service_factory_type_name);
+
+      ServiceControlMessage start_control_message = new ServiceControlMessage.Builder()
+        .AddArguments(
+          new KeyValuePair.Builder()
+            .SetKey(Strings.kServiceAssembly)
+            .SetValue(service_assembly_location)
+            .Build())
+        .AddArguments(
+          new KeyValuePair.Builder()
+            .SetKey(Strings.kServiceType)
+            .SetValue(service_factory_type_name)
+            .Build())
+        .AddArguments(
+          new KeyValuePair.Builder()
+            .SetKey(Strings.kServiceSwitches)
+            .SetValue(service_switches)
+            .Build())
+        .Build();
+
+      process.OnMessagePacketReceived(
+        GetRubyMessagePacketHeader(start_control_message));
+    }
+
+    RubyMessagePacket GetRubyMessagePacketHeader(ServiceControlMessage start_control_message) {
+      ByteString start_control_message_bytes = start_control_message.ToByteString();
+      RubyMessageHeader header = new RubyMessageHeader.Builder()
+        .SetId(0)
+        .SetSender(ByteString.Empty)
+        .SetService(Strings.kRubyHostServiceName)
+        .SetSize(start_control_message_bytes.Length)
+        .Build();
+
+      RubyMessage message = new RubyMessage.Builder()
+        .SetId(0)
+        .SetToken("service-control-start-event")
+        .SetType((int)ServiceControlEventType.kServiceControlEventStart)
+        .SetMessage(start_control_message_bytes)
+        .Build();
+
+      return new RubyMessagePacket.Builder()
+        .SetHeader(header)
+        .SetHeaderSize(header.SerializedSize)
+        .SetMessage(message)
+        .SetSize(header.SerializedSize + 2 + message.SerializedSize)
+        .Build();
+    }
+
+    string GetServiceFactoryTypeName() {
+      string service_factory_type_name =
+        switches_.GetSwitchValue(Strings.kServiceType);
+      if (service_factory_type_name == string.Empty) {
+        throw new ArgumentException(string.Format(
+          Resources.Arg_MissingOrInvalid, Strings.kServiceType));
+      }
+      return service_factory_type_name;
+    }
+    /// <summary>
+    /// Builds a command line to pass to the assembly. The command line
+    /// program argument will be set to the class_type_name. So, the
+    /// service could use a single instance of the service factory to create
+    /// all the services that it implements.
+    /// </summary>
+    string GetServiceSwicthes(string program) {
+      string service_switches = program;
+      IList<string> loose_values = switches_.LooseValues;
+      for (int i = 0, j = loose_values.Count; i < j; i++) {
+        service_switches += string.Concat(" ", loose_values[i]);
+      }
+      return service_switches;
+    }
+
+    string GetServiceLocation() {
+      string service_assembly_location =
+        switches_.GetSwitchValue(Strings.kServiceAssembly);
+
+      // If the path is not absolute it must be relative to the services
+      // directory
+      if (!Path.IsPathRooted(service_assembly_location)) {
+        service_assembly_location = Path.Combine(settings_.ServicesFolder,
+          service_assembly_location);
+      }
+
+      if (!File.Exists(service_assembly_location)) {
+        throw new ArgumentException(
+          string.Format(Resources.log_assembly_not_found,
+            service_assembly_location));
+      }
+      return service_assembly_location;
     }
   }
 }

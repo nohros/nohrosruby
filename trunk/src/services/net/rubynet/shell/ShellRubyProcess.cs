@@ -1,6 +1,7 @@
 using System;
 using Nohros.Desktop;
 using Nohros.MyToolsPack.Console;
+using Nohros.Ruby.Protocol;
 
 namespace Nohros.Ruby.Shell
 {
@@ -8,7 +9,7 @@ namespace Nohros.Ruby.Shell
                                     IRubyProcess
   {
     readonly IMyToolsPackConsole console_;
-    readonly RubyMessageChannel ruby_message_channel_;
+    readonly IRubyMessageChannel ruby_message_channel_;
 
     #region .ctor
     /// <summary>
@@ -16,7 +17,8 @@ namespace Nohros.Ruby.Shell
     /// using the specified <see cref="CommandLine"/> and
     /// <see cref="RubySettings"/> objects.
     /// </summary>
-    public ShellRubyProcess(IMyToolsPackConsole console, RubyMessageChannel ruby_message_channel)
+    public ShellRubyProcess(IMyToolsPackConsole console,
+      IRubyMessageChannel ruby_message_channel)
       : base(ruby_message_channel) {
       console_ = console;
       ruby_message_channel_ = ruby_message_channel;

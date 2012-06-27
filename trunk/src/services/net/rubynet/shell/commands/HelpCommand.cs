@@ -70,17 +70,17 @@ Stops a service.
     /// about them.
     /// </remarks>
     public HelpCommand(string command_name)
-      : base(ShellSwitches.kHelpCommand) {
+      : base(ShellStrings.kHelpCommand) {
         command_name_ = command_name;
 
         help_commands_table_ = new ListDictionary(
           StringComparer.OrdinalIgnoreCase);
 
-        help_commands_table_[ShellSwitches.kStartCommand] = kStartCommandHelp;
-        help_commands_table_[ShellSwitches.kStopCommand] = kStopCommandHelp;
-        help_commands_table_[ShellSwitches.kSendCommand] = kSendCommandHelp;
-        help_commands_table_[ShellSwitches.kClearCommand] = kClearCommandHelp;
-        help_commands_table_[ShellSwitches.kExitCommand] = kExitCommandHelp;
+        help_commands_table_[ShellStrings.kStartCommand] = kStartCommandHelp;
+        help_commands_table_[ShellStrings.kStopCommand] = kStopCommandHelp;
+        help_commands_table_[ShellStrings.kSendCommand] = kSendCommandHelp;
+        help_commands_table_[ShellStrings.kClearCommand] = kClearCommandHelp;
+        help_commands_table_[ShellStrings.kExitCommand] = kExitCommandHelp;
     }
     #endregion
 

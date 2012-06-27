@@ -1,18 +1,20 @@
 using System;
 using System.Collections.Generic;
-
 using Nohros.Desktop;
+using Nohros.Ruby.Shell;
 
 namespace Nohros.Ruby
 {
-  static class RubyNet {
+  internal static class RubyNet
+  {
     static void Main(string[] args) {
       CommandLine command_line = CommandLine.ForCurrentProcess;
 
       // Check if the debug is enabled first, so the caller has the chance
       // to debug everything.
-      if (command_line.HasSwitch(Strings.kWaitForDebugger))
+      if (command_line.HasSwitch(Strings.kWaitForDebugger)) {
         System.Diagnostics.Debugger.Launch();
+      }
 
       // Show the usage tips if desired.
       if (command_line.HasSwitch(Strings.kHelp))
@@ -29,13 +31,12 @@ namespace Nohros.Ruby
       // command line to the run method simulating the start command.
       string legacy_command_line_string = GetLegacyCommandLine(command_line);
 
-      // Checks if the process should runs as a service or process.
-      bool run_as_shell = command_line.HasSwitch(ShellSwitches.kWithShell);
-
       AppFactory factory = new AppFactory(command_line);
-      IRubyProcess process = run_as_shell
-        ? factory.CreateShellRubyProcess() as IRubyProcess
-        : factory.CreateServiceRubyProcess() as IRubyProcess;
+      RubySettings settings = factory.CreateRubySettings();
+      IRubyProcess process =
+        settings.RunningMode == RunningMode.Interactive
+          ? factory.CreateShellRubyProcess(settings) as IRubyProcess
+          : factory.CreateServiceRubyProcess(settings) as IRubyProcess;
       process.Run(legacy_command_line_string);
     }
 
@@ -47,22 +48,16 @@ namespace Nohros.Ruby
     /// command line.</param>
     /// <returns>A string that could be translated to a start command by the
     /// shell command line parser.</returns>
-    static string GetLegacyCommandLine(
-      CommandLine current_process_command_line) {
-
-      // check if the required start parameters was supplied.
-      if (current_process_command_line.HasSwitch(
-        ShellSwitches.kAssemblyNameSwitch) &&
-        current_process_command_line.HasSwitch(
-        ShellSwitches.kTypeNameSwitch)) {
-
+    static string GetLegacyCommandLine(CommandLine current_process_command_line) {
+      // Check if the required start parameters was supplied.
+      if (current_process_command_line.HasSwitch(Strings.kServiceAssembly) &&
+        current_process_command_line.HasSwitch(Strings.kServiceType)) {
         CommandLine start_command_line =
-          new CommandLine(ShellSwitches.kStartCommand);
-
+          new CommandLine(ShellStrings.kStartCommand);
         start_command_line.CopySwitchesFrom(current_process_command_line);
 
-        // append the switch parsing prefix to the command line ensuring
-        // taht only the loose parameters is sent to the service.
+        // Append the switch parsing prefix to the command line ensuring that
+        // only the loose parameters is sent to the service.
         start_command_line.AppendSwitchParsingStopPrefix();
         IList<string> loose_values = current_process_command_line.LooseValues;
         foreach (string loose_value in loose_values) {
