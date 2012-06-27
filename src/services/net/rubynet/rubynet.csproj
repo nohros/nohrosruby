@@ -9,8 +9,8 @@
     <ProjectGuid>{561B3424-32B8-484E-9E4C-972D341F431E}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Nohros.Ruby.Service.Net</RootNamespace>
-    <AssemblyName>nohros.rubynet</AssemblyName>
+    <RootNamespace>Nohros.Ruby</RootNamespace>
+    <AssemblyName>nohros.ruby.net.servicehost</AssemblyName>
     <StartupObject>
     </StartupObject>
     <FileUpgradeFlags>
@@ -59,8 +59,9 @@
     <Reference Include="mytoolspack.console, Version=0.2.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\nohros.mytoolspack.0.3.3\lib\mytoolspack.console.dll</HintPath>
     </Reference>
-    <Reference Include="nohros, Version=0.9.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\must.common.0.9.5\lib\nohros.dll</HintPath>
+    <Reference Include="nohros, Version=0.9.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\must.common.0.9.6\lib\nohros.dll</HintPath>
     </Reference>
     <Reference Include="nohros.desktop, Version=0.6.6.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\must.desktop.0.7.1\lib\nohros.desktop.dll</HintPath>
@@ -78,7 +79,9 @@
     <Compile Include="configuration\RubySettings.cs" />
     <Compile Include="configuration\RunningMode.cs" />
     <Compile Include="ipc\BlockedMessageReceiver.cs" />
-    <Compile Include="ipc\IPCChannel.cs" />
+    <Compile Include="ipc\NullMessageChannel.cs" />
+    <Compile Include="ipc\RubyMessageChannel.cs" />
+    <Compile Include="ipc\IRubyMessageChannel.cs" />
     <Compile Include="ipc\IRubyMessageListener.cs" />
     <Compile Include="ipc\IRubyMessageReceiver.cs" />
     <Compile Include="ipc\ListenerExecutorPair.cs" />
@@ -86,14 +89,12 @@
     <Compile Include="ipc\RubyMessageReceiver.cs" />
     <Compile Include="IRubyProcess.cs" />
     <Compile Include="IRubyProcessFactory.cs" />
-    <Compile Include="ipc\LoggerMessageSender.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="ipc\RubyMessage.cs" />
-    <Compile Include="ipc\RubyMessageSender.cs" />
     <Compile Include="ServicesFactory.cs" />
     <Compile Include="service\ServiceRubyProcess.cs" />
     <Compile Include="shell\commands\ClearCommand.cs" />
@@ -119,8 +120,9 @@
     <Compile Include="RubyServiceHost.cs" />
     <Compile Include="shell\commands\StartCommand.cs" />
     <Compile Include="Strings.cs" />
-    <Compile Include="Switches.cs" />
+    <Compile Include="shell\Switches.cs" />
     <Compile Include="..\..\..\protos\parsers\csharp\RubyProtos.cs" />
+    <Compile Include="..\..\..\protos\parsers\csharp\Control.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">
@@ -148,9 +150,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="libzmq.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="libzmq.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

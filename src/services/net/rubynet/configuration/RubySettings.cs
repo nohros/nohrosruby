@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Xml;
 using Nohros.Configuration;
 using Nohros.MyToolsPack.Console;
@@ -13,6 +14,7 @@ namespace Nohros.Ruby
   {
     readonly string prompt_;
     RunningMode running_mode_;
+    string services_folder_;
 
     #region .ctor
     /// <summary>
@@ -21,12 +23,20 @@ namespace Nohros.Ruby
     public RubySettings() {
       running_mode_ = RunningMode.Service;
       prompt_ = Strings.kShellPrompt;
+      services_folder_ = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
+        Strings.kServicesFolderName);
     }
     #endregion
 
     /// <inheritdoc/>
     public RunningMode RunningMode {
       get { return running_mode_; }
+    }
+
+    /// <inheritdoc/>
+    public string ServicesFolder {
+      get { return services_folder_; }
+      protected set { services_folder_ = value; }
     }
 
     /// <summary>

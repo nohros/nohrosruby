@@ -1,5 +1,6 @@
 ﻿using System;
 using Nohros.Concurrent;
+using Nohros.Ruby.Protocol;
 
 namespace Nohros.Ruby
 {
@@ -16,11 +17,31 @@ namespace Nohros.Ruby
     /// notifications for incoming messages.
     /// </param>
     /// <param name="executor">
-    /// A <see cref="IExecutor"/> that executes the
-    /// <see cref="IRubyMessageListener.OnMessagePacketReceived"/> callback
-    /// method.
+    /// A <see cref="IExecutor"/> object that is used to execute the
+    /// <see cref="IRubyMessageListener.OnMessagePacketReceived"/> callback.
     /// </param>
-    void AddListener(IRubyMessageListener listener, IExecutor executor);
+    /// <param name="service">
+    /// The name of the service associated with the listener.
+    /// </param>
+    /// <remarks>
+    /// Each listener should be associated with a service(real or virtual).
+    /// It will receive only the messages that is destinated to the
+    /// associated service.
+    /// </remarks>
+    void AddListener(IRubyMessageListener listener, IExecutor executor,
+      string service);
+
+    /// <summary>
+    /// Sends a message packet to the ruby service node.
+    /// </summary>
+    /// <param name="packet">
+    /// The message packet to send.
+    /// </param>
+    /// <returns>
+    /// <c>true</c> is the message was succesfully sent; otherwise,
+    /// <c>false</c>.
+    /// </returns>
+    bool Send(RubyMessagePacket packet);
 
     /// <summary>
     /// Opens the communication channel.

@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace Nohros.Ruby
+namespace Nohros.Ruby.Shell
 {
-  internal sealed class ShellSwitches
+  internal sealed class ShellStrings
   {
     #region .ctor
-    ShellSwitches() { }
+    ShellStrings() { }
     #endregion
 
     /// <summary>
@@ -62,5 +62,7 @@ namespace Nohros.Ruby
     /// Specifies the name of the service.
     /// </summary>
     public const string kService = "service";
+
+    public const string kShellServiceName = "shell";
   }
 }

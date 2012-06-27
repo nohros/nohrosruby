@@ -6,7 +6,6 @@ using Nohros.Desktop;
 using Nohros.Logging;
 using Nohros.MyToolsPack.Console;
 using Nohros.Providers;
-using Nohros.Ruby.Service.Net;
 using Nohros.Ruby.Shell;
 using ZMQ;
 
@@ -45,7 +44,7 @@ namespace Nohros.Ruby
     /// </summary>
     /// <returns>A <see cref="RubySettings"/> object contained the application
     /// settings.</returns>
-    RubySettings CreateRubySettings() {
+    public RubySettings CreateRubySettings() {
       // The rubynet process is started from another process(ruby service)
       // and the directory where the ruby configuration file is stored
       // could be different from the app base directory. So, instead to use
@@ -56,6 +55,8 @@ namespace Nohros.Ruby
         Path.Combine(
           Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
           kConfigurationFileName), kConfigRootNodeName);
+
+      ConfigureLogger(settings);
       return settings;
     }
 
@@ -65,13 +66,11 @@ namespace Nohros.Ruby
     /// <returns>
     /// A <see cref="ShellRubyProcess"/> object.
     /// </returns>
-    public ShellRubyProcess CreateShellRubyProcess() {
-      RubySettings settings = CreateRubySettings();
-      ConfigureLogger(settings);
-
+    public ShellRubyProcess CreateShellRubyProcess(RubySettings settings) {
       MyToolsPackConsole console = GetToolsPackConsole(settings);
-      RubyMessageChannel ruby_message_channel = GetIPCChannel(settings);
-      ShellRubyProcess process = new ShellRubyProcess(console, ruby_message_channel);
+      IRubyMessageChannel ruby_message_channel = GetIPCChannel(settings);
+      ShellRubyProcess process = new ShellRubyProcess(console,
+        ruby_message_channel);
 
       // Tell the tools pack console to send our implementation of
       // the IMyToolsPackConsole interface when run commands.
@@ -84,9 +83,7 @@ namespace Nohros.Ruby
     /// Creates an instance of the <see cref="ServiceRubyProcess"/> class.
     /// </summary>
     /// <returns></returns>
-    public ServiceRubyProcess CreateServiceRubyProcess() {
-      RubySettings settings = CreateRubySettings();
-      ConfigureLogger(settings);
+    public ServiceRubyProcess CreateServiceRubyProcess(RubySettings settings) {
       IRubyMessageChannel channel = GetIPCChannel(settings);
       return new ServiceRubyProcess(channel);
     }
@@ -104,8 +101,7 @@ namespace Nohros.Ruby
 
         return new RubyMessageChannel(socket);
       }
-      // TODO(neylor.silva): Implement a dummy channel.
-      throw new NotImplementedException();
+      return new NullMessageChannel();
     }
 
     MyToolsPackConsole GetToolsPackConsole(RubySettings settings) {
@@ -118,7 +114,7 @@ namespace Nohros.Ruby
       tools_pack_console.LoadInternalCommands();
 
       // load the ruby internal commands
-      ICommandFactory factory = new InternalCommandsFactory();
+      ICommandFactory factory = new InternalCommandsFactory(settings);
       foreach (string name in factory.CommandNames) {
         tools_pack_console.LoadCommand("Nohros.Ruby", name, factory);
       }

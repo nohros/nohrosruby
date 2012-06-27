@@ -1,5 +1,4 @@
 ﻿using System;
-using Nohros.Concurrent;
 using Nohros.Ruby.Protocol;
 
 namespace Nohros.Ruby
@@ -7,8 +6,7 @@ namespace Nohros.Ruby
   /// <summary>
   /// A <see cref="IRubyProcess"/> that runs as a pseudo windows service.
   /// </summary>
-  internal class ServiceRubyProcess : AbstractRubyProcess, IRubyProcess,
-                                      IRubyMessageListener
+  internal class ServiceRubyProcess : AbstractRubyProcess, IRubyMessageListener
   {
     #region .ctor
     /// <summary>
@@ -26,10 +24,6 @@ namespace Nohros.Ruby
 
     /// <inheritdoc/>
     void IRubyMessageListener.OnMessagePacketReceived(RubyMessagePacket packet) {
-    }
-
-    public override void Run(string command_line_string) {
-      RubyMessageChannel.AddListener(this, Executors.SameThreadExecutor());
     }
   }
 }

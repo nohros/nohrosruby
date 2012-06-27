@@ -11,7 +11,7 @@ namespace Nohros.Ruby.Shell
     /// <summary>
     /// Initializes a new instance of the <see cref="ClearCommand"/> class
     /// </summary>
-    public ClearCommand():base(ShellSwitches.kClearCommand) { }
+    public ClearCommand():base(ShellStrings.kClearCommand) { }
     #endregion
 
     /// <summary>

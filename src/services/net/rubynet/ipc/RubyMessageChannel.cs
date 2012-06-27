@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-
+using Google.ProtocolBuffers;
 using Nohros.Concurrent;
 using Nohros.Resources;
 using Nohros.Ruby.Protocol;
@@ -17,12 +17,19 @@ namespace Nohros.Ruby
   {
     const string kClassName = "Nohros.Ruby.RubyMessageChannel";
 
-    readonly List<ListenerExecutorPair> listeners_;
+    static readonly byte[] empty_frame_;
+    readonly Dictionary<string, List<ListenerExecutorPair>> listeners_;
     readonly IRubyLogger logger_;
     readonly Mailbox<RubyMessagePacket> mailbox_;
     readonly Socket socket_;
     bool is_opened_;
     Thread receiver_thread_;
+
+    #region .ctor
+    static RubyMessageChannel() {
+      empty_frame_ = new byte[0];
+    }
+    #endregion
 
     #region .ctor
     /// <summary>
@@ -41,7 +48,7 @@ namespace Nohros.Ruby
 #endif
       socket_ = socket;
       mailbox_ = new Mailbox<RubyMessagePacket>(OnMessagePacket);
-      listeners_ = new List<ListenerExecutorPair>();
+      listeners_ = new Dictionary<string, List<ListenerExecutorPair>>();
       logger_ = RubyLogger.ForCurrentProcess;
       is_opened_ = false;
     }
@@ -52,17 +59,45 @@ namespace Nohros.Ruby
     }
 
     /// <inheritdoc/>
-    public bool Send(IRubyMessage message) {
+    public bool Send(IRubyMessage message, string service) {
 #if DEBUG
       if (!is_opened_) {
         logger_.Warn("Send() called on a closed channel.");
         return false;
       }
 #endif
+      // Send the message to the service for processing.
+      RubyMessage response = message as RubyMessage ??
+        RubyMessage.ParseFrom(message.ToByteArray());
 
+      // Create the repy packed using the service processing result.
+      int message_size = message.ToByteArray().Length;
+      RubyMessageHeader header = new RubyMessageHeader.Builder()
+        .SetId(message.Id)
+        .SetSender(ByteString.CopyFrom(socket_.Identity))
+        .SetSize(message_size)
+        .SetService(service)
+        .Build();
+
+      int header_size = header.SerializedSize;
+      RubyMessagePacket packet = new RubyMessagePacket.Builder()
+        .SetHeader(header)
+        .SetHeaderSize(header.SerializedSize)
+        .SetMessage(response)
+        .SetSize(header_size + 2 + message_size)
+        .Build();
+
+      return Send(packet);
+    }
+
+    public bool Send(RubyMessagePacket packet) {
       try {
-        SendStatus status = socket_.Send(message.ToByteArray());
-        return status == SendStatus.Sent;
+        // sent message should follow the pattern: [empty frame][message]
+        SendStatus status = socket_.SendMore(empty_frame_);
+        if (status == SendStatus.Sent) {
+          socket_.Send(packet.ToByteArray());
+          return status == SendStatus.Sent;
+        }
       } catch (System.Exception exception) {
         logger_.Error(
           string.Format(StringResources.Log_MethodThrowsException, kClassName,
@@ -93,19 +128,9 @@ namespace Nohros.Ruby
       }
     }
 
-    /// <summary>
-    /// Adds a listener to receive notifications for incoming messages.
-    /// </summary>
-    /// <param name="listener">
-    /// A <see cref="IRubyMessageListener"/> that wants to receive
-    /// notifications for incoming messages.
-    /// </param>
-    /// <param name="executor">
-    /// A <see cref="IExecutor"/> that executes the
-    /// <see cref="IRubyMessageListener.OnMessagePacketReceived"/> callback
-    /// method.
-    /// </param>
-    public void AddListener(IRubyMessageListener listener, IExecutor executor) {
+    /// <inheritdoc/>
+    public void AddListener(IRubyMessageListener listener, IExecutor executor,
+      string service) {
 #if DEBUG
       if (listener == null || executor == null) {
         throw new ArgumentNullException(listener == null
@@ -113,11 +138,12 @@ namespace Nohros.Ruby
           : "executor");
       }
 #endif
-      // If listeners_ is null means that the IPC channel does not receive
-      // messages, so just ignore the added listener since it will not be used.
-      if (listeners_ != null) {
-        listeners_.Add(new ListenerExecutorPair(listener, executor));
+      List<ListenerExecutorPair> listeners;
+      if (!listeners_.TryGetValue(service, out listeners)) {
+        listeners = new List<ListenerExecutorPair>();
+        listeners_.Add(service, listeners);
       }
+      listeners.Add(new ListenerExecutorPair(listener, executor, service));
     }
 
     RubyMessagePacket GetMessagePacket() {
@@ -155,10 +181,14 @@ namespace Nohros.Ruby
     /// The received message packet.
     /// </param>
     void OnMessagePacket(RubyMessagePacket packet) {
-      for (int i = 0, j = listeners_.Count; i < j; i++) {
-        ListenerExecutorPair pair = listeners_[i];
-        pair.Executor.Execute(
-          delegate { pair.Listener.OnMessagePacketReceived(packet); });
+      string key = packet.Header.Service;
+      List<ListenerExecutorPair> listeners;
+      if (listeners_.TryGetValue(key, out listeners)) {
+        for (int i = 0, j = listeners_.Count; i < j; i++) {
+          ListenerExecutorPair pair = listeners[i];
+          pair.Executor.Execute(
+            delegate { pair.Listener.OnMessagePacketReceived(packet); });
+        }
       }
     }
   }

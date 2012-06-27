@@ -26,6 +26,28 @@ namespace Nohros.Ruby
     /// </summary>
     public const string kMessageSenderEndpoint = "message-sender-endpoint";
 
+    public const string kRubyHostServiceName = "ruby";
+
+    /// <summary>
+    /// Specifies the path of the service assembly.
+    /// </summary>
+    public const string kServiceAssembly = "assembly";
+
+    /// <summary>
+    /// Specifies the assembly's fully qualified name of the service class
+    /// factory.
+    /// </summary>
+    public const string kServiceType = "type";
+
+    public const string kServiceSwitches = "switches";
+
+    /// <summary>
+    /// The name of the fodler that is used to store the services binaries.
+    /// </summary>
+    public const string kServicesFolderName = "services";
+
+    public const string kRunningMode = "running-mode";
+
     /// <summary>
     /// The string that is displayed on the shell prompt.
     /// </summary>

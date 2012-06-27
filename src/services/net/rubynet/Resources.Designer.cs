@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Nohros.Ruby.Service.Net {
+namespace Nohros.Ruby {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Nohros.Ruby.Service.Net {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Nohros.Ruby.Service.Net.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Nohros.Ruby.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,6 +57,15 @@ namespace Nohros.Ruby.Service.Net {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} was not specified or is invalid..
+        /// </summary>
+        internal static string Arg_MissingOrInvalid {
+            get {
+                return ResourceManager.GetString("Arg_MissingOrInvalid", resourceCulture);
             }
         }
         

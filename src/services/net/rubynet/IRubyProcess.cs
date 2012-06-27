@@ -12,7 +12,7 @@ namespace Nohros.Ruby
   /// <see cref="IRubyProcess"/> provides an abstraction for this two type of
   /// process.
   /// </remarks>
-  internal interface IRubyProcess
+  internal interface IRubyProcess: IRubyMessageListener
   {
     /// <summary>
     /// Runs the process.
