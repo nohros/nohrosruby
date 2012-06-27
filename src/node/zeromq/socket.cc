@@ -49,10 +49,24 @@ bool Socket::Send(Message* message, int size, SocketFlags flags) {
     zmq_send(ref_->socket(), message->message(), flags)) == ZMQ_OK;
 }
 
-scoped_refptr<Message> Socket::Receive(SocketFlags flags) {
-  Message* message = new Message();
-  CheckError(zmq_recv(ref_->socket(), message->message(), flags));
-  return message;
+std::vector<scoped_refptr<Message>> Socket::Receive(SocketFlags flags) {
+  bool has_more = true;
+  size_t more_size;
+  std::vector<scoped_refptr<Message>> message_parts;
+  do {
+    // Get the next message part from socket.
+    Message* message = new Message();
+    if (CheckError(
+      zmq_recv(ref_->socket(), message->message(), flags)) != ZMQ_OK) {
+      break;
+    }
+    message_parts.push_back(message);
+
+    // Check if the message is a multipart message.
+    int err = zmq_getsockopt(ref_->socket(), ZMQ_RCVMORE, &has_more, &more_size);
+    has_more = (CheckError(err) != ZMQ_OK) && has_more;
+  } while (has_more);
+  return message_parts;
 }
 
 int Socket::CheckError(int err) {
