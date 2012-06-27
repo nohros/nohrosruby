@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>nohros.ruby.net</id>
+    <version>0.3.2</version>
+    <title>Nohros Ruby .NET language binding</title>
+    <authors>Nohros Inc</authors>
+    <owners>Nohros Inc</owners>
+    <projectUrl>http://code.google.com/p/nohrosruby/</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>
+      This project contains the Nohros Ruby interfaces for the .NET language.
+    </description>
+    <summary>Nohros Ruby .NET language binding.</summary>
+    <copyright>Nohros Inc</copyright>
+    <language>en-US</language>
+    <tags>csharp nohros ruby .net</tags>
+  </metadata>
+  <files>
+    <file src="..\..\..\bin\release\nohros.ruby.net.dll" target="lib\nohros.ruby.net.dll" />
+  </files>
+</package>
