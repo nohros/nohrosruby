@@ -7,18 +7,40 @@
 
 import "google/protobuf/csharp_options.proto";
 
-package protocol;
+package protocol.control;
 
-option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby.Protocol";
+option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby.Protocol.Control";
 option optimize_for = LITE_RUNTIME;
 
-// Starts the service named StartService.Name.
-message RequestMessage {
-  // The name of the service associated with the request.
-  optional string name = 1;
+message KeyValuePair {
+  required string key = 1;
+  required string value = 2;
 }
 
-message ResponseMessage {
-  // The name of the service associated with the request.
-  optional string name = 1;
+message ExceptionMessage {
+  // A number that uniquely identifies the exception within an service.
+  optional sint64 code = 1;
+
+  // The message that describes the current exception.
+  optional string message = 2;
+  
+  // The name of the service or object that causes the exception.
+  optional string source = 3;
+  
+  // A collection of key/value pairs that provide additional, user-defined
+  // information about the exception.
+  repeated KeyValuePair data = 4;
+}
+
+enum ServiceControlEventType {
+  kServiceControlEventStart = 1;
+  kServiceControlEventStop = 2;
+}
+  
+message ServiceControlMessage {
+  // The service associated with the control message.
+  optional string service = 1;
+  
+  // A list of arguments for performing control actions.
+  repeated KeyValuePair arguments = 2;
 }
