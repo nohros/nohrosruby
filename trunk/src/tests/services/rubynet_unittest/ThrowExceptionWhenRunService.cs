@@ -1,32 +1,26 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
+using Nohros.Ruby.Protocol;
 
-namespace Nohros.Ruby.Tests.Net
+namespace Nohros.Ruby.Tests
 {
-  public class ThrowExceptionWhenRunService: IRubyService, IRubyServiceFactory
+  public class ThrowExceptionWhenRunService : AbstractRubyService,
+                                              IRubyServiceFactory
   {
     #region .ctor
-    public ThrowExceptionWhenRunService() { }
+    public ThrowExceptionWhenRunService() : base("ThrowExceptionWhenRunService") {
+    }
     #endregion
+
+    IRubyService IRubyServiceFactory.CreateService(string command_line) {
+      return new ThrowExceptionWhenRunService();
+    }
 
     public void Start() {
       throw new Exception();
     }
 
-    public void Stop() {
-    }
-
-    public IRubyMessage OnServerMessage(IRubyMessage message) {
+    public override IRubyMessage OnMessage(IRubyMessage message) {
       return message;
-    }
-
-    public string Name {
-      get { return "ThrowExceptionWhenRunService"; }
-    }
-
-    IRubyService IRubyServiceFactory.CreateService(string command_line) {
-      return new ThrowExceptionWhenRunService();
     }
   }
 }
