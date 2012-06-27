@@ -5,6 +5,7 @@
 #ifndef NODE_ZEROMQ_SOCKET_H_
 #define NODE_ZEROMQ_SOCKET_H_
 
+#include <vector>
 #include <base/memory/ref_counted.h>
 
 #include "node/zeromq/context.h"
@@ -92,11 +93,16 @@ class Socket {
   // Refer to zeromq docs for a detailed description.
   bool Send(Message* message, int size, SocketFlags flags);
 
-  // Receive a message from a socket. The Socket::Receive() function shall
-  // receive a message from a socket and return a pointer to the received
-  // message. If there are no messages available the Socket::Receive() function
-  // shall block until the request can be satisfied. The flags argument is a
-  // combination of the flags defined below:
+  // Receive all the parts os a message from a socket. The Socket::Receive()
+  // function shall receive all the parts of a multi-part message from a socket
+  // and return an vector contained the received message parts. If there are no
+  // messages available the Socket::Receive() function shall block until the
+  // request can be satisfied. The flags argument is a combination of the
+  // flags defined below:
+  //
+  // If the message is not a multi-part message the returned vector will
+  // contain only one element, which is the representiation of the the received
+  // single-part message.
   //
   // * ZMQ_NOBLOCK
   //     Specifies that the operation should be performed in non-blocking mode.
@@ -105,7 +111,7 @@ class Socket {
   //     data.
   //
   // Refer to zeromq docs for a detailed description.
-  scoped_refptr<Message> Receive(SocketFlags flags);
+  std::vector<scoped_refptr<Message>> Receive(SocketFlags flags);
 
   // Returns true if the socket can be used.
   bool is_valid() const { return ref_->is_valid(); }
