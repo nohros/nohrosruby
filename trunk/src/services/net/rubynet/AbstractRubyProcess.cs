@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using Google.ProtocolBuffers;
 using Nohros.Concurrent;
 using Nohros.Resources;
 using Nohros.Ruby.Protocol;
@@ -56,15 +57,29 @@ namespace Nohros.Ruby
 
     /// <inheritdoc/>
     public void OnMessagePacketReceived(RubyMessagePacket packet) {
+      switch (packet.Message.Type) {
+        case (int) NodeMessageType.kServiceControl:
+          OnServiceControlMessage(packet.Message.Message);
+          break;
+      }
+    }
+
+    /// <inheritdoc/>
+    public virtual IRubyMessageChannel RubyMessageChannel {
+      get { return ruby_message_channel_; }
+    }
+
+    /// <inheritdoc/>
+    public void OnServiceControlMessage(ByteString message) {
       try {
         ServiceControlMessage service_control_message =
-          ServiceControlMessage.ParseFrom(packet.Message.Message);
-        switch (packet.Message.Type) {
-          case (int) ServiceControlEventType.kServiceControlEventStart:
+          ServiceControlMessage.ParseFrom(message);
+        switch ((ServiceControlMessageType) service_control_message.Type) {
+          case ServiceControlMessageType.kServiceControlStart:
             StartService(service_control_message);
             break;
 
-          case (int) ServiceControlEventType.kServiceControlEventStop:
+          case ServiceControlMessageType.kServiceControlStop:
             StopService(service_control_message);
             break;
         }
@@ -72,11 +87,6 @@ namespace Nohros.Ruby
         logger_.Error(string.Format(StringResources.Log_MethodThrowsException,
           kClassName, "OnMessagePacketReceived"), exception);
       }
-    }
-
-    /// <inheritdoc/>
-    public virtual IRubyMessageChannel RubyMessageChannel {
-      get { return ruby_message_channel_; }
     }
 
     /// <summary>

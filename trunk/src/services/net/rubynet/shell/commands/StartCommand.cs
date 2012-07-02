@@ -56,6 +56,7 @@ namespace Nohros.Ruby.Shell
 
       ServiceControlMessage start_control_message =
         new ServiceControlMessage.Builder()
+          .SetType(ServiceControlMessageType.kServiceControlStart)
           .AddArguments(
             new KeyValuePair.Builder()
               .SetKey(Strings.kServiceAssembly)
@@ -91,8 +92,8 @@ namespace Nohros.Ruby.Shell
 
       RubyMessage message = new RubyMessage.Builder()
         .SetId(0)
-        .SetToken("service-control-start-event")
-        .SetType((int) ServiceControlEventType.kServiceControlEventStart)
+        .SetToken("service-control")
+        .SetType((int) NodeMessageType.kServiceControl)
         .SetMessage(start_control_message_bytes)
         .Build();
 
