@@ -17,8 +17,9 @@ namespace Nohros.Ruby
     /// A <see cref="RubyMessageChannel"/> object that is used to handle the
     /// communication with the external world.
     /// </param>
-    public ServiceRubyProcess(IRubyMessageChannel ruby_message_channel)
-      : base(ruby_message_channel) {
+    public ServiceRubyProcess(IRubySettings settings,
+      IRubyMessageChannel ruby_message_channel)
+      : base(settings, ruby_message_channel) {
     }
     #endregion
 

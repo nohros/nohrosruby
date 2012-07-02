@@ -9,7 +9,6 @@ namespace Nohros.Ruby.Shell
                                     IRubyProcess
   {
     readonly IMyToolsPackConsole console_;
-    readonly IRubyMessageChannel ruby_message_channel_;
 
     #region .ctor
     /// <summary>
@@ -18,10 +17,9 @@ namespace Nohros.Ruby.Shell
     /// <see cref="RubySettings"/> objects.
     /// </summary>
     public ShellRubyProcess(IMyToolsPackConsole console,
-      IRubyMessageChannel ruby_message_channel)
-      : base(ruby_message_channel) {
+      IRubySettings settings, IRubyMessageChannel ruby_message_channel)
+      : base(settings, ruby_message_channel) {
       console_ = console;
-      ruby_message_channel_ = ruby_message_channel;
     }
     #endregion
 

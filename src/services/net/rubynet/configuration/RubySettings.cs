@@ -14,7 +14,7 @@ namespace Nohros.Ruby
   {
     readonly string prompt_;
     RunningMode running_mode_;
-    string services_folder_;
+    string services_directory_;
 
     #region .ctor
     /// <summary>
@@ -23,7 +23,7 @@ namespace Nohros.Ruby
     public RubySettings() {
       running_mode_ = RunningMode.Service;
       prompt_ = Strings.kShellPrompt;
-      services_folder_ = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
+      services_directory_ = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
         Strings.kServicesFolderName);
     }
     #endregion
@@ -34,9 +34,9 @@ namespace Nohros.Ruby
     }
 
     /// <inheritdoc/>
-    public string ServicesFolder {
-      get { return services_folder_; }
-      protected set { services_folder_ = value; }
+    public string ServicesDirectory {
+      get { return services_directory_; }
+      protected set { services_directory_ = value; }
     }
 
     /// <summary>

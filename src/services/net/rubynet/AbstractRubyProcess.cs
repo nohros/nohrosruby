@@ -22,6 +22,7 @@ namespace Nohros.Ruby
     readonly Dictionary<string, RubyServiceHost> hosted_services_;
     readonly IRubyLogger logger_;
     readonly IRubyMessageChannel ruby_message_channel_;
+    readonly IRubySettings settings_;
 
     #region .ctor
     /// <summary>
@@ -32,11 +33,13 @@ namespace Nohros.Ruby
     /// A <see cref="RubyMessageChannel"/> object that is used to handle the
     /// communication with the ruby service node.
     /// </param>
-    protected AbstractRubyProcess(IRubyMessageChannel ruby_message_channel) {
+    protected AbstractRubyProcess(IRubySettings settings,
+      IRubyMessageChannel ruby_message_channel) {
       ruby_message_channel_ = ruby_message_channel;
       hosted_services_ = new Dictionary<string, RubyServiceHost>();
       hosted_service_mutex_ = new object();
       logger_ = RubyLogger.ForCurrentProcess;
+      settings_ = settings;
     }
     #endregion
 
@@ -109,7 +112,7 @@ namespace Nohros.Ruby
         return;
       }
 
-      var factory = new ServicesFactory();
+      var factory = new ServicesFactory(settings_);
       var service = factory.CreateService(message);
       var host = new RubyServiceHost(service, ruby_message_channel_);
 
