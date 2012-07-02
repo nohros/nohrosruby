@@ -70,7 +70,7 @@ namespace Nohros.Ruby
     public ShellRubyProcess CreateShellRubyProcess(RubySettings settings) {
       MyToolsPackConsole console = GetToolsPackConsole(settings);
       IRubyMessageChannel ruby_message_channel = GetIPCChannel(settings);
-      ShellRubyProcess process = new ShellRubyProcess(console,
+      ShellRubyProcess process = new ShellRubyProcess(console, settings,
         ruby_message_channel);
 
       // Tell the tools pack console to send our implementation of
@@ -86,7 +86,7 @@ namespace Nohros.Ruby
     /// <returns></returns>
     public ServiceRubyProcess CreateServiceRubyProcess(RubySettings settings) {
       IRubyMessageChannel channel = GetIPCChannel(settings);
-      return new ServiceRubyProcess(channel);
+      return new ServiceRubyProcess(settings, channel);
     }
 
     IRubyMessageChannel GetIPCChannel(RubySettings settings) {

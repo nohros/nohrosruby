@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Nohros.Configuration;
 using Nohros.Providers;
 using Nohros.Ruby.Protocol.Control;
@@ -11,11 +12,14 @@ namespace Nohros.Ruby
   /// </summary>
   internal class ServicesFactory
   {
+    readonly IRubySettings settings_;
+
     #region .ctor
     /// <summary>
     /// Initializes a new instance of the <see cref="ServicesFactory"/> class.
     /// </summary>
-    public ServicesFactory() {
+    public ServicesFactory(IRubySettings settings) {
+      settings_ = settings;
     }
     #endregion
 
@@ -28,9 +32,25 @@ namespace Nohros.Ruby
     }
 
     IRubyServiceFactory GetServiceFactory(IDictionary<string, string> options) {
+      string service_factory_assembly_location =
+        options[Strings.kServiceAssembly];
+      string service_factory_class_type = options[Strings.kServiceType];
+
+      // If the assembly path is relative, we need to resolve it using the
+      // configured services directory as base path.
+      if (!Path.IsPathRooted(service_factory_assembly_location)) {
+        service_factory_assembly_location =
+          Path.Combine(settings_.ServicesDirectory,
+            service_factory_assembly_location);
+      }
+      string service_factory_assembly =
+        Path.GetFileName(service_factory_assembly_location);
+      service_factory_assembly_location =
+        Path.GetDirectoryName(service_factory_assembly_location);
       ProviderNode provider =
         new ProviderNode.Builder(
-          options[Strings.kServiceAssembly], options[Strings.kServiceType])
+          service_factory_assembly, service_factory_class_type)
+          .SetLocation(service_factory_assembly_location)
           .SetOptions(options)
           .Build();
       return ProviderFactory<IRubyServiceFactory>.CreateProviderFactory(provider);

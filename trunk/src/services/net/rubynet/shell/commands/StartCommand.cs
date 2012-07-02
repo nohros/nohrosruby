@@ -54,30 +54,34 @@ namespace Nohros.Ruby.Shell
       string service_factory_type_name = GetServiceFactoryTypeName();
       string service_switches = GetServiceSwicthes(service_factory_type_name);
 
-      ServiceControlMessage start_control_message = new ServiceControlMessage.Builder()
-        .AddArguments(
-          new KeyValuePair.Builder()
-            .SetKey(Strings.kServiceAssembly)
-            .SetValue(service_assembly_location)
-            .Build())
-        .AddArguments(
-          new KeyValuePair.Builder()
-            .SetKey(Strings.kServiceType)
-            .SetValue(service_factory_type_name)
-            .Build())
-        .AddArguments(
-          new KeyValuePair.Builder()
-            .SetKey(Strings.kServiceSwitches)
-            .SetValue(service_switches)
-            .Build())
-        .Build();
+      ServiceControlMessage start_control_message =
+        new ServiceControlMessage.Builder()
+          .AddArguments(
+            new KeyValuePair.Builder()
+              .SetKey(Strings.kServiceAssembly)
+              .SetValue(service_assembly_location)
+              .Build())
+          .AddArguments(
+            new KeyValuePair.Builder()
+              .SetKey(Strings.kServiceType)
+              .SetValue(service_factory_type_name + "," +
+                Path.GetFileNameWithoutExtension(service_assembly_location))
+              .Build())
+          .AddArguments(
+            new KeyValuePair.Builder()
+              .SetKey(Strings.kServiceSwitches)
+              .SetValue(service_switches)
+              .Build())
+          .Build();
 
       process.OnMessagePacketReceived(
         GetRubyMessagePacketHeader(start_control_message));
     }
 
-    RubyMessagePacket GetRubyMessagePacketHeader(ServiceControlMessage start_control_message) {
-      ByteString start_control_message_bytes = start_control_message.ToByteString();
+    RubyMessagePacket GetRubyMessagePacketHeader(
+      ServiceControlMessage start_control_message) {
+      ByteString start_control_message_bytes =
+        start_control_message.ToByteString();
       RubyMessageHeader header = new RubyMessageHeader.Builder()
         .SetId(0)
         .SetSender(ByteString.Empty)
@@ -88,7 +92,7 @@ namespace Nohros.Ruby.Shell
       RubyMessage message = new RubyMessage.Builder()
         .SetId(0)
         .SetToken("service-control-start-event")
-        .SetType((int)ServiceControlEventType.kServiceControlEventStart)
+        .SetType((int) ServiceControlEventType.kServiceControlEventStart)
         .SetMessage(start_control_message_bytes)
         .Build();
 
@@ -109,6 +113,7 @@ namespace Nohros.Ruby.Shell
       }
       return service_factory_type_name;
     }
+
     /// <summary>
     /// Builds a command line to pass to the assembly. The command line
     /// program argument will be set to the class_type_name. So, the
@@ -131,7 +136,7 @@ namespace Nohros.Ruby.Shell
       // If the path is not absolute it must be relative to the services
       // directory
       if (!Path.IsPathRooted(service_assembly_location)) {
-        service_assembly_location = Path.Combine(settings_.ServicesFolder,
+        service_assembly_location = Path.Combine(settings_.ServicesDirectory,
           service_assembly_location);
       }
 

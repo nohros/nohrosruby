@@ -22,6 +22,6 @@ namespace Nohros.Ruby
     /// Gets the path to the folder that is used to store the services
     /// binaries.
     /// </summary>
-    string ServicesFolder { get; }
+    string ServicesDirectory { get; }
   }
 }
