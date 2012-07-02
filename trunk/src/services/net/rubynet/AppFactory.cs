@@ -42,8 +42,9 @@ namespace Nohros.Ruby
     /// Loads the application setting by reading and parsing the configuration
     /// file.
     /// </summary>
-    /// <returns>A <see cref="RubySettings"/> object contained the application
-    /// settings.</returns>
+    /// <returns>
+    /// A <see cref="RubySettings"/> object contained the application settings.
+    /// </returns>
     public RubySettings CreateRubySettings() {
       // The rubynet process is started from another process(ruby service)
       // and the directory where the ruby configuration file is stored
