@@ -26,7 +26,7 @@ namespace Nohros.Ruby
     /// </summary>
     public const string kMessageSenderEndpoint = "message-sender-endpoint";
 
-    public const string kRubyHostServiceName = "ruby";
+    public const string kRubyHostServiceName = "ruby-service-host";
 
     /// <summary>
     /// Specifies the path of the service assembly.
