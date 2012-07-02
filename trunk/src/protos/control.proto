@@ -2,7 +2,11 @@
 // Use of this source code is governed by a MIT-style license that can be
 // found in the LICENSE file.
 //
-// Define the service control messages.
+// Define the service control messages. Service control messages acts as a
+// simple RPC mechanism. A single control message packet is sent out and a
+// simgle control message packet is sent in response. There is no retry. There
+// are four message types: control, query, response and error. The node messages
+// should be destinated to the [ruby] service (RubyMessageHeader.Service = [ruby])
 //
 
 import "google/protobuf/csharp_options.proto";
@@ -32,15 +36,104 @@ message ExceptionMessage {
   repeated KeyValuePair data = 4;
 }
 
-enum ServiceControlEventType {
-  kServiceControlEventStart = 1;
-  kServiceControlEventStop = 2;
-}
+// The service control message types.
+enum NodeMessageType {
+  // A message that is sent to control the behavior of a service. The are four
+  // control types: start, stop, pause and continue.
+  kServiceControl = 1;
   
+  // A message that is sent to query for service information. There are two
+  // query types: ping and find.
+  kNodeQuery = 2;
+   
+  // A message that is sent upon successfully completion of a node message
+  // processing.
+  kNodeResponse = 3;
+  
+  // A message that should be sent when a query cannot be fulfilled.
+  kNodeError = 4;
+}
+
+enum ServiceControlMessageType {
+  // A message that should be sent to start a service.
+  kServiceControlStart = 1;
+  
+  // A message that should be sent to stop a service.
+  kServiceControlStop = 2;
+  
+  // A message that should be sent to pause a service.
+  kServiceControlPause = 3;
+  
+  // A message that should be sent to continue a service.
+  kServiceControlContinue = 4;
+}
+
+// A message that is sent to control the behavior of a service.
+//
+// Protocol
+//  RubyMessage.Type = [NodeMessageType]
+//  RubyMessage.Token = [node-service-control.kServiceControl]
 message ServiceControlMessage {
-  // The service associated with the control message.
-  optional string service = 1;
+  // The method type of the query.
+  optional ServiceControlMessageType type = 1;
   
-  // A list of arguments for performing control actions.
-  repeated KeyValuePair arguments = 2;
+  // The service associated with the control message. Should be the ID of the
+  // service which the message is destinated.
+  optional string service = 2;
+  
+  // A list of arguments for performing node actions.
+  repeated KeyValuePair arguments = 3;
 }
+
+enum QueryMessageType {
+  // The most basic query is ping. A ping query has no arguments.
+  kQueryPing = 1;
+  
+  // Find query is used to find informations about a service given its facts. A
+  // find query has a list of key/value pairs representing the facts of the
+  // searched service. When a node receives a "find" query, it should respond
+  // with a list of found services nodes or the K(8) closest good nodes in its
+  // own rounting table.
+  kQueryFind = 2;
+}
+
+// A message that is sent to search for services.
+//
+// Protocol
+//  RubyMessage.Type = [NodeMessageType.kNodeQuery]
+//  RubyMessage.Token = [node-query]
+message QueryMessage {
+  // The method type of the query.
+  optional QueryMessageType type = 1;
+  
+  // A list of key/value pairs containing the service facts to be searched.
+  repeated KeyValuePair facts = 2;
+}
+
+// A message that is sent upon successfully completion of a node message
+// processing.
+//
+// Protocol
+//  RubyMessage.Type = [NodeMessageType.kNodeResponse]
+//  RubyMessage.Token = [node-response]
+message ResponseMessage {
+  // A list of key value pairs containing named return values.
+  repeated KeyValuePair reponses = 1;
+}
+
+// A message that should be sent when a query cannot be fulfilled. The
+// following table describes the possible error codes:
+//
+// Code | Description
+//  201 | Generic error
+//  202 | Server error
+//  203 | Protocol error, such as malformed packet or invalid arguments.
+//  204 | Method unknown.
+//
+// Protocol
+//  RubyMessage.Type = [NodeMessageType.kNodeError]
+//  RubyMessage.Token = [node-error]
+message ErrorMessage {
+  repeated KeyValuePair errors = 1;
+}
+
