@@ -119,8 +119,8 @@
     <Compile Include="RubyNet.cs" />
     <Compile Include="RubyServiceHost.cs" />
     <Compile Include="shell\commands\StartCommand.cs" />
+    <Compile Include="shell\ShellStrings.cs" />
     <Compile Include="Strings.cs" />
-    <Compile Include="shell\Switches.cs" />
     <Compile Include="..\..\..\protos\parsers\csharp\RubyProtos.cs" />
     <Compile Include="..\..\..\protos\parsers\csharp\Control.cs" />
   </ItemGroup>
