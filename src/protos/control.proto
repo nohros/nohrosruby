@@ -13,23 +13,10 @@
 //import "google/protobuf/csharp_options.proto";
 //option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby.Protocol.Control";
 
+import "common.proto";
+
 package protocol.control;
 option optimize_for = LITE_RUNTIME;
-
-message ExceptionMessage {
-  // A number that uniquely identifies the exception within an service.
-  optional sint64 code = 1;
-
-  // The message that describes the current exception.
-  optional string message = 2;
-  
-  // The name of the service or object that causes the exception.
-  optional string source = 3;
-  
-  // A collection of key/value pairs that provide additional, user-defined
-  // information about the exception.
-  repeated KeyValuePair data = 4;
-}
 
 // The service control message types.
 enum NodeMessageType {
