@@ -27,10 +27,16 @@
 // start processing the request(ex. creating the deocoder objets, request
 // processor, etc.) while the rest of the message is comming.
 
-package protocol;
+//import "google/protobuf/csharp_options.proto";
+//option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby.Protocol.Control";
 
-option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby.Protocol.Control";
+package protocol;
 option optimize_for = LITE_RUNTIME;
+
+message KeyValuePair {
+  required string key = 1;
+  required string value = 2;  
+}
 
 // The message header. Contains information about the packed message.
 message RubyMessageHeader {
@@ -56,13 +62,17 @@ message RubyMessageHeader {
   // unsigned values.
   optional int32 size = 2;
 
-  // The name of the service associated with the message.
-  optional string service = 3;
-  
-  // A seguence of bytes that identifies the message sender. This could be the
-  // sender name, the sende IP address, the sender UUID or anything else that
-  // could be serialized as a sequence of bytes and identifies the sender.
-  optional bytes sender = 4;
+  // Facts is a discrete bits of information about a service. Ruby allows the
+  // smae service to run more than once in a single machine. When more than one
+  // instance of a service is running on the same machine with distinct
+  // configuration values, the service name will not be sufficient to
+  // communicate with this service. The facts field is used to distinghuish
+  // two distincts instance of a service that is running in a single machine
+  // with diferrent configurations. Facts is a collection of strings consisting
+  // of two parts as follows: name=value. The "name" part is a string that
+  // uniquely identifies the encoded fact and the "value" part is the value of
+  // the fact associated with the name "name".
+  repeated KeyValuePair facts = 3;
 }
 
 // The service message. This is the message that is usually sent to the
@@ -75,22 +85,6 @@ message RubyMessage {
   // requests that could be generated. We cannot use a unsigned type because
   // some languages, such as java and php does not support unsigned values.
   optional sint64 id = 1;
-  
-  // Facts is a discrete bits of information about a service. Ruby allows the
-  // smae service to run more than once in a single machine. When more than one
-  // instance of a service is running on the same machine with distinct
-  // configuration values, the service name will not be sufficient to
-  // communicate with this service. The facts field is used to distinghuish
-  // two distincts instance of a service that is running in a single machine
-  // with diferrent configurations. Facts is a collection of strings consisting
-  // of two parts as follows: name=value. The "name" part is a string that
-  // uniquely identifies the encoded fact and the "value" part is the value of
-  // the fact associated with the name "name".
-  message Fact {
-    optional string name = 1;
-    optional string value = 2;
-  }
-  repeated Fact facts = 2;
   
   // A integer used to identify the type of message. The meaning of the value
   // stored into this field is service-dependant. For example, a service could
@@ -116,6 +110,11 @@ message RubyMessage {
   // to define the method name/type and this field to store the parameters of
   // the method call.
   optional bytes message = 5;
+  
+  // A seguence of bytes that identifies the message sender. This could be the
+  // sender name, the sende IP address, the sender UUID or anything else that
+  // could be serialized as a sequence of bytes and identifies the sender.
+  optional bytes sender = 6;
 }
 
 // Wraps a protobuf message into a envelope, which defines what is in the
