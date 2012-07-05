@@ -28,15 +28,12 @@
 // processor, etc.) while the rest of the message is comming.
 
 //import "google/protobuf/csharp_options.proto";
-//option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby.Protocol.Control";
+//option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby.Protocol";
+
+import "common.proto";
 
 package protocol;
 option optimize_for = LITE_RUNTIME;
-
-message KeyValuePair {
-  required string key = 1;
-  required string value = 2;  
-}
 
 // The message header. Contains information about the packed message.
 message RubyMessageHeader {
