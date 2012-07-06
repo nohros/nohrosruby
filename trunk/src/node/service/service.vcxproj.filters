@@ -6,6 +6,21 @@
     <ClInclude Include="ruby_service.h" />
     <ClInclude Include="service_base.h" />
     <ClInclude Include="constants.h" />
+    <ClInclude Include="..\..\protos\parsers\c\control.pb.h">
+      <Filter>protos</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\protos\parsers\c\log_message.pb.h">
+      <Filter>protos</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\protos\parsers\c\ruby_protos.pb.h">
+      <Filter>protos</Filter>
+    </ClInclude>
+    <ClInclude Include="service_metadata.h" />
+    <ClInclude Include="services_database.h" />
+    <ClInclude Include="..\..\protos\parsers\c\common.pb.h">
+      <Filter>protos</Filter>
+    </ClInclude>
+    <ClInclude Include="hash.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="service_main.cc" />
@@ -13,6 +28,21 @@
     <ClCompile Include="ruby_service.cc" />
     <ClCompile Include="service_base.cc" />
     <ClCompile Include="constants.cc" />
+    <ClCompile Include="..\..\protos\parsers\c\control.pb.cc">
+      <Filter>protos</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\protos\parsers\c\log_message.pb.cc">
+      <Filter>protos</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\protos\parsers\c\ruby_protos.pb.cc">
+      <Filter>protos</Filter>
+    </ClCompile>
+    <ClCompile Include="service_metadata.cc" />
+    <ClCompile Include="services_database.cc" />
+    <ClCompile Include="..\..\protos\parsers\c\common.pb.cc">
+      <Filter>protos</Filter>
+    </ClCompile>
+    <ClCompile Include="hash.cc" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="protos">

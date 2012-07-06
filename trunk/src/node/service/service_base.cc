@@ -17,7 +17,7 @@ namespace node {
 
 ServiceBase* g_service = NULL;
 
-ServiceBase::ServiceBase(const char* service_name)
+ServiceBase::ServiceBase(const wchar_t* service_name)
   : service_name_(service_name),
     service_status_handle_(0),
     stop_event_(false, false),
@@ -39,7 +39,7 @@ ServiceBase::ServiceBase(const char* service_name)
 
 void ServiceBase::Run() {
   SERVICE_TABLE_ENTRY entry[] = {
-    { "", ServiceMainCallback }, { NULL, NULL }
+    { TEXT(""), ServiceMainCallback }, { NULL, NULL }
   };
 
   BOOL ok = StartServiceCtrlDispatcher(entry);
@@ -52,8 +52,8 @@ void ServiceBase::Run() {
 }
 
 // static
-VOID WINAPI ServiceBase::ServiceMainCallback(DWORD argc, LPSTR *argv) {
-  const char* service_name = g_service->service_name().c_str();
+VOID WINAPI ServiceBase::ServiceMainCallback(DWORD argc, LPWSTR *argv) {
+  const wchar_t* service_name = g_service->service_name().c_str();
   SERVICE_STATUS_HANDLE service_status_handle =
     RegisterServiceCtrlHandlerEx(service_name, ServiceCommandCallback,
       static_cast<LPVOID>(g_service));
@@ -72,16 +72,16 @@ VOID WINAPI ServiceBase::ServiceMainCallback(DWORD argc, LPSTR *argv) {
 
   g_service->service_status_handle_ = service_status_handle;
   if (g_service->SetServiceState(SERVICE_START_PENDING)) {
-    std::vector<std::string> arguments;
+    std::vector<std::wstring> arguments;
     for (DWORD i = 0; i < argc; i++) {
-      arguments.push_back(std::string(argv[i]));
+      arguments.push_back(std::wstring(argv[i]));
     }
     g_service->ServiceQueuedMainCallback(arguments);
   }
 }
 
 void ServiceBase::ServiceQueuedMainCallback(
-  const std::vector<std::string>& arguments) {
+  const std::vector<std::wstring>& arguments) {
 
   // Create a waitable event and register a waiter on then, allowing the
   // thread that is running this method to terminate without terminating the

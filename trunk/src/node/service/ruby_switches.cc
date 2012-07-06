@@ -14,6 +14,10 @@ namespace switches {
 
 // Overrides the default port used for commands delivery.
 const char kMessageChannelPort[] = "message-channel-port";
+
+// Specifies the aaddress of the service tracker.
+const char kServiceTrackerAddress[] = "service-tracker-address";
+
 const char kWaitDebugger[] = "wait-debugger";
 
 }  // namespace swicthes

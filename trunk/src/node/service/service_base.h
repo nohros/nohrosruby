@@ -22,7 +22,7 @@ namespace node {
 class ServiceBase {
 
  public:
-  explicit ServiceBase(const char* service_name);
+  explicit ServiceBase(const wchar_t* service_name);
 
   virtual ~ServiceBase();
 
@@ -36,21 +36,21 @@ class ServiceBase {
   void Run();
 
   // Gets the service's name as seen by the SCM.
-  const std::string& service_name() const { return service_name_; };
+  const std::wstring& service_name() const { return service_name_; };
 
  protected:
   // Executed when a Start command is sent to the service by the Service
   // Control Manager (SCM). OnStart is the method in which you specify the
   // behavior of the service. OnStart can take arugments as a way to pass
   // data, but this usage is rare.
-  virtual void OnStart(const std::vector<std::string>& arguments) = 0;
+  virtual void OnStart(const std::vector<std::wstring>& arguments) = 0;
 
   // Executed when a Stop command is sent to the service by the Service Control
   // Manager (SCM).
   virtual void OnStop() = 0;
 
  private:
-  static VOID WINAPI ServiceMainCallback(DWORD argc, LPSTR *argv);
+  static VOID WINAPI ServiceMainCallback(DWORD argc, LPWSTR *argv);
   static DWORD WINAPI ServiceCommandCallback(DWORD command, DWORD event_type,
     LPVOID event_data, LPVOID context);
 
@@ -62,7 +62,7 @@ class ServiceBase {
   // Directs a wait thread in the thread pool to wait for the service to
   // terminate and finilize the service start process by putting it in the
   // Running state.
-  void ServiceQueuedMainCallback(const std::vector<std::string>& arguments);
+  void ServiceQueuedMainCallback(const std::vector<std::wstring>& arguments);
 
   // Updates the service state of the ServiceBase Control Manager's status
   // information for the service.
@@ -74,7 +74,7 @@ class ServiceBase {
   void Teardown();
 
   // The name of the service as seen by th ServiceBase Control Manager (SCM).
-  std::string service_name_;
+  std::wstring service_name_;
 
   // A structure that contains status information for a service.
   SERVICE_STATUS service_status_;

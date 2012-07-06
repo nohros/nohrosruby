@@ -14,6 +14,7 @@ namespace switches {
 // alongside the definition of their values in the .cc file.
 
 extern const char kMessageChannelPort[];
+extern const char kServiceTrackerAddress[];
 extern const char kWaitDebugger[];
 }
 

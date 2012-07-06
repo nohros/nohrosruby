@@ -8,10 +8,18 @@
 #define NODE_SERVICE_CONSTANTS_H_
 #pragma once
 
+#include <base/file_path.h>
+
 namespace node {
 
 extern const long kMessageChannelPort;
-extern const char kRubyServiceName[];
+extern const wchar_t kRubyServiceName[];
+extern const char kServiceTrackerAddress[];
+extern const char kNodeServiceName[];
+
+// filenames
+extern const FilePath::CharType kServicesDatabaseFilename[];
+extern const FilePath::CharType kServicesDir[];
 
 }
 
