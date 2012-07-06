@@ -24,7 +24,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -52,20 +52,21 @@
       <Optimization>Disabled</Optimization>
       <TreatWarningAsError>true</TreatWarningAsError>
       <ExceptionHandling>Sync</ExceptionHandling>
-      <AdditionalIncludeDirectories>.;..;..\..;..\third_party\chrome\include;..\third_party\zeromq\include;..\third_party\protobuf\src;..\..\protos\parsers\c;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..;..\..;..\third_party\chrome\src;..\third_party\zeromq\include;..\third_party\protobuf\src;..\..\protos\parsers\c;</AdditionalIncludeDirectories>
       <AdditionalOptions>/wd4310  /wd4100  /wd4481 /wd4512 /wd4244  /wd4127 </AdditionalOptions>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <PreprocessorDefinitions>_MBCS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;base.lib;base_static.lib;zeromq.lib;libzmq.lib;libprotobuf-lite.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\third_party\chrome\lib;..\third_party\zeromq\builds\msvc\$(Configuration);$(SolutionDir)bin\$(Configuration)\lib;..\third_party\protobuf\vsprojects\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;psapi.lib;base.lib;base_static.lib;zeromq.lib;libzmq.lib;libprotobuf-lite.lib;sql.lib;sqlite3.lib;icuuc.lib;icui18n.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\third_party\chrome\lib\$(Configuration);..\third_party\zeromq\builds\msvc\$(Configuration);..\..\bin\$(Configuration)\lib;..\third_party\protobuf\vsprojects\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
-      <IgnoreSpecificDefaultLibraries>LIBCMTD</IgnoreSpecificDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -76,27 +77,43 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <TreatWarningAsError>true</TreatWarningAsError>
       <ExceptionHandling>Sync</ExceptionHandling>
-      <AdditionalIncludeDirectories>.;..;..\..;..\third_party\chrome\include;..\third_party\zeromq\include;..\third_party\protobuf\src;..\..\protos\parsers\c;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..;..\..;..\third_party\chrome\src;..\third_party\zeromq\include;..\third_party\protobuf\src;..\..\protos\parsers\c;</AdditionalIncludeDirectories>
       <AdditionalOptions>/wd4310  /wd4100  /wd4481 /wd4512 /wd4244  /wd4127 </AdditionalOptions>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PreprocessorDefinitions>_MBCS;OFFICIAL_BUILD;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;base.lib;base_static.lib;zeromq.lib;libzmq.lib;libprotobuf-lite.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\third_party\chrome\lib;..\third_party\zeromq\builds\msvc\$(Configuration);$(SolutionDir)bin\$(Configuration)\lib;..\third_party\protobuf\vsprojects\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;psapi.lib;base.lib;base_static.lib;zeromq.lib;libzmq.lib;libprotobuf-lite.lib;sql.lib;sqlite3.lib;icuuc.lib;icui18n.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\third_party\chrome\lib\$(Configuration);..\third_party\zeromq\builds\msvc\$(Configuration);$(SolutionDir)bin\$(Configuration)\lib;..\third_party\protobuf\vsprojects\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\protos\parsers\c\common.pb.h" />
+    <ClInclude Include="..\..\protos\parsers\c\control.pb.h" />
+    <ClInclude Include="..\..\protos\parsers\c\log_message.pb.h" />
+    <ClInclude Include="..\..\protos\parsers\c\ruby_protos.pb.h" />
+    <ClInclude Include="hash.h" />
     <ClInclude Include="ruby_service.h" />
     <ClInclude Include="ruby_switches.h" />
+    <ClInclude Include="services_database.h" />
     <ClInclude Include="service_base.h" />
     <ClInclude Include="service_logging.h" />
+    <ClInclude Include="service_metadata.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\protos\parsers\c\common.pb.cc" />
+    <ClCompile Include="..\..\protos\parsers\c\control.pb.cc" />
+    <ClCompile Include="..\..\protos\parsers\c\log_message.pb.cc" />
+    <ClCompile Include="..\..\protos\parsers\c\ruby_protos.pb.cc" />
     <ClCompile Include="constants.cc" />
+    <ClCompile Include="hash.cc" />
+    <ClCompile Include="services_database.cc" />
+    <ClCompile Include="service_metadata.cc" />
     <ClInclude Include="constants.h">
       <FileType>CppCode</FileType>
     </ClInclude>
