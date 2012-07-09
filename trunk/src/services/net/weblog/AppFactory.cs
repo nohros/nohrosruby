@@ -37,7 +37,7 @@ namespace Nohros.Ruby.Logging
     }
 
     Socket GetPublisherSocket(Context context) {
-      Socket socket = context.Socket(SocketType.DEALER);
+      Socket socket = context.Socket(SocketType.PUB);
       socket.Bind("tcp://*:" + settings_.PublisherPort);
       return socket;
     }
