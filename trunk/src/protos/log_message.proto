@@ -2,14 +2,14 @@
 // Use of this source code is governed by a MIT-style license that can be
 // found in the LICENSE file.
 
-import "google/protobuf/csharp_options.proto";
+//import "google/protobuf/csharp_options.proto";
+//option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby.Logging";
 
-package protocol;
-
-option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby.Protocol";
+package logging;
 option optimize_for = LITE_RUNTIME;
 
 // The format of the log message that is sent to the subscribers.
+// Message UUID: cfa950a0ca0611e19b230800200c9a66
 message LogMessage {
   // The level of the logging event.
   optional string level = 1;
@@ -20,7 +20,6 @@ message LogMessage {
   // The unix time representing the date and time the event was logged.
   optional sint64 time_stamp = 3;
   
-  // The string representation of the exception that was supplied by the user (if
-  // a exception was supplied).
-  optional string exception = 4;
+  // The ID of the application associated with this log message.
+  optional string application = 5;
 }
