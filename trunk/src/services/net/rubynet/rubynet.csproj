@@ -18,7 +18,7 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OldToolsVersion>3.5</OldToolsVersion>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\..\src\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <TargetFrameworkProfile />
@@ -59,12 +59,13 @@
     <Reference Include="mytoolspack.console, Version=0.2.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\nohros.mytoolspack.0.3.3\lib\mytoolspack.console.dll</HintPath>
     </Reference>
-    <Reference Include="nohros, Version=0.9.6.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="nohros, Version=0.9.7.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\must.common.0.9.6\lib\nohros.dll</HintPath>
+      <HintPath>..\..\..\packages\must.common.0.9.7\lib\nohros.dll</HintPath>
     </Reference>
-    <Reference Include="nohros.desktop, Version=0.6.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\must.desktop.0.7.1\lib\nohros.desktop.dll</HintPath>
+    <Reference Include="nohros.desktop, Version=0.7.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\must.desktop.0.7.2\lib\nohros.desktop.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -123,6 +124,7 @@
     <Compile Include="Strings.cs" />
     <Compile Include="..\..\..\protos\parsers\csharp\RubyProtos.cs" />
     <Compile Include="..\..\..\protos\parsers\csharp\Control.cs" />
+    <Compile Include="..\..\..\protos\parsers\csharp\Common.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">

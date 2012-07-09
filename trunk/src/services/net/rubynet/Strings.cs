@@ -4,6 +4,17 @@ namespace Nohros.Ruby
 {
   internal sealed class Strings
   {
+    // Common message facts ---------------------------------------------------
+
+    public const string kUserNameFact = "host-user-name";
+    public const string kCLRVersion = "host-clr-version";
+    public const string kOSVersionFact = "host-os-version";
+    public const string kMachineNameFact = "host-name";
+
+    // Control message tokens ------------------------------------------------
+
+    public const string kAnnounceMessageToken = "node-announce";
+
     /// <summary>
     /// The name of node that contains the logging provider configuration.
     /// </summary>
@@ -48,10 +59,13 @@ namespace Nohros.Ruby
 
     public const string kRunningMode = "running-mode";
 
+    public const string kServiceNameFact = "service-name";
+
     /// <summary>
     /// The string that is displayed on the shell prompt.
     /// </summary>
     public const string kShellPrompt = "rubynet$: ";
+
     public const string kHelp = "help";
     public const string kWaitForDebugger = "debug";
 
@@ -59,13 +73,16 @@ namespace Nohros.Ruby
 RubyNet Version 0.3.0
 ";
 
-    public const string kHeader = kVersion + @"
+    public const string kHeader =
+      kVersion +
+        @"
 Copyright (c) 2010 Nohros Systems Inc. All Rights Reserved.
 
 Use of this software code is governed by a MIT license.
 ";
 
-    public const string kUsageCommon = @"
+    public const string kUsageCommon =
+      @"
   -assembly      specifes the assembly to load and run. This value must be
                  an absolute path or a path relative to the base directory.
 
@@ -77,12 +94,14 @@ Use of this software code is governed by a MIT license.
                  (without quotes).
 ";
 
-    public const string kUsage = kHeader + @"
+    public const string kUsage =
+      kHeader +
+        @"
 Runs a .NET assembly like a console application.
 Usage: nohros.rubynet -assembly=ASSEMBLYNAME -type=TYPENAME [-help] -- ARGS
 "
-        + kUsageCommon +
-@"
+          + kUsageCommon +
+            @"
   -with-shell    specifies that the a command line language interpreter
                  must be started. With a shell users can stop and start
                  services directly from the command line and without

@@ -1,8 +1,8 @@
 using System;
-using Google.ProtocolBuffers;
+using System.Collections.Generic;
 using Nohros.Concurrent;
-using Nohros.Resources;
 using Nohros.Ruby.Protocol;
+using Nohros.Ruby.Protocol.Control;
 
 namespace Nohros.Ruby
 {
@@ -43,33 +43,12 @@ namespace Nohros.Ruby
 
     public void OnMessagePacketReceived(RubyMessagePacket packet) {
       // send the message to the service for processing.
-      IRubyMessage message = service_.OnMessage(packet.Message);
-      RubyMessage response = message as RubyMessage ??
-        RubyMessage.ParseFrom(message.ToByteArray());
-
-      // Create the repy packed using the service processing result.
-      int message_size = message.ToByteArray().Length;
-      RubyMessageHeader header = new RubyMessageHeader.Builder()
-        .SetSize(message_size)
-        .Build();
-
-      int header_size = header.SerializedSize;
-      RubyMessagePacket reply = new RubyMessagePacket.Builder()
-        .SetHeader(header)
-        .SetHeaderSize(header.SerializedSize)
-        .SetMessage(response)
-        .SetSize(header_size + 2 + message_size)
-        .Build();
-
-      if (!ruby_message_channel_.Send(reply)) {
-        logger_.Warn("Reply message cannot be sent: " +
-          response.ToByteString().ToBase64());
-      }
+      service_.OnMessage(packet.Message);
     }
 
     /// <inheritdoc/>
-    public bool Send(IRubyMessage message, string service) {
-      return ruby_message_channel_.Send(message, service);
+    public bool Send(IRubyMessage message) {
+      return ruby_message_channel_.Send(message);
     }
 
     /// <summary>
@@ -91,9 +70,41 @@ namespace Nohros.Ruby
     /// </para>
     /// </remarks>
     public void Start() {
-      ruby_message_channel_.AddListener(this, Executors.ThreadPoolExecutor(),
-        service_.Name);
+      ruby_message_channel_.AddListener(this, Executors.ThreadPoolExecutor());
+      Announce();
       service_.Start(this);
+    }
+
+    void Announce() {
+      // Tell the service node that we are hosting a new service.
+      AnnounceMessage.Builder builder = new AnnounceMessage.Builder()
+        .AddFacts(new KeyValuePair.Builder()
+          .SetKey(Strings.kMachineNameFact)
+          .SetValue(Environment.MachineName))
+        .AddFacts(new KeyValuePair.Builder()
+          .SetKey(Strings.kOSVersionFact)
+          .SetValue(Environment.OSVersion.ToString()))
+        .AddFacts(new KeyValuePair.Builder()
+          .SetKey(Strings.kCLRVersion)
+          .SetValue(Environment.Version.ToString()))
+        .AddFacts(new KeyValuePair.Builder()
+          .SetKey(Strings.kUserNameFact)
+          .SetValue(Environment.UserName));
+
+      foreach (KeyValuePair<string, string> fact in service_.Facts) {
+        builder.AddFacts(
+          new KeyValuePair.Builder()
+            .SetKey(fact.Key)
+            .SetValue(fact.Value));
+      }
+
+      RubyMessage message = new RubyMessage.Builder()
+        .SetId(0)
+        .SetToken(Strings.kAnnounceMessageToken)
+        .SetType((int) NodeMessageType.kNodeAnnounce)
+        .SetMessage(builder.Build().ToByteString())
+        .Build();
+      Send(message);
     }
 
     /// <inherithdoc/>

@@ -20,16 +20,12 @@ namespace Nohros.Ruby
     /// A <see cref="IExecutor"/> object that is used to execute the
     /// <see cref="IRubyMessageListener.OnMessagePacketReceived"/> callback.
     /// </param>
-    /// <param name="service">
-    /// The name of the service associated with the listener.
-    /// </param>
     /// <remarks>
     /// Each listener should be associated with a service(real or virtual).
     /// It will receive only the messages that is destinated to the
     /// associated service.
     /// </remarks>
-    void AddListener(IRubyMessageListener listener, IExecutor executor,
-      string service);
+    void AddListener(IRubyMessageListener listener, IExecutor executor);
 
     /// <summary>
     /// Sends a message packet to the ruby service node.

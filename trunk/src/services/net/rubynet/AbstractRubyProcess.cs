@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
+
 using Google.ProtocolBuffers;
 using Nohros.Concurrent;
 using Nohros.Resources;
@@ -20,10 +20,10 @@ namespace Nohros.Ruby
     const int kMaxRunningServices = 10;
 
     readonly object hosted_service_mutex_;
-    readonly Dictionary<string, RubyServiceHost> hosted_services_;
     readonly IRubyLogger logger_;
     readonly IRubyMessageChannel ruby_message_channel_;
     readonly IRubySettings settings_;
+    int running_services_count_;
 
     #region .ctor
     /// <summary>
@@ -37,10 +37,10 @@ namespace Nohros.Ruby
     protected AbstractRubyProcess(IRubySettings settings,
       IRubyMessageChannel ruby_message_channel) {
       ruby_message_channel_ = ruby_message_channel;
-      hosted_services_ = new Dictionary<string, RubyServiceHost>();
       hosted_service_mutex_ = new object();
       logger_ = RubyLogger.ForCurrentProcess;
       settings_ = settings;
+      running_services_count_ = 0;
     }
     #endregion
 
@@ -51,8 +51,7 @@ namespace Nohros.Ruby
 
     /// <inheritdoc/>
     public virtual void Run(string command_line_string) {
-      RubyMessageChannel.AddListener(this, Executors.SameThreadExecutor(),
-        Strings.kRubyHostServiceName);
+      ruby_message_channel_.AddListener(this, Executors.SameThreadExecutor());
     }
 
     /// <inheritdoc/>
@@ -116,32 +115,18 @@ namespace Nohros.Ruby
     /// </para>
     /// </remarks>
     void StartService(ServiceControlMessage message) {
-      if (hosted_services_.Count > kMaxRunningServices) {
+      if (running_services_count_ > kMaxRunningServices) {
         logger_.Warn(
           "The limit of simultaneous running services has been reached");
         return;
-      }
-
-      var factory = new ServicesFactory(settings_);
-      var service = factory.CreateService(message);
-      var host = new RubyServiceHost(service, ruby_message_channel_);
-
-      // Keep |hosted_services_| thread safe, since it is manipulated by more
-      // than one thread (This thread and the thread that is running the
-      // service).
-      lock (hosted_service_mutex_) {
-        hosted_services_.Add(service.Name, host);
       }
 
       // A try/catch block is used here to ensure the consistence of the
       // list of running services.
       try {
         var thread = new Thread(ThreadMain) {IsBackground = true};
-        thread.Start(host);
+        thread.Start(message);
       } catch (Exception exception) {
-        lock (hosted_service_mutex_) {
-          hosted_services_.Remove(service.Name);
-        }
         logger_.Error(string.Format(StringResources.Log_MethodThrowsException,
           kClassName, "HostService"), exception);
       }
@@ -151,25 +136,27 @@ namespace Nohros.Ruby
     }
 
     void ThreadMain(object o) {
-      var host = o as RubyServiceHost;
+      var message = o as ServiceControlMessage;
 #if DEBUG
-      if (host == null) {
+      if (message == null) {
         throw new ArgumentException(
-          "object 'o' is not an instance of the RubyServiceHost class");
+          "object 'o' is not an instance of the ServiceControlMessage class");
       }
 #endif
+      var factory = new ServicesFactory(settings_);
+      var service = factory.CreateService(message);
+      var host = new RubyServiceHost(service, ruby_message_channel_);
+
       // A try/catch block is used here to ensure the consistence of the
       // list of running services and to isolate one service from another.
       try {
+        ++running_services_count_;
         host.Start();
       } catch (Exception exception) {
         logger_.Error(string.Format(StringResources.Log_MethodThrowsException,
           kClassName, "ThreadMain"), exception);
       }
-
-      lock (hosted_service_mutex_) {
-        hosted_services_.Remove(host.Service.Name);
-      }
+      --running_services_count_;
     }
   }
 }
