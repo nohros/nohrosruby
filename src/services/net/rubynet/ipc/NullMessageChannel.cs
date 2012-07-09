@@ -21,13 +21,12 @@ namespace Nohros.Ruby
     #endregion
 
     /// <inheritdoc/>
-    public bool Send(IRubyMessage message, string service) {
+    public bool Send(IRubyMessage message) {
       return true;
     }
 
     /// <inheritdoc/>
-    public void AddListener(IRubyMessageListener listener, IExecutor executor,
-      string service) {
+    public void AddListener(IRubyMessageListener listener, IExecutor executor) {
     }
 
     /// <inheritdoc/>

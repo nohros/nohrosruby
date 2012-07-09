@@ -85,14 +85,17 @@ namespace Nohros.Ruby.Shell
         start_control_message.ToByteString();
       RubyMessageHeader header = new RubyMessageHeader.Builder()
         .SetId(0)
-        .SetSender(ByteString.Empty)
-        .SetService(Strings.kRubyHostServiceName)
+        .AddFacts(
+          new KeyValuePair.Builder()
+            .SetKey(Strings.kServiceNameFact)
+            .SetValue(Strings.kRubyHostServiceName)
+            .Build())
         .SetSize(start_control_message_bytes.Length)
         .Build();
 
       RubyMessage message = new RubyMessage.Builder()
         .SetId(0)
-        .SetToken("service-control")
+        .SetToken("node-service-control")
         .SetType((int) NodeMessageType.kServiceControl)
         .SetMessage(start_control_message_bytes)
         .Build();
