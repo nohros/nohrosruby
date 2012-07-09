@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Nohros.Ruby.Weblog
+namespace Nohros.Ruby.Logging
 {
   /// <summary>
   /// A simple logging interface abstracting logging APIs.
@@ -46,7 +46,7 @@ namespace Nohros.Ruby.Weblog
   /// the application.
   /// </para>
   /// </remarks>
-  interface IWeblogLogger
+  interface IAggregatorLogger
   {
     #region IsEnabled
     /// <summary>

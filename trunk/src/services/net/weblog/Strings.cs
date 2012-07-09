@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Nohros.Ruby.Weblog
+namespace Nohros.Ruby.Logging
 {
   internal class Strings
   {

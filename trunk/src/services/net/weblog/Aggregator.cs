@@ -1,103 +1,135 @@
 ﻿using System;
-using System.Net.Sockets;
+using System.Collections.Generic;
 using System.Text;
-
+using Nohros.Ruby.Protocol;
+using ZMQ;
+using Nohros.Concurrent;
+using Nohros.Resources;
 using Nohros.Data.Json;
-using Nohros.Ruby.Logging;
 
-namespace Nohros.Ruby.Weblog
+namespace Nohros.Ruby.Logging
 {
   /// <summary>
-  /// A class that aggregates log messages published by a
-  /// <see cref="Aggregator"/> and outputs then throught a TCP socket.
+  /// A class that aggregates log messages send from anywhere (possible from a
+  /// service) publish and persist them to a database.
   /// </summary>
-  public class Aggregator
+  public class Aggregator : AbstractRubyService
   {
+    const string kClassName = "Nohros.Ruby.Logging.Aggregator";
+
+    readonly Socket dealer_;
+    readonly IDictionary<string, string> facts_;
+
+    readonly IAggregatorLogger logger_ = AggregatorLogger.ForCurrentProcess;
+    readonly Mailbox<LogMessage> mailbox_;
     readonly Socket publisher_;
-    readonly ZMQ.Socket subscriber_;
+    readonly IAggregatorSettings settings_;
+    bool is_running_;
 
-    readonly IWeblogLogger logger = WeblogLogger.ForCurrentProcess;
-
+    #region .ctor
     /// <summary>
     /// Initializes a new instance of the <see cref="Aggregator"/> class
-    /// by using the specified TCP and ZMQ sockets.
+    /// by using the specified ZMQ sockets.
     /// </summary>
+    /// <param name="dealer">
+    /// A <see cref="Socket"/> of type <see cref="SocketType.DEALER"/> that is
+    /// used to receive messages from somewhere.
+    /// </param>
     /// <param name="publisher">
-    /// A <see cref="Socket"/> that can be used to send tcp packets.
+    /// A <see cref="Socket"/> of type <see cref="SocketType.PUB"/> that is
+    /// used to publish the message.
     /// </param>
-    /// <param name="subscriber">
-    /// A <see cref="ZMQ.Socket "/> that can be used to subscribe to a zeromq
-    /// publisher socket.
-    /// </param>
-    public Aggregator(Socket publisher, ZMQ.Socket subscriber) {
+    public Aggregator(Socket dealer, Socket publisher,
+      IAggregatorSettings settings) {
       publisher_ = publisher;
-      subscriber_ = subscriber;
+      dealer_ = dealer;
+      settings_ = settings;
+      mailbox_ = new Mailbox<LogMessage>(OnLogMessage);
+      is_running_ = false;
+
+      facts_ = new Dictionary<string, string>();
+      InitFacts();
+    }
+    #endregion
+
+    public override void Start(IRubyServiceHost service_host) {
+      is_running_ = true;
+      while (is_running_) {
+        try {
+          byte[] data = dealer_.Recv();
+
+          LogMessage message = LogMessage.ParseFrom(data);
+          logger_.Debug("Received a message from:" + message.Application);
+          mailbox_.Send(message);
+        } catch (ZMQ.Exception zmqe) {
+          is_running_ = false;
+          if (zmqe.Errno == (int)ERRNOS.ETERM) {
+            logger_.Debug("zmq::Context is terminating.");
+          } else {
+            logger_.Error(
+              string.Format(StringResources.Log_MethodThrowsException,
+                kClassName,
+                "Start"), zmqe);
+          }
+        } catch (System.Exception exception) {
+          logger_.Error(
+            string.Format(StringResources.Log_MethodThrowsException, kClassName,
+              "Start"), exception);
+        }
+      }
+    }
+
+    public override void Stop(IRubyMessage message) {
+      is_running_ = false;
+      dealer_.Dispose();
+    }
+
+    /// <inheritdoc/>
+    public override void OnMessage(IRubyMessage message) {
+    }
+
+    void OnLogMessage(LogMessage message) {
+      Publish(message);
+      Store(message);
     }
 
     /// <summary>
-    /// Subscribes to the zeromq publisher located at TCP/IP address
-    /// <paramref name="host"/>:<paramref name="port"/>.
+    /// Publish the message to any conneted subscriber.
     /// </summary>
-    /// <param name="host">
-    /// The name of the remote publisher host.
+    /// <param name="message">
+    /// The message to publish.
     /// </param>
-    /// <param name="port">
-    /// The port number of the remote publisher host.
-    /// </param>
-    /// <exception cref="ArgumentNullException">
-    /// <paramref name="host"/> is null.
-    /// </exception>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// The port number is not valid.
-    /// </exception>
-    /// <remarks>
-    /// </remarks>
-    public bool Subscribe(string host, int port) {
-      try {
-        string address = "tcp://" + host + ":" + port.ToString();
-
-        #region : logging :
-        if (logger.IsDebugEnabled) {
-          logger.Debug("Subscribing to publisher located at:" + address);
-        }
-        #endregion
-
-        subscriber_.Connect(address);
-        return true;
-      } catch(ZMQ.Exception exception) {
-        #region : logging :
-        logger.Error("Subscription failed", exception);
-        #endregion
-      }
-      return false;
+    void Publish(LogMessage message) {
+      string serialized_message = new JsonStringBuilder()
+        .WriteBeginObject()
+        .WriteMember("level", message.Level)
+        .WriteMember("message", message.Message)
+        .WriteMember("timestamp", message.TimeStamp)
+        .WriteMember("exception", message.Exception)
+        .WriteMember("application", message.Application)
+        .ToString();
+      publisher_.SendMore(message.Application, Encoding.UTF8);
+      publisher_.Send(serialized_message, Encoding.UTF8);
     }
 
-    public void Run() {
-      try {
-        byte[] data = subscriber_.Recv();
-        LogMessage message = LogMessage.ParseFrom(data);
-        JsonStringBuilder builder = new JsonStringBuilder()
-          .WriteBeginObject()
-          .WriteMember("level", message.Level)
-          .WriteMember("message", message.Message)
-          .WriteMember("", message.TimeStamp)
-          .WriteMember("", message.Exception);
+    /// <summary>
+    /// Persist the messageto a database.
+    /// </summary>
+    /// <param name="message">
+    /// The message to be persisted.
+    /// </param>
+    void Store(LogMessage message) {
+      settings_.AggregatorDataProvider.Store(message);
+    }
 
-        byte[] log_message_byte_array = Encoding.UTF8.GetBytes(builder.ToString());
-        publisher_.Send(log_message_byte_array);
-      } catch(ZMQ.Exception zmq_exception) {
-        #region : logging :
-        logger.Error("ZMQ exception", zmq_exception);
-        #endregion
-      } catch(SocketException socket_exception) {
-        #region : logging :
-        logger.Error("Socket exception", socket_exception);
-        #endregion
-      } catch(Exception exception) {
-        #region : logging :
-        logger.Error("", exception);
-        #endregion
-      }
+    void InitFacts() {
+      facts_.Add("service-name", "nohros.ruby.log");
+      facts_.Add("can-process-message", "cfa950a0ca0611e19b230800200c9a66");
+    }
+
+    /// <inheritdoc/>
+    public override IDictionary<string, string> Facts {
+      get { return facts_; }
     }
   }
 }

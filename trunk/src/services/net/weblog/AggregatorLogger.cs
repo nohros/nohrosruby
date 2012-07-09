@@ -1,28 +1,26 @@
 ﻿using System;
-using Nohros.Configuration;
 using Nohros.Logging;
-using Nohros.Providers;
 
-namespace Nohros.Ruby.Weblog
+namespace Nohros.Ruby.Logging
 {
   /// <summary>
-  /// A implementation of the <see cref="IWeblogLogger"/> that uses the
+  /// A implementation of the <see cref="IAggregatorLogger"/> that uses the
   /// nohros must framework.
   /// </summary>
   /// <remarks>
   /// This class uses the nohros must framework and is the only point where
   /// this dependency exists. Clients should call the
   /// <see cref="ForCurrentProcess"/> method to obtain an instance of the
-  /// <see cref="IWeblogLogger"/> class, and uses it to log messages.
+  /// <see cref="IAggregatorLogger"/> class, and uses it to log messages.
   /// <para>
   /// By default the <see cref="NOPLogger"/> is returned by the
   /// <see cref="ForCurrentProcess"/> method. The application must configure
   /// the correct logger on the app initialization.
   /// </para>
   /// </remarks>
-  internal class WeblogLogger: IWeblogLogger
+  internal class AggregatorLogger: IAggregatorLogger
   {
-    static IWeblogLogger current_process_logger_;
+    static IAggregatorLogger current_process_logger_;
 
     ILogger internal_logger_;
 
@@ -31,7 +29,7 @@ namespace Nohros.Ruby.Weblog
     /// <summary>
     /// Initializes the singleton process's logger instance.
     /// </summary>
-    static WeblogLogger() {
+    static AggregatorLogger() {
       // set the logger to be used, configure it and
       // do some initialization stuffs
       //
@@ -45,26 +43,26 @@ namespace Nohros.Ruby.Weblog
       // of the singleton logger object.
       NOPLogger internal_logger = new NOPLogger();
 
-      // initialize a new instance of the WeblogLogger using the
+      // initialize a new instance of the AggregatorLogger using the
       // previously instantiated logger.
-      WeblogLogger logger = new WeblogLogger(internal_logger);
+      AggregatorLogger logger = new AggregatorLogger(internal_logger);
 
-      current_process_logger_ = logger as IWeblogLogger;
+      current_process_logger_ = logger as IAggregatorLogger;
     }
     #endregion
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="WeblogLogger"/>
+    /// Initializes a new instance of the <see cref="AggregatorLogger"/>
     /// class by using the specified <see cref="ILogger"/> interface.
     /// </summary>
-    public WeblogLogger(ILogger logger) {
+    public AggregatorLogger(ILogger logger) {
       internal_logger_ = logger;
     }
 
     /// <summary>
     /// Gets the current process logger.
     /// </summary>
-    public static IWeblogLogger ForCurrentProcess {
+    public static IAggregatorLogger ForCurrentProcess {
       get {
         return current_process_logger_;
       }
