@@ -114,7 +114,7 @@ message ResponseMessage {
 //  RubyMessage.Type = [NodeMessageType.kNodeAnnounce]
 //  RubyMessage.Token = [node-announce]
 message AnnounceMessage {
-  optional KeyValuePair facts = 1;
+  repeated KeyValuePair facts = 1;
 }
 
 // A message that should be sent when a query cannot be fulfilled. The
