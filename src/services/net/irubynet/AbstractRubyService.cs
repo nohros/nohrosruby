@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Nohros.Ruby.Protocol;
 
 namespace Nohros.Ruby
@@ -14,29 +15,14 @@ namespace Nohros.Ruby
   /// </summary>
   public abstract class AbstractRubyService : IRubyService
   {
-    readonly string name_;
-
     #region .ctor
     /// <summary>
-    /// Initialize a new instance of tje <see cref="AbstractRubyService"/>
+    /// Initialize a new instance of the <see cref="AbstractRubyService"/>
     /// class by using the specified service name.
     /// </summary>
-    /// <param name="name">
-    /// The name of the service.
-    /// </param>
-    protected AbstractRubyService(string name) {
-      name_ = name;
+    protected AbstractRubyService() {
     }
     #endregion
-
-    /// <inheritdoc/>
-    public virtual string Name {
-      get { return name_; }
-    }
-
-    /// <inheritdoc/>
-    public virtual void Start(IRubyServiceHost service_host) {
-    }
 
     /// <inheritdoc/>
     public virtual void Shutdown() {
@@ -51,9 +37,15 @@ namespace Nohros.Ruby
     }
 
     /// <inheritdoc/>
-    public virtual void Stop(IRubyMessage message) {
-    }
+    public abstract void Start(IRubyServiceHost service_host);
 
-    public abstract IRubyMessage OnMessage(IRubyMessage message);
+    /// <inheritdoc/>
+    public abstract void Stop(IRubyMessage message);
+
+    /// <inheritdoc/>
+    public abstract void OnMessage(IRubyMessage message);
+
+    /// <inheritdoc/>
+    public abstract IDictionary<string, string> Facts { get; }
   }
 }

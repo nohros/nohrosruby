@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Nohros.Ruby.Protocol;
 
 namespace Nohros.Ruby
@@ -30,7 +31,33 @@ namespace Nohros.Ruby
     /// specified name at once.
     /// </para>
     /// </remarks>
-    string Name { get; }
+    //string Name { get; }
+
+    /// <summary>
+    /// Gets a collection of key/value pairs representing a discreet bits of
+    /// information about the service. Examples could be service name,
+    /// host name, release, operating system, etc.
+    /// </summary>
+    /// <para>
+    /// The <see cref="Facts"/> is used by the service node to filter the
+    /// received messages. Service node guarantee that a service receive only
+    /// messages associated with one or more service facts.
+    /// <para>
+    /// For example, a service that declares the facts
+    /// <para>
+    /// {"service-name"="service", "host-name"="my.host.name"}
+    /// </para>  will receive the messages that has the facts:
+    /// <para>
+    /// </para>
+    /// {"service-name"="service"}
+    /// {"host-name"="my.host.name"}
+    /// {"service-name"="service", "host-name"="my.host.name"}
+    /// </para>, but will not receive messages that has the facts:
+    /// <para>
+    /// {"service-name"="service", "host-name"="my.host.name", "other-fact":""}
+    /// </para>
+    /// </para>
+    IDictionary<string, string> Facts { get; }
 
     /// <summary>
     /// Starts the service.
@@ -140,6 +167,6 @@ namespace Nohros.Ruby
     /// response indicating if the message can be processed or not.
     /// </para>
     /// </remarks>
-    IRubyMessage OnMessage(IRubyMessage message);
+    void OnMessage(IRubyMessage message);
   }
 }

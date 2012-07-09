@@ -49,12 +49,6 @@ namespace Nohros.Ruby.Protocol
     string Token { get; }
 
     /// <summary>
-    /// Gets an array of <see cref="IFact"/> containg the facts for the service
-    /// should handle the message.
-    /// </summary>
-    IFact[] Facts { get; }
-
-    /// <summary>
     /// Gets a sequence of bytes containing the service specific message
     /// encoded accordingly to the google protobuf format.
     /// </summary>
