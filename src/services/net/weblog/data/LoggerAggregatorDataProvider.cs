@@ -10,7 +10,7 @@ namespace Nohros.Ruby.Logging
   /// </summary>
   public class LoggerAggregatorDataProvider : IAggregatorDataProvider
   {
-    readonly IAggregatorLogger logger_;
+    readonly IRubyLogger logger_;
 
     /// <summary>
     /// Initializes a new instance of the
@@ -18,19 +18,19 @@ namespace Nohros.Ruby.Logging
     /// configured logger to "store" the log messages.
     /// </summary>
     public LoggerAggregatorDataProvider() {
-      logger_ = AggregatorLogger.ForCurrentProcess;
+      logger_ = RubyLogger.ForCurrentProcess;
     }
 
-    public void Store(LogMessage message) {
+    public bool Store(LogMessage message) {
       logger_.Info(
         new JsonStringBuilder()
           .WriteBeginObject()
           .WriteMember("level", message.Level)
-          .WriteMember("message", message.Message)
+          .WriteMember("reason", message.Reason)
           .WriteMember("timestamp", message.TimeStamp)
-          .WriteMember("exception", message.Exception)
           .WriteMember("application", message.Application)
           .ToString());
+      return true;
     }
   }
 }
