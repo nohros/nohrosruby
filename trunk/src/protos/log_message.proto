@@ -40,5 +40,5 @@ message LogMessage {
   
   // A collection of key value pairs that is used to categorize the log. For
   // example: object=input, action=created, status=success.
-  repeated KeyValuePair categorization = 6;
+  repeated ruby.KeyValuePair categorization = 6;
 }
