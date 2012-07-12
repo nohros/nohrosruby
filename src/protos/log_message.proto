@@ -2,8 +2,10 @@
 // Use of this source code is governed by a MIT-style license that can be
 // found in the LICENSE file.
 
-//import "google/protobuf/csharp_options.proto";
-//option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby.Logging";
+import "google/protobuf/csharp_options.proto";
+option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby.Logging";
+
+import "common.proto";
 
 package logging;
 option optimize_for = LITE_RUNTIME;
@@ -11,15 +13,32 @@ option optimize_for = LITE_RUNTIME;
 // The format of the log message that is sent to the subscribers.
 // Message UUID: cfa950a0ca0611e19b230800200c9a66
 message LogMessage {
-  // The level of the logging event.
+  // The level of the logging event. Could be any string that is relevant for
+  // the application, but is usually one of the following:
+  //  * DEBUG
+  //  * INFO
+  //  * WARN
+  //  * ERROR
   optional string level = 1;
- 
-  // The log message as supplied by the user.
-  optional string message = 2;
   
   // The unix time representing the date and time the event was logged.
-  optional sint64 time_stamp = 3;
+  optional sint64 time_stamp = 2;
+
+  // The ID of the application associated with this log message. This is usually
+  // set to [MACHINE-NAME].[PROGRAM-NAME], but could be anything that identifies
+  // the application.
+  optional string application = 3;
   
-  // The ID of the application associated with this log message.
-  optional string application = 5;
+  // The name of the user associated with the log. It could be anything that
+  // identifies the user associated with the log message. For example: The name
+  // of the user that is running the application, the user account associated
+  // with the machine or the machine name where the application is running.
+  optional string user = 4;
+
+  // The log message as supplied by the user.
+  optional string reason = 5;
+  
+  // A collection of key value pairs that is used to categorize the log. For
+  // example: object=input, action=created, status=success.
+  repeated KeyValuePair categorization = 6;
 }
