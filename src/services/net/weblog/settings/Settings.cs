@@ -41,7 +41,7 @@ namespace Nohros.Ruby.Logging
     /// <inheritdoc/>
     public int ListenerPort {
       get { return listener_port_; }
-      internal set { listener_port_ = 0; }
+      internal set { listener_port_ = value; }
     }
   }
 }
