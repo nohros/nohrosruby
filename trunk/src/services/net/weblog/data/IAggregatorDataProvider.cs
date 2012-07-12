@@ -13,6 +13,6 @@ namespace Nohros.Ruby.Logging
     /// <param name="message">
     /// The message to be stored.
     /// </param>
-    void Store(LogMessage message);
+    bool Store(LogMessage message);
   }
 }
