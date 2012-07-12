@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using Nohros.Ruby.Protocol;
 using ZMQ;
+
+using Nohros.Ruby;
+using Nohros.Ruby.Protocol;
 using Nohros.Concurrent;
 using Nohros.Resources;
 using Nohros.Data.Json;
@@ -17,12 +20,12 @@ namespace Nohros.Ruby.Logging
   {
     const string kClassName = "Nohros.Ruby.Logging.Aggregator";
 
-    readonly Socket dealer_;
     readonly IDictionary<string, string> facts_;
 
-    readonly IAggregatorLogger logger_ = AggregatorLogger.ForCurrentProcess;
+    readonly IRubyLogger logger_ = RubyLogger.ForCurrentProcess;
     readonly Mailbox<LogMessage> mailbox_;
-    readonly Socket publisher_;
+    readonly Context context_;
+    Socket dealer_, publisher_;
     readonly IAggregatorSettings settings_;
     bool is_running_;
 
@@ -31,21 +34,14 @@ namespace Nohros.Ruby.Logging
     /// Initializes a new instance of the <see cref="Aggregator"/> class
     /// by using the specified ZMQ sockets.
     /// </summary>
-    /// <param name="dealer">
-    /// A <see cref="Socket"/> of type <see cref="SocketType.DEALER"/> that is
-    /// used to receive messages from somewhere.
-    /// </param>
-    /// <param name="publisher">
-    /// A <see cref="Socket"/> of type <see cref="SocketType.PUB"/> that is
-    /// used to publish the message.
-    /// </param>
-    public Aggregator(Socket dealer, Socket publisher,
-      IAggregatorSettings settings) {
-      publisher_ = publisher;
-      dealer_ = dealer;
+    public Aggregator(Context context, IAggregatorSettings settings) {
       settings_ = settings;
       mailbox_ = new Mailbox<LogMessage>(OnLogMessage);
+      context_ = context;
       is_running_ = false;
+      dealer_ = null;
+      publisher_ = null;
+      context_ = context;
 
       facts_ = new Dictionary<string, string>();
       InitFacts();
@@ -53,6 +49,8 @@ namespace Nohros.Ruby.Logging
     #endregion
 
     public override void Start(IRubyServiceHost service_host) {
+      publisher_ = GetPublisherSocket(context_, settings_.PublisherPort);
+      dealer_ = GetDealerSocket(context_, settings_.ListenerPort);
       is_running_ = true;
       while (is_running_) {
         try {
@@ -79,9 +77,23 @@ namespace Nohros.Ruby.Logging
       }
     }
 
+    Socket GetDealerSocket(Context context, int port) {
+      Socket socket = context.Socket(SocketType.DEALER);
+      socket.Bind("tcp://*:" + port);
+      return socket;
+    }
+
+    Socket GetPublisherSocket(Context context, int port) {
+      Socket socket = context.Socket(SocketType.PUB);
+      socket.Bind("tcp://*:" + port);
+      return socket;
+    }
+
     public override void Stop(IRubyMessage message) {
       is_running_ = false;
       dealer_.Dispose();
+      publisher_.Dispose();
+      context_.Dispose();
     }
 
     /// <inheritdoc/>
@@ -100,16 +112,8 @@ namespace Nohros.Ruby.Logging
     /// The message to publish.
     /// </param>
     void Publish(LogMessage message) {
-      string serialized_message = new JsonStringBuilder()
-        .WriteBeginObject()
-        .WriteMember("level", message.Level)
-        .WriteMember("message", message.Message)
-        .WriteMember("timestamp", message.TimeStamp)
-        .WriteMember("exception", message.Exception)
-        .WriteMember("application", message.Application)
-        .ToString();
       publisher_.SendMore(message.Application, Encoding.UTF8);
-      publisher_.Send(serialized_message, Encoding.UTF8);
+      publisher_.Send(message.ToByteArray());
     }
 
     /// <summary>
