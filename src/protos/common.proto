@@ -4,9 +4,10 @@
 //
 // Basic messages for general use.
 
-//import "google/protobuf/csharp_options.proto";
-//option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby";
+import "google/protobuf/csharp_options.proto";
+option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby";
 
+package ruby;
 option optimize_for = LITE_RUNTIME;
 
 message KeyValuePair {
