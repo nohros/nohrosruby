@@ -64,7 +64,7 @@ std::vector<scoped_refptr<Message>> Socket::Receive(SocketFlags flags) {
 
     // Check if the message is a multipart message.
     int err = zmq_getsockopt(ref_->socket(), ZMQ_RCVMORE, &has_more, &more_size);
-    has_more = (CheckError(err) != ZMQ_OK) && has_more;
+    has_more = (CheckError(err) == ZMQ_OK) && has_more;
   } while (has_more);
   return message_parts;
 }

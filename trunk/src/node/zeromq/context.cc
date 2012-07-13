@@ -77,6 +77,10 @@ void Context::Close() {
   // Additionaly clear the opened sockets, because they contain weak references
   // to this context. This case can come up when error-handling code is hit
   // on production.
+  for (SocketRefSet::iterator i = open_sockets_.begin();
+    i != open_sockets_.end(); ++i) {
+    (*i)->Close();
+  }
 
   if (zmq_context_) {
     zmq_term(zmq_context_);
