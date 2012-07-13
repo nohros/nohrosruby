@@ -19,7 +19,6 @@
 #include <google/protobuf/repeated_field.h>
 #include <sql/connection.h>
 
-#include <control.pb.h>
 #include <ruby_protos.pb.h>
 #include "node/zeromq/context.h"
 #include "node/zeromq/socket.h"
@@ -85,44 +84,12 @@ void RubyService::OnMessage(const MessageParts& message_parts) {
     return;
   }
 
-  // Route the message to its destination.
-  RouteMessage(message_parts[0], &packet);
-}
-
-void RubyService::RouteMessage(zmq::Message* sender,
-  protocol::RubyMessagePacket* packet) {
-  DCHECK(sender);
-  DCHECK(packet);
-
   if (!packet->has_message()) {
     LOG(WARNING) << "Received a packet with no message associated.";
     return;
   }
 
-  // A empty sender means that the message is a request sent to one of
-  // the hosted services. In that case we need to set the |sender| value
-  // to the address of the message sender and search for the service that
-  // should receive the message.
-  std::vector<std::string> destinations;
-  if (!packet->message().has_sender()) {
-    // Set the address of the sender, so message receiver could send a
-    // reply back.
-    packet->mutable_message()->set_sender(sender->data());
-
-    // Search for the service(s) that should receive the message. If no
-    // services are found, reply to the sender with the sent message (modified
-    // with the sender address).
-    ServiceFacts service_facts = GetServiceFacts(packet->header());
-    if (service_facts.size()) {
-      ServicesMetadata services;
-      if (db_->GetServiceMetadata(service_facts, &services)) {
-        DispatchMessage(destinations, packet);
-        return;
-      }
-    }
-  }
-  destinations.push_back(sender->data());
-  DispatchMessage(destinations, packet);
+  DispatchMessage(message_parts[0]->data(), message_router_->GetRoutes(packet));
 }
 
 void RubyService::DispatchMessage(const std::vector<std::string>& destinations,
@@ -154,17 +121,6 @@ void RubyService::DispatchMessage(const std::vector<std::string>& destinations,
       zmq::kSendMore);
     router_->Send(packet_data, packet_size, zmq::kNoFlags);
   }
-}
-
-ServiceFacts RubyService::GetServiceFacts(
-  const protocol::RubyMessageHeader& header) {
-  ServiceFacts service_facts;
-  KeyValuePairSet facts = header.facts();
-  for (KeyValuePairSet::iterator fact = facts.begin();
-    fact != facts.end(); ++fact) {
-    service_facts.push_back(std::make_pair(fact->key(), fact->value()));
-  }
-  return service_facts;
 }
 
 zmq::Socket* RubyService::CreateRouterSocket(int port) {

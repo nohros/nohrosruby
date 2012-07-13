@@ -2,8 +2,8 @@
 // Use of this source code is governed by BSD-style license that can be found
 // in the LICENCE file.
 
-#ifndef NODE_SERVICE_SERVICE_NETADATA_H_
-#define NODE_SERVICE_SERVICE_NETADATA_H_
+#ifndef NODE_SERVICE_SERVICE_METADATA_H_
+#define NODE_SERVICE_SERVICE_METADATA_H_
 #pragma once
 
 #include <string>
@@ -69,4 +69,4 @@ class ServiceMetadata : public base::RefCountedThreadSafe<ServiceMetadata> {
 
 }  // namespace node
 
-#endif  // NODE_SERVICE_SERVICE_NETADATA_H_
+#endif  // NODE_SERVICE_SERVICE_METADATA_H_

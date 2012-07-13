@@ -21,6 +21,7 @@
       <Filter>protos</Filter>
     </ClInclude>
     <ClInclude Include="hash.h" />
+    <ClInclude Include="message_router.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="service_main.cc" />
@@ -43,6 +44,7 @@
       <Filter>protos</Filter>
     </ClCompile>
     <ClCompile Include="hash.cc" />
+    <ClCompile Include="message_router.cc" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="protos">
