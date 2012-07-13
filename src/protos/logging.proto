@@ -10,8 +10,16 @@ import "common.proto";
 package logging;
 option optimize_for = LITE_RUNTIME;
 
+enum LoggingMessageType {
+  kLogMessage = 1;
+}
+
 // The format of the log message that is sent to the subscribers.
 // Message UUID: cfa950a0ca0611e19b230800200c9a66
+//
+// Protocol
+//  RubyMessage.Type = [LoggingMessageType.kLogMessage]
+//  RubyMessage.Token = [node-announce]
 message LogMessage {
   // The level of the logging event. Could be any string that is relevant for
   // the application, but is usually one of the following:
@@ -41,4 +49,13 @@ message LogMessage {
   // A collection of key value pairs that is used to categorize the log. For
   // example: object=input, action=created, status=success.
   repeated ruby.KeyValuePair categorization = 6;
+  
+  // Metadata messages contains metadata about log messages(such as control
+  // messages). It is used to instruct the logger service about what to do with
+  // the message (publish it, store it, etc).
+  message Metadata {
+    optional bool publish = 1 [default = true];
+    optional bool store = 2 [default = true];
+  }
+  optional Metadata medatata = 7;
 }
