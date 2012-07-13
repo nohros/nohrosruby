@@ -5,7 +5,9 @@
 #ifndef NODE_ZEROMQ_MESSAGE_H_
 #define NODE_ZEROMQ_MESSAGE_H_
 
+#include <string>
 #include <zmq.h>
+
 #include <base/memory/ref_counted.h>
 
 namespace zmq {
@@ -58,20 +60,23 @@ class Message : public base::RefCountedThreadSafe<Message> {
   Message();
   explicit Message(int size);
 
-  const void* data() { return zmq_msg_data(&message_); }
-
   // The underlying buffer size.
   size_t size() { return zmq_msg_size(&message_); }
+  
+  void* mutable_data() { return zmq_msg_data(&message_); }
+  const std::string data() {
+    return std::string(static_cast<char*>(mutable_data()), size());
+  }
 
   // A pointer to the raw zeromq message.
   zmq_msg_t* message() { return &message_; }
 
  protected:
-  friend class base::RefCountedThreadSafe<Message>;  
+  friend class base::RefCountedThreadSafe<Message>;
 
   // Only allow derived classes to specify data_.
   // In all other cases, we own data_, and must delete it at destruction time.
-  //Message(void* data, int size);
+  // Message(void* data, int size);
 
   virtual ~Message();
 
