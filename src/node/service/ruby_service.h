@@ -13,7 +13,6 @@
 
 #include "node/zeromq/context.h"
 #include "node/service/service_base.h"
-#include "node/service/services_database.h"
 
 
 namespace zmq {
@@ -21,18 +20,9 @@ class Socket;
 class Message;
 }
 
-namespace sql {
-class Connection;
-}
-
 namespace protocol {
 class RubyMessagePacket;
 class RubyMessageHeader;
-
-namespace control {
-class AnnounceMessage;
-}
-}
 
 namespace node {
 class ServicesDatabase;
@@ -54,11 +44,6 @@ class RubyService
   // from clients and services.
   void set_message_channel_port (int port) { message_channel_port_ = port; }
 
-  // Sets the address of the service tracker.
-  void set_service_tracker_address (const std::string& service_tracker_address) {
-    service_tracker_address_ = service_tracker_address;
-  }
-
  protected:
   // Implementation of the SeviceBase methods.
   void OnStart(const std::vector<std::wstring>& arguments) OVERRIDE;
@@ -73,29 +58,18 @@ class RubyService
  private:
   // Process the message parts.
   void OnMessage(const MessageParts& message_parts);
-  void OnNodeMessage(const protocol::RubyMessagePacket& packet);
   
-  // Routes a message to its final destination. |sender| is the socket address
-  // of the message sender and |packet| is the message packet to be routed.
-  void RouteMessage(zmq::Message* sender, protocol::RubyMessagePacket* packet);
-
   // Dispatches a message packet to its destiantion.
   void DispatchMessage(const std::vector<std::string>& destinations,
     const protocol::RubyMessagePacket* packet);
-
-  ServiceFacts GetServiceFacts(const protocol::RubyMessageHeader& header);
 
   // Creates a socket object and bind it to the given |port|.Returns true
   // if the socket was created succesfully; otherwise, false.
   zmq::Socket* CreateRouterSocket(int port);
   zmq::Context* context_;
 
-  // The database that is used to store the services metadata.
-  ServicesDatabase* db_;
-
   bool is_running_;
   int message_channel_port_;
-  std::string service_tracker_address_;
 
   // The zeromq socket that is used as a message router.
   scoped_ptr<zmq::Socket> router_;

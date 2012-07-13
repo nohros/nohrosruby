@@ -6,6 +6,9 @@
 #define NODE_SERVICE_SERVICES_DATABASE_H_
 #pragma once
 
+#include <vector>
+#include <string>
+
 #include <sql/meta_table.h>
 #include <base/file_path.h>
 #include <base/basictypes.h>
@@ -24,8 +27,8 @@ namespace node {
 class ServiceMetadata;
 
 typedef std::pair<std::string, std::string> ServiceFact;
-typedef std::vector<ServiceFact> ServiceFacts;
-typedef std::vector<scoped_refptr<ServiceMetadata> > ServicesMetadata;
+typedef std::vector<ServiceFact> ServiceFactSet;
+typedef std::vector<scoped_refptr<ServiceMetadata> > ServicesMetadataSet;
 
 class ServicesDatabase {
  public:
@@ -41,7 +44,8 @@ class ServicesDatabase {
   // Gets the metadata for the services that has the given facts. Returns true
   // if we have metadata for at least one service associated with the given
   // facts.
-  bool GetServiceMetadata(const ServiceFacts& facts, ServicesMetadata* medatada);
+  bool GetServiceMetadata(const ServiceFactSet& facts,
+    ServicesMetadataSet* medatada);
 
  private:
   // Creates the services table, returning true if the table already exists

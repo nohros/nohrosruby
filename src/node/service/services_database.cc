@@ -96,8 +96,8 @@ bool ServicesDatabase::InitServicesFactsTable() {
                  "ON facts(hash_code)"));
 }
 
-bool ServicesDatabase::GetServiceMetadata(const ServiceFacts& facts,
-  ServicesMetadata* services) {
+bool ServicesDatabase::GetServiceMetadata(const ServiceFactSet& facts,
+  ServicesMetadataSet* services) {
   DCHECK(db_.get());
   DCHECK(services);
   DCHECK(facts.size());
