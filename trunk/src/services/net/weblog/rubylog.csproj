@@ -65,8 +65,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Aggregator.cs" />
-    <Compile Include="..\..\..\protos\parsers\csharp\LogMessage.cs" />
     <Compile Include="..\..\..\protos\parsers\csharp\Common.cs" />
+    <Compile Include="..\..\..\protos\parsers\csharp\Logging.cs" />
     <Compile Include="AggregatorFactory.cs" />
     <Compile Include="AppFactory.cs" />
     <Compile Include="data\IAggregatorDataProvider.cs" />
@@ -83,7 +83,6 @@
     <Compile Include="settings\Settings.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="rubylog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -8,5 +8,6 @@ namespace Nohros.Ruby.Logging
     public const string kRootFileName = "logging";
     public const string kLoggingProviderName = "LoggingProvider";
     public const string kAggregatorDataProvider = "AggregatorDataProvider";
+    public const string kApplicationName = "Nohros.Ruby.RubyLog";
   }
 }
