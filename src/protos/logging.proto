@@ -2,8 +2,8 @@
 // Use of this source code is governed by a MIT-style license that can be
 // found in the LICENSE file.
 
-import "google/protobuf/csharp_options.proto";
-option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby.Logging";
+//import "google/protobuf/csharp_options.proto";
+//option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby.Logging";
 
 import "common.proto";
 
@@ -11,7 +11,12 @@ package logging;
 option optimize_for = LITE_RUNTIME;
 
 enum LoggingMessageType {
+  // A message used to publish and/or store a logging message.
   kLogMessage = 1;
+  
+  // Messages used to manipulate the storage repository used to store the log
+  // messages.
+  kStorageInfo = 2;
 }
 
 // The format of the log message that is sent to the subscribers.
@@ -58,4 +63,25 @@ message LogMessage {
     optional bool store = 2 [default = true];
   }
   optional Metadata medatata = 7;
+}
+
+// A message used to manipulate the storage for a specific application. The
+// default storage has the same name of the application, and no limits on the
+// number of messages that can be stored.
+message StorageInfo {
+  // The ID of the application associated with this message.
+  optional string application = 1;
+  
+  // The name of the storage to associate with the application. Every log
+  // message sent from the application [application] will be stored in a storage
+  // that is identified by the value of this field.
+  optional string name = 2;  
+ 
+  // Specifies the maximum number of log messages the storage shall store. Once
+  // the space is fully utilized, newly added messages should replace the oldest
+  // messages in the storage. If this value is zero the storage should not
+  // limit on number of log messages that should be stored. There is no
+  // guarantee that this feature is implemented by the currently used storage
+  // mechaninsm.
+  optional int32 size = 3;
 }
