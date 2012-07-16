@@ -59,6 +59,7 @@ namespace Nohros.Ruby.Shell
       // A try-block is used to catch any unhandled exception that is raised
       // by a service.
       try {
+        base.Run(command_line_string);
         console_.Run(command_line_string);
       } catch (Exception ex) {
         string message = "";

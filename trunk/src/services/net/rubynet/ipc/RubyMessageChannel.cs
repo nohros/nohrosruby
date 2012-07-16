@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
-using Google.ProtocolBuffers;
+
 using Nohros.Concurrent;
 using Nohros.Resources;
 using Nohros.Ruby.Protocol;
-using Nohros.Ruby.Protocol.Control;
 using ZMQ;
 
 namespace Nohros.Ruby
@@ -24,6 +22,7 @@ namespace Nohros.Ruby
     readonly IRubyLogger logger_;
     readonly Mailbox<RubyMessagePacket> mailbox_;
     readonly Socket socket_;
+    readonly string message_channel_endpoint_;
     bool is_opened_;
     Thread receiver_thread_;
 
@@ -40,13 +39,17 @@ namespace Nohros.Ruby
     /// The <see cref="RubyMessageChannel"/> object constructed through this
     /// constructor discards any received message.
     /// </remarks>
-    public RubyMessageChannel(Socket socket) {
+    public RubyMessageChannel(Socket socket, string message_channel_endpoint)
+    {
 #if DEBUG
-      if (socket == null) {
-        throw new ArgumentNullException("socket");
+      if (socket == null || message_channel_endpoint == null) {
+        throw new ArgumentNullException(socket == null
+          ? "socket"
+          : "string message_channel_endpoint");
       }
 #endif
       socket_ = socket;
+      message_channel_endpoint_ = message_channel_endpoint;
       mailbox_ = new Mailbox<RubyMessagePacket>(OnMessagePacket);
       listeners_ = new List<ListenerExecutorPair>();
       logger_ = RubyLogger.ForCurrentProcess;
@@ -107,12 +110,14 @@ namespace Nohros.Ruby
     /// Opens the communication channel.
     /// </summary>
     /// <remarks>
-    /// A <see cref="RubyMessageChannel"/> should be opened to start receiving
-    /// messages.
+    /// A <see cref="RubyMessageChannel"/> should be opened to start
+    /// sending/receiving messages.
     /// </remarks>
     public void Open() {
       if (!is_opened_) {
         is_opened_ = true;
+
+        socket_.Connect(message_channel_endpoint_);
 
         // create a dedicated thread to receive messages.
         receiver_thread_ = new Thread(ReceiveMessagePacket);

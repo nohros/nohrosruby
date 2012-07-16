@@ -51,6 +51,7 @@ namespace Nohros.Ruby
 
     /// <inheritdoc/>
     public virtual void Run(string command_line_string) {
+      ruby_message_channel_.Open();
       ruby_message_channel_.AddListener(this, Executors.SameThreadExecutor());
     }
 
