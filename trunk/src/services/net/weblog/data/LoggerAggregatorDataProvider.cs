@@ -32,5 +32,9 @@ namespace Nohros.Ruby.Logging
           .ToString());
       return true;
     }
+
+    public bool SetupStorage(StorageInfo storage) {
+      return true;
+    }
   }
 }

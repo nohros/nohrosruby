@@ -25,7 +25,7 @@ namespace Nohros.Ruby.Logging
     readonly Context context_;
     Socket publisher_;
     readonly IAggregatorSettings settings_;
-    ManualResetEvent start_stop_event_;
+    readonly ManualResetEvent start_stop_event_;
 
     #region .ctor
     /// <summary>
