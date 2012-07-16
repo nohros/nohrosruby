@@ -58,6 +58,16 @@ namespace Nohros.Ruby.Protocol
     byte[] Message { get; }
 
     /// <summary>
+    ///A seguence of bytes that identifies the message sender.
+    /// </summary>
+    /// <remarks>
+    /// The message sender value could be set to the sender name, the sender
+    /// IP address, the sender UUID or anything else that could be serialized
+    /// as a sequence of bytes and identifies the sender.
+    /// </remarks>
+    byte[] Sender { get; }
+
+    /// <summary>
     /// Serializes a <see cref="IRubyMessage"/> object into a byte array.
     /// </summary>
     byte[] ToByteArray();
