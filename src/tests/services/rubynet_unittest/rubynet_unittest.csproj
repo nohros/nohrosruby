@@ -71,6 +71,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServicesFactoryTests.cs" />
     <Compile Include="ThrowExceptionWhenRunService.cs" />
+    <Compile Include="..\..\..\protos\parsers\csharp\Logging.cs" />
+    <Compile Include="..\..\..\protos\parsers\csharp\Control.cs" />
+    <Compile Include="..\..\..\protos\parsers\csharp\Common.cs" />
+    <Compile Include="..\..\..\protos\parsers\csharp\RubyProtos.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\services\net\irubynet\irubyservice.csproj">
