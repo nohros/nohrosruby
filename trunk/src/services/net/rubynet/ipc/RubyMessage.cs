@@ -8,5 +8,6 @@ namespace Nohros.Ruby.Protocol
   public partial class RubyMessage : IRubyMessage
   {
     byte[] IRubyMessage.Message { get { return Message.ToByteArray(); } }
+    byte[] IRubyMessage.Sender { get { return Message.ToByteArray(); } }
   }
 }
