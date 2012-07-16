@@ -94,8 +94,7 @@ namespace Nohros.Ruby
         string ipc_channel_address =
           switches_.GetSwitchValue(Strings.kIPCChannelAddress);
         Context context = new Context(Context.DefaultIOThreads);
-        Socket dealer = context.Socket(SocketType.DEALER);
-        return new RubyMessageChannel(dealer, ipc_channel_address);
+        return new RubyMessageChannel(context, ipc_channel_address);
       }
       return new NullMessageChannel();
     }

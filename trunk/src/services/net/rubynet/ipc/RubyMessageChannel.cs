@@ -22,8 +22,9 @@ namespace Nohros.Ruby
     readonly IRubyLogger logger_;
     readonly Mailbox<RubyMessagePacket> mailbox_;
     readonly Socket socket_;
+    readonly Context context_;
     readonly string message_channel_endpoint_;
-    bool is_opened_;
+    bool channel_is_opened_;
     Thread receiver_thread_;
 
     #region .ctor
@@ -39,21 +40,22 @@ namespace Nohros.Ruby
     /// The <see cref="RubyMessageChannel"/> object constructed through this
     /// constructor discards any received message.
     /// </remarks>
-    public RubyMessageChannel(Socket socket, string message_channel_endpoint)
+    public RubyMessageChannel(Context context, string message_channel_endpoint)
     {
 #if DEBUG
-      if (socket == null || message_channel_endpoint == null) {
-        throw new ArgumentNullException(socket == null
+      if (context == null || message_channel_endpoint == null) {
+        throw new ArgumentNullException(context == null
           ? "socket"
           : "string message_channel_endpoint");
       }
 #endif
-      socket_ = socket;
+      context_ = context;
+      socket_ = context_.Socket(SocketType.DEALER);
       message_channel_endpoint_ = message_channel_endpoint;
       mailbox_ = new Mailbox<RubyMessagePacket>(OnMessagePacket);
       listeners_ = new List<ListenerExecutorPair>();
       logger_ = RubyLogger.ForCurrentProcess;
-      is_opened_ = false;
+      channel_is_opened_ = false;
     }
     #endregion
 
@@ -64,7 +66,7 @@ namespace Nohros.Ruby
     /// <inheritdoc/>
     public bool Send(IRubyMessage message) {
 #if DEBUG
-      if (!is_opened_) {
+      if (!channel_is_opened_) {
         logger_.Warn("Send() called on a closed channel.");
         return false;
       }
@@ -114,8 +116,8 @@ namespace Nohros.Ruby
     /// sending/receiving messages.
     /// </remarks>
     public void Open() {
-      if (!is_opened_) {
-        is_opened_ = true;
+      if (!channel_is_opened_) {
+        channel_is_opened_ = true;
 
         socket_.Connect(message_channel_endpoint_);
 
@@ -145,6 +147,10 @@ namespace Nohros.Ruby
           RubyMessagePacket packet = RubyMessagePacket.ParseFrom(message);
           return packet;
         }
+      } catch (ZMQ.Exception exception) {
+        if (exception.Errno == (int)ERRNOS.ETERM) {
+          Close();
+        }
       } catch (System.Exception exception) {
         logger_.Error(string.Format(StringResources.Log_MethodThrowsException,
           kClassName, "GetMessagePacket"), exception);
@@ -162,7 +168,16 @@ namespace Nohros.Ruby
     void ReceiveMessagePacket() {
       // get the next message packet and store it in mailbox for futher
       // processing.
-      mailbox_.Send(GetMessagePacket());
+      while (channel_is_opened_) {
+        mailbox_.Send(GetMessagePacket());
+      }
+    }
+
+    /// <summary>
+    /// Closes the communication channel.
+    /// </summary>
+    public void Close() {
+      channel_is_opened_ = false;
     }
 
     /// <summary>
