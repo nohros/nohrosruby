@@ -27,7 +27,7 @@ namespace Nohros.Ruby
     public const string kMyToolsPackNode = "mytoolspack";
 
     /// <summary>
-    /// The address of th IPC channel tha hadnles the communication between
+    /// The address of th IPC channel tha handles the communication between
     /// the services and clients.
     /// </summary>
     public const string kIPCChannelAddress = "ipc-channel-address";
