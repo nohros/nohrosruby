@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using ZMQ;
 
-using Nohros.Ruby;
 using Nohros.Ruby.Protocol;
 using Nohros.Concurrent;
 using Nohros.Resources;
-using Nohros.Data.Json;
 
 namespace Nohros.Ruby.Logging
 {
@@ -25,9 +23,9 @@ namespace Nohros.Ruby.Logging
     readonly IRubyLogger logger_ = RubyLogger.ForCurrentProcess;
     readonly Mailbox<LogMessage> mailbox_;
     readonly Context context_;
-    Socket dealer_, publisher_;
+    Socket publisher_;
     readonly IAggregatorSettings settings_;
-    bool is_running_;
+    ManualResetEvent start_stop_event_;
 
     #region .ctor
     /// <summary>
@@ -36,10 +34,9 @@ namespace Nohros.Ruby.Logging
     /// </summary>
     public Aggregator(Context context, IAggregatorSettings settings) {
       settings_ = settings;
-      mailbox_ = new Mailbox<LogMessage>(OnLogMessage);
+      mailbox_ = new Mailbox<LogMessage>(ProcessLogMessage);
       context_ = context;
-      is_running_ = false;
-      dealer_ = null;
+      start_stop_event_ = new ManualResetEvent(false);
       publisher_ = null;
       context_ = context;
 
@@ -50,37 +47,8 @@ namespace Nohros.Ruby.Logging
 
     public override void Start(IRubyServiceHost service_host) {
       publisher_ = GetPublisherSocket(context_, settings_.PublisherPort);
-      dealer_ = GetDealerSocket(context_, settings_.ListenerPort);
-      is_running_ = true;
-      while (is_running_) {
-        try {
-          byte[] data = dealer_.Recv();
-
-          LogMessage message = LogMessage.ParseFrom(data);
-          logger_.Debug("Received a message from:" + message.Application);
-          mailbox_.Send(message);
-        } catch (ZMQ.Exception zmqe) {
-          is_running_ = false;
-          if (zmqe.Errno == (int)ERRNOS.ETERM) {
-            logger_.Debug("zmq::Context is terminating.");
-          } else {
-            logger_.Error(
-              string.Format(StringResources.Log_MethodThrowsException,
-                kClassName,
-                "Start"), zmqe);
-          }
-        } catch (System.Exception exception) {
-          logger_.Error(
-            string.Format(StringResources.Log_MethodThrowsException, kClassName,
-              "Start"), exception);
-        }
-      }
-    }
-
-    Socket GetDealerSocket(Context context, int port) {
-      Socket socket = context.Socket(SocketType.DEALER);
-      socket.Bind("tcp://*:" + port);
-      return socket;
+      start_stop_event_.WaitOne();
+      start_stop_event_.Close();
     }
 
     Socket GetPublisherSocket(Context context, int port) {
@@ -90,19 +58,68 @@ namespace Nohros.Ruby.Logging
     }
 
     public override void Stop(IRubyMessage message) {
-      is_running_ = false;
-      dealer_.Dispose();
+      start_stop_event_.Set();
       publisher_.Dispose();
       context_.Dispose();
     }
 
     /// <inheritdoc/>
     public override void OnMessage(IRubyMessage message) {
+      switch (message.Type) {
+        case (int) LoggingMessageType.kLogMessage:
+          OnLogMessage(message);
+          break;
+      }
     }
 
-    void OnLogMessage(LogMessage message) {
-      Publish(message);
-      Store(message);
+    void ProcessLogMessage(LogMessage log) {
+      try {
+        LogMessage.Types.Metadata metadata = log.Medatata;
+        if (metadata.Publish) {
+          Publish(log);
+        }
+
+        if (metadata.Store) {
+          Store(log);
+        }
+      } catch (System.Exception exception) {
+        logger_.Error(
+          string.Format(StringResources.Log_MethodThrowsException, kClassName,
+            "Start"), exception);
+      }
+    }
+
+    void OnLogMessage(IRubyMessage message) {
+      // A try/catch block is used here to capture parsing exceptions.
+      try {
+        LogMessage log = LogMessage.ParseFrom(message.Message);
+        mailbox_.Send(log);
+      } catch (System.Exception exception) {
+        LogMessage log = GetInternalLogMessage(exception);
+        Publish(log);
+        Store(log);
+      }
+    }
+
+    /// <summary>
+    /// Gets a <see cref="LogMessage"/> object that represents the given
+    /// exception.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="LogMessage"/> object that represents
+    /// <paramref name="exception"/>.
+    /// </returns>
+    LogMessage GetInternalLogMessage(System.Exception exception) {
+      return new LogMessage.Builder()
+        .SetApplication(Strings.kApplicationName)
+        .SetLevel("ERROR")
+        .SetReason(exception.Message)
+        .SetTimeStamp(TimeUnitHelper.ToUnixTime(DateTime.Now))
+        .SetUser(Environment.UserName)
+        .AddCategorization(new KeyValuePair.Builder()
+          .SetKey("stack-trace")
+          .SetValue(exception.StackTrace))
+        .Build();
     }
 
     /// <summary>
@@ -112,18 +129,31 @@ namespace Nohros.Ruby.Logging
     /// The message to publish.
     /// </param>
     void Publish(LogMessage message) {
-      publisher_.SendMore(message.Application, Encoding.UTF8);
-      publisher_.Send(message.ToByteArray());
+      try {
+        publisher_.SendMore(message.Application, Encoding.UTF8);
+        publisher_.Send(message.ToByteArray());
+      } catch (System.Exception exception) {
+        Store(GetInternalLogMessage(exception));
+      }
     }
 
     /// <summary>
-    /// Persist the messageto a database.
+    /// Persist the messaget o a database.
     /// </summary>
     /// <param name="message">
     /// The message to be persisted.
     /// </param>
     void Store(LogMessage message) {
-      settings_.AggregatorDataProvider.Store(message);
+      try {
+        settings_.AggregatorDataProvider.Store(message);
+      } catch(System.Exception exception) {
+        // This is the last place where an internal raised exception could
+        // reach. So, at this point we need to log the message using our
+        // internal logger.
+        logger_.Error(
+          string.Format(StringResources.Log_MethodThrowsException, kClassName,
+            "Store"), exception);
+      }
     }
 
     void InitFacts() {
