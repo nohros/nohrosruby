@@ -37,7 +37,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rubynet_unittest", "tests\s
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(node)", "(node)", "{3CF61E7D-AE37-4B2A-99AC-188A246EEE7B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "weblog", "services\net\weblog\weblog.csproj", "{EBEF07D1-5A08-4904-8C88-CE119D1E8E4D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rubylog", "services\net\weblog\rubylog.csproj", "{EBEF07D1-5A08-4904-8C88-CE119D1E8E4D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(nuget)", "(nuget)", "{98A13114-1161-46A2-A64B-E20505CDB745}"
 EndProject
