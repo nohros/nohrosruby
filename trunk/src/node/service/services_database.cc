@@ -96,7 +96,7 @@ bool ServicesDatabase::InitServicesFactsTable() {
                  "ON facts(hash_code)"));
 }
 
-bool ServicesDatabase::GetServiceMetadata(const ServiceFactSet& facts,
+bool ServicesDatabase::GetServicesMetadata(const ServiceFactSet& facts,
   ServicesMetadataSet* services) {
   DCHECK(db_.get());
   DCHECK(services);
@@ -116,39 +116,42 @@ bool ServicesDatabase::GetServiceMetadata(const ServiceFactSet& facts,
     services_found.insert(s.ColumnInt(0));
   }
 
-  std::string cmd("SELECT id, name, language_runtime_type, arguments"
-                  "FROM services s"
-                  " INNER JOIN facts f on f.service_id = s.id"
+  std::string cmd("SELECT id, name, language_runtime_type, arguments "
+                  "FROM services s "
+                  "INNER JOIN facts f on f.service_id = s.id "
                   "WHERE service_id = ? and hash_code in (");
-  cmd.append(base::IntToString(first_service_fact_hash));
+
+  cmd += base::IntToString(first_service_fact_hash);
   for (int i = 1; i< facts_size; ++i) {
-    cmd.append(base::IntToString(GetServiceFactHash(facts[i])));
+    cmd += "," +  base::IntToString(GetServiceFactHash(facts[i]));
   }
+  cmd += ")";
 
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, cmd.c_str()));
   for (std::set<int>::iterator k = services_found.begin();
         k != services_found.end(); ++k) {
-
     statement.BindInt(0, *k);
     if (!statement.Step()) {
       return false;
     }
 
-    scoped_refptr<ServiceMetadata> service =
-      new ServiceMetadata(
-        statement.ColumnInt(0),
-        statement.ColumnString(1),
-        static_cast<LanguageRuntimeType>(statement.ColumnInt(2)),
-        statement.ColumnString(3));
+    scoped_refptr<ServiceMetadata> service(new ServiceMetadata());
+    service->set_service_id(statement.ColumnInt(0));
+    service->set_service_name(statement.ColumnString(1));
+    service->set_language_runtime_type(
+      static_cast<LanguageRuntimeType>(statement.ColumnInt(2)));
+    service->set_arguments(statement.ColumnString(3));
+
     services->push_back(service);
     statement.Reset();
   }
-  return true;
+  return services->size() > 0;
 }
 
 uint32 ServicesDatabase::GetServiceFactHash(const std::pair<std::string,
   std::string> fact) {
-  return node::Hash(base::StringPrintf("%s=%s", fact.first, fact.second));
+  return node::Hash(base::StringPrintf("%s=%s", fact.first.data(),
+    fact.second.data()));
 }
 
 sql::Connection* ServicesDatabase::CreateDB(const FilePath& db_name) {
