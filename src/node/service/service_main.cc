@@ -20,6 +20,8 @@
 #include "node/service/ruby_switches.h"
 #include "node/service/constants.h"
 #include "node/service/services_database.h"
+#include "node/service/message_router.h"
+#include "node/service/routing_database.h"
 
 int main(int argc, char** argv) {
   CommandLine::Init(argc, argv);
@@ -51,8 +53,14 @@ int main(int argc, char** argv) {
     return -1;
   }
 
-  // Set up the ruby service node.
-  node::RubyService service(&context, &services_database);
+  node::RoutingDatabase routing_database;
+  if (!routing_database.Open()) {
+    LOG(ERROR) << "Unable to open the routing database";
+    return -1;
+  }
+
+  node::MessageRouter message_router(&services_database, &routing_database);
+  node::RubyService service(&context, &message_router);
 
   int message_channel_port = node::kMessageChannelPort;
   if (switches.HasSwitch(switches::kMessageChannelPort)) {
@@ -69,8 +77,6 @@ int main(int argc, char** argv) {
 
   // Set up the service tracker address, if supplied.
   if (switches.HasSwitch(switches::kServiceTrackerAddress)) {
-    service.set_service_tracker_address(
-      switches.GetSwitchValueASCII(switches::kServiceTrackerAddress));
   }
 
   service.Run();

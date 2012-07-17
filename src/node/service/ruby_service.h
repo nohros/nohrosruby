@@ -14,7 +14,6 @@
 #include "node/zeromq/context.h"
 #include "node/service/service_base.h"
 
-
 namespace zmq {
 class Socket;
 class Message;
@@ -23,9 +22,11 @@ class Message;
 namespace protocol {
 class RubyMessagePacket;
 class RubyMessageHeader;
+}
 
 namespace node {
 class ServicesDatabase;
+class MessageRouter;
 
 typedef std::vector<scoped_refptr<zmq::Message>> MessageParts;
 
@@ -34,7 +35,7 @@ class RubyService
       public base::PlatformThread::Delegate,
       public zmq::ErrorDelegate {
  public:
-  RubyService(zmq::Context* context, ServicesDatabase* db);
+  RubyService(zmq::Context* context, MessageRouter* message_router);
 
   ~RubyService();
 
@@ -68,6 +69,7 @@ class RubyService
   zmq::Socket* CreateRouterSocket(int port);
   zmq::Context* context_;
 
+  MessageRouter* message_router_;
   bool is_running_;
   int message_channel_port_;
 

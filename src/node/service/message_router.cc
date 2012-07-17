@@ -2,19 +2,26 @@
 // Use of this source code is governed by BSD-style license that can be found
 // in the LICENCE file.
 
+#include "node/service/message_router.h"
+
 #include <base/logging.h>
+#include <sql/connection.h>
 #include <google/protobuf/repeated_field.h>
 #include <ruby_protos.pb.h>
 
-#include "node/service/message_router.h"
+#include "node/service/routing_database.h"
 
 namespace node {
 
 typedef 
-  google::protobuf::RepeatedPtrField<protocol::KeyValuePair> KeyValuePairSet;
+  google::protobuf::RepeatedPtrField<ruby::KeyValuePair> KeyValuePairSet;
 
-MessageRouter::MessageRouter(ServicesDatabase* services_database)
-  : services_database_(services_database) {
+MessageRouter::MessageRouter(ServicesDatabase* services_database,
+  RoutingDatabase* routing_database)
+  : services_database_(services_database),
+    routing_database_(routing_database) {
+  DCHECK(services_database);
+  DCHECK(routing_database);
 }
 
 MessageRouter::~MessageRouter() {
@@ -41,12 +48,36 @@ RouteSet MessageRouter::GetRoutes(const std::string& sender,
     ServiceFactSet service_facts = GetServiceFacts(packet->header());
     if (service_facts.size() > 0) {
       ServicesMetadataSet services;
-      if (services_database_->GetServiceMetadata(service_facts, &services)) {
+      if (services_database_->GetServicesMetadata(service_facts, &services)) {
+        // We found services that matches the given facts in our database,
+        // now we need to check if the found services are running and get its
+        // addresses.
+        for (ServicesMetadataSet::iterator service = services.begin();
+          service != services.end(); ++service) { 
+        }
       }
     }
   }
   routes.push_back(sender);
   return routes;
+}
+
+bool MessageRouter::AddRoute(const std::string& address,
+  const ServiceFactSet& facts) {
+  DCHECK(facts.size());
+  ServicesMetadataSet services;
+  if (!services_database_->GetServicesMetadata(facts, &services)) {
+    LOG(WARNING) << "Attempt to add a route to an unregistered service";
+    return false;
+  }
+
+  for (ServicesMetadataSet::iterator service = services.begin();
+    service != services.end(); ++service) {
+    if (!routing_database_->AddRoute(service->get()->service_id(), address)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 ServiceFactSet MessageRouter::GetServiceFacts(
