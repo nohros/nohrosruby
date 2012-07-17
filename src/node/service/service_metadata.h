@@ -17,7 +17,7 @@ enum LanguageRuntimeType {
   kNet = 1,
   kJava = 2,
   kMachineCode = 3,
-  kPyhon = 4
+  kPython = 4
 };
 
 // Holds all informations associated with a specific service. Refcounting
@@ -56,6 +56,12 @@ class ServiceMetadata : public base::RefCountedThreadSafe<ServiceMetadata> {
     language_runtime_type_ = language_runtime_type;
   }
 
+  // The internal service ID.
+  int service_id() const { return service_id_; }
+  void set_service_id(int service_id) {
+    service_id_ = service_id;
+  }
+
  private:
   friend class base::RefCountedThreadSafe<ServiceMetadata>;
   ~ServiceMetadata();
@@ -63,6 +69,7 @@ class ServiceMetadata : public base::RefCountedThreadSafe<ServiceMetadata> {
   std::string service_name_;
   std::string arguments_;
   int language_runtime_type_;
+  int service_id_;
 
   DISALLOW_COPY_AND_ASSIGN(ServiceMetadata);
 };
