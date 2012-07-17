@@ -25,18 +25,18 @@
 #include "node/zeromq/message.h"
 #include "node/service/constants.h"
 #include "node/service/service_metadata.h"
+#include "node/service/message_router.h"
 
 namespace node {
 
-typedef google::protobuf::RepeatedPtrField<protocol::KeyValuePair> KeyValuePairSet;
+typedef google::protobuf::RepeatedPtrField<ruby::KeyValuePair> KeyValuePairSet;
 
-RubyService::RubyService(zmq::Context* context, ServicesDatabase* db)
+RubyService::RubyService(zmq::Context* context, MessageRouter* message_router)
   : ServiceBase(node::kRubyServiceName),
     context_(context),
-    db_(db_),
     router_(NULL),
-    service_tracker_address_(""),
     message_channel_port_(node::kMessageChannelPort),
+    message_router_(message_router),
     thread_(NULL),
     is_running_(false) {
 }
@@ -84,22 +84,23 @@ void RubyService::OnMessage(const MessageParts& message_parts) {
     return;
   }
 
-  if (!packet->has_message()) {
+  if (!packet.has_message()) {
     LOG(WARNING) << "Received a packet with no message associated.";
     return;
   }
 
-  DispatchMessage(message_parts[0]->data(), message_router_->GetRoutes(packet));
+  DispatchMessage(
+    message_router_->GetRoutes(message_parts[0]->data(), &packet), &packet);
 }
 
-void RubyService::DispatchMessage(const std::vector<std::string>& destinations,
+void RubyService::DispatchMessage(const RouteSet& destinations,
   const protocol::RubyMessagePacket* packet) {
   DCHECK(router_.get());
   DCHECK(destinations.size());
 
   int packet_size = packet->ByteSize();
-  for (std::vector<std::string>::iterator destination;
-    destination != destinations.begin(); ++destination) {
+  for (RouteSet::const_iterator destination = destinations.begin();
+    destination != destinations.end(); ++destination) {
     // Write the destination address to the router socket as the first
     // message part.
     int destination_address_size = destination->size();

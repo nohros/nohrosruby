@@ -9,9 +9,6 @@
     <ClInclude Include="..\..\protos\parsers\c\control.pb.h">
       <Filter>protos</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\protos\parsers\c\log_message.pb.h">
-      <Filter>protos</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\protos\parsers\c\ruby_protos.pb.h">
       <Filter>protos</Filter>
     </ClInclude>
@@ -22,6 +19,7 @@
     </ClInclude>
     <ClInclude Include="hash.h" />
     <ClInclude Include="message_router.h" />
+    <ClInclude Include="routing_database.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="service_main.cc" />
@@ -30,9 +28,6 @@
     <ClCompile Include="service_base.cc" />
     <ClCompile Include="constants.cc" />
     <ClCompile Include="..\..\protos\parsers\c\control.pb.cc">
-      <Filter>protos</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\protos\parsers\c\log_message.pb.cc">
       <Filter>protos</Filter>
     </ClCompile>
     <ClCompile Include="..\..\protos\parsers\c\ruby_protos.pb.cc">
@@ -45,6 +40,7 @@
     </ClCompile>
     <ClCompile Include="hash.cc" />
     <ClCompile Include="message_router.cc" />
+    <ClCompile Include="routing_database.cc" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="protos">

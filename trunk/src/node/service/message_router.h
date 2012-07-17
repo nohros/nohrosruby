@@ -9,10 +9,13 @@
 #include <string>
 #include <vector>
 
+#include <base/memory/ref_counted.h>
+
 #include "node/service/services_database.h"
 
 namespace protocol {
 class RubyMessagePacket;
+class RubyMessageHeader;
 }
 
 namespace sql {
@@ -21,6 +24,7 @@ class Connection;
 
 namespace node {
 class ServicesDatabase;
+class RoutingDatabase;
 
 typedef std::vector<std::string> RouteSet;
 
@@ -34,7 +38,8 @@ typedef std::vector<std::string> RouteSet;
 //
 class MessageRouter {
  public:
-  explicit MessageRouter(ServicesDatabase* service_database);
+  explicit MessageRouter(ServicesDatabase* service_database,
+    RoutingDatabase* routing_database);
   ~MessageRouter();
 
   // Gets the routes for a message. |sender| is the the sender ID and |packet|
@@ -42,11 +47,19 @@ class MessageRouter {
   RouteSet GetRoutes(const std::string& sender,
     protocol::RubyMessagePacket* packet);
 
+  // Adds a route for the specified service facts.
+  bool AddRoute(const std::string& route, const ServiceFactSet& facts);
+
  private:
   ServiceFactSet GetServiceFacts(const protocol::RubyMessageHeader& header);
 
   // The database used to store information about the installed services.
   ServicesDatabase* services_database_;
+
+  // Stores the routing address of the running services.
+  RoutingDatabase* routing_database_;
+
+  scoped_ptr<sql::Connection> route_table_;
 };
 
 }  // namesapce node

@@ -95,10 +95,10 @@
   <ItemGroup>
     <ClInclude Include="..\..\protos\parsers\c\common.pb.h" />
     <ClInclude Include="..\..\protos\parsers\c\control.pb.h" />
-    <ClInclude Include="..\..\protos\parsers\c\log_message.pb.h" />
     <ClInclude Include="..\..\protos\parsers\c\ruby_protos.pb.h" />
     <ClInclude Include="hash.h" />
     <ClInclude Include="message_router.h" />
+    <ClInclude Include="routing_database.h" />
     <ClInclude Include="ruby_service.h" />
     <ClInclude Include="ruby_switches.h" />
     <ClInclude Include="services_database.h" />
@@ -109,11 +109,11 @@
   <ItemGroup>
     <ClCompile Include="..\..\protos\parsers\c\common.pb.cc" />
     <ClCompile Include="..\..\protos\parsers\c\control.pb.cc" />
-    <ClCompile Include="..\..\protos\parsers\c\log_message.pb.cc" />
     <ClCompile Include="..\..\protos\parsers\c\ruby_protos.pb.cc" />
     <ClCompile Include="constants.cc" />
     <ClCompile Include="hash.cc" />
     <ClCompile Include="message_router.cc" />
+    <ClCompile Include="routing_database.cc" />
     <ClCompile Include="services_database.cc" />
     <ClCompile Include="service_metadata.cc" />
     <ClInclude Include="constants.h">
