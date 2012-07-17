@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="AbstractRubyService.cs" />
     <Compile Include="IFact.cs" />
+    <Compile Include="IRubyLogger.cs" />
     <Compile Include="IRubyMessage.cs" />
     <Compile Include="IRubyMessageSender.cs" />
     <Compile Include="IRubyService.cs" />

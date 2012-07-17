@@ -14,5 +14,16 @@ namespace Nohros.Ruby
   /// </remarks>
   public interface IRubyServiceHost: IRubyMessageSender
   {
+    /// <summary>
+    /// Gets a <see cref="IRubyLogger"/> object that can be used to log
+    /// messages.
+    /// </summary>
+    /// <remarks>
+    /// Services could use your own logger mechanism, but it is preferred to
+    /// use the logger exposed by the ruby service host, since it automatically
+    /// aggrgates all the logs into a central repository and provides
+    /// reliability through a internal fallback mechanism.
+    /// </remarks>
+    IRubyLogger RubyLogger { get; }
   }
 }
