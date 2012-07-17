@@ -54,10 +54,20 @@ bool RoutingDatabase::RemoveRoute(int service_id) {
   return s.Run();
 }
 
+bool RoutingDatabase::GetRoute(int service_id, std::string* address) {
+  sql::Statement s(db_->GetCachedStatement(SQL_FROM_HERE,
+    "SELECT address FROM routes WHERE service_id = ?"));
+  if (s.Step()) {
+    address->swap(s.ColumnString(0));
+    return true;
+  }
+  return false;
+}
+
 bool RoutingDatabase::InitRoutesTable() {
   if (!db_->DoesTableExist("routes")) {
     if (!db_->Execute("CREATE TABLE routes ("
-                      "service_id INTEGER PRIMARY,"
+                      "service_id INTEGER PRIMARY KEY,"
                       "address BLOB NOT NULL)")) {
       LOG(WARNING) << db_->GetErrorMessage();
       return false;
