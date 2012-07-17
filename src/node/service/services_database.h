@@ -15,6 +15,8 @@
 #include <base/memory/scoped_ptr.h>
 #include <base/memory/ref_counted.h>
 
+#include "node/service/service_metadata.h"
+
 namespace sql {
 class Connection;
 }
@@ -44,7 +46,7 @@ class ServicesDatabase {
   // Gets the metadata for the services that has the given facts. Returns true
   // if we have metadata for at least one service associated with the given
   // facts.
-  bool GetServiceMetadata(const ServiceFactSet& facts,
+  bool GetServicesMetadata(const ServiceFactSet& facts,
     ServicesMetadataSet* medatada);
 
  private:
