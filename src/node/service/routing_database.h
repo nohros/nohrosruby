@@ -36,6 +36,10 @@ class RoutingDatabase {
   // otherwise.
   bool RemoveRoute(int service_id);
 
+  // Gets the route address for the service associated with |service_id|.
+  // Returns true when a route exists; otherwise, false.
+  bool GetRoute(int service_id, std::string* address);
+
  private:
   // Creates the routes table, returning true if the table already exists or
   // was successfully created.

@@ -45,20 +45,29 @@ RouteSet MessageRouter::GetRoutes(const std::string& sender,
     // Search for the service(s) that should receive the message. If no
     // services are found, reply to the sender with the sent message (modified
     // with the sender address).
-    ServiceFactSet service_facts = GetServiceFacts(packet->header());
-    if (service_facts.size() > 0) {
+    ServiceFactSet service_facts;
+    if (GetServiceFacts(packet->header(), &service_facts)) {
       ServicesMetadataSet services;
       if (services_database_->GetServicesMetadata(service_facts, &services)) {
-        // We found services that matches the given facts in our database,
+        // We found services that matches the given facts, in our database,
         // now we need to check if the found services are running and get its
         // addresses.
         for (ServicesMetadataSet::iterator service = services.begin();
-          service != services.end(); ++service) { 
+          service != services.end(); ++service) {
+          std::string address;
+          if (routing_database_->GetRoute(
+            service->get()->service_id(), &address)) {
+            routes.push_back(address);
+          }
         }
       }
     }
   }
-  routes.push_back(sender);
+
+  // If no routes are found, we need to send the message back to the sender.
+  if (routes.size() == 0) {
+    routes.push_back(sender);
+  }
   return routes;
 }
 
@@ -80,15 +89,14 @@ bool MessageRouter::AddRoute(const std::string& address,
   return true;
 }
 
-ServiceFactSet MessageRouter::GetServiceFacts(
-  const protocol::RubyMessageHeader& header) {
-  ServiceFactSet service_facts;
+bool MessageRouter::GetServiceFacts(
+  const protocol::RubyMessageHeader& header, ServiceFactSet* set) {
   KeyValuePairSet facts = header.facts();
   for (KeyValuePairSet::iterator fact = facts.begin();
     fact != facts.end(); ++fact) {
-    service_facts.push_back(std::make_pair(fact->key(), fact->value()));
+    set->push_back(std::make_pair(fact->key(), fact->value()));
   }
-  return service_facts;
+  return set->size() != 0;
 }
 
 }  // namesapce node

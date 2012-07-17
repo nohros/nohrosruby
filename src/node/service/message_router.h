@@ -38,7 +38,7 @@ typedef std::vector<std::string> RouteSet;
 //
 class MessageRouter {
  public:
-  explicit MessageRouter(ServicesDatabase* service_database,
+  MessageRouter(ServicesDatabase* service_database,
     RoutingDatabase* routing_database);
   ~MessageRouter();
 
@@ -51,15 +51,14 @@ class MessageRouter {
   bool AddRoute(const std::string& route, const ServiceFactSet& facts);
 
  private:
-  ServiceFactSet GetServiceFacts(const protocol::RubyMessageHeader& header);
+  bool GetServiceFacts(const protocol::RubyMessageHeader& header,
+    ServiceFactSet* set);
 
   // The database used to store information about the installed services.
   ServicesDatabase* services_database_;
 
   // Stores the routing address of the running services.
   RoutingDatabase* routing_database_;
-
-  scoped_ptr<sql::Connection> route_table_;
 };
 
 }  // namesapce node
