@@ -39,6 +39,12 @@ namespace Nohros.Ruby
 
     public const string kRubyHostServiceName = "ruby-service-host";
 
+    public const string kNodeQueryToken = "node-query";
+
+    public const string kNodeServiceName = "nohros.ruby.node";
+
+    public const string kHostServiceFact = "host";
+
     /// <summary>
     /// Specifies the path of the service assembly.
     /// </summary>
@@ -59,7 +65,9 @@ namespace Nohros.Ruby
 
     public const string kRunningMode = "running-mode";
 
-    public const string kServiceNameFact = "service-name";
+    public const string kServiceNameFact = "service";
+
+    public const string kMessageUUIDFact = "msguuid";
 
     /// <summary>
     /// The string that is displayed on the shell prompt.

@@ -73,12 +73,14 @@
   <ItemGroup>
     <Compile Include="AbstractRubyProcess.cs" />
     <Compile Include="AppFactory.cs" />
+    <Compile Include="service\AggregatorLogger.cs" />
     <Compile Include="configuration\ConsoleSettings.cs" />
-    <Compile Include="configuration\IRubyLogger.cs" />
+    <Compile Include="service\IAggregatorService.cs" />
     <Compile Include="configuration\IRubySettings.cs" />
     <Compile Include="configuration\RubyLogger.cs" />
     <Compile Include="configuration\RubySettings.cs" />
     <Compile Include="configuration\RunningMode.cs" />
+    <Compile Include="service\AggregatorService.cs" />
     <Compile Include="ipc\BlockedMessageReceiver.cs" />
     <Compile Include="ipc\NullMessageChannel.cs" />
     <Compile Include="ipc\RubyMessageChannel.cs" />
@@ -90,6 +92,7 @@
     <Compile Include="ipc\RubyMessageReceiver.cs" />
     <Compile Include="IRubyProcess.cs" />
     <Compile Include="IRubyProcessFactory.cs" />
+    <Compile Include="proto\KeyValuePairs.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -97,6 +100,7 @@
     </Compile>
     <Compile Include="ipc\RubyMessage.cs" />
     <Compile Include="ServicesFactory.cs" />
+    <Compile Include="service\LoggerAggregatorService.cs" />
     <Compile Include="service\ServiceRubyProcess.cs" />
     <Compile Include="shell\commands\ClearCommand.cs" />
     <Compile Include="shell\commands\HelpCommand.cs">
@@ -125,6 +129,7 @@
     <Compile Include="..\..\..\protos\parsers\csharp\RubyProtos.cs" />
     <Compile Include="..\..\..\protos\parsers\csharp\Control.cs" />
     <Compile Include="..\..\..\protos\parsers\csharp\Common.cs" />
+    <Compile Include="..\..\..\protos\parsers\csharp\Logging.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">

@@ -30,10 +30,9 @@ namespace Nohros.Ruby
   {
     static IRubyLogger current_process_logger_;
 
-    ILogger internal_logger_;
+    readonly ILogger internal_logger_;
 
     #region .ctor
-
     /// <summary>
     /// Initializes the singleton process's logger instance.
     /// </summary>

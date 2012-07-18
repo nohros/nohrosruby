@@ -15,6 +15,7 @@ namespace Nohros.Ruby
     readonly string prompt_;
     RunningMode running_mode_;
     string services_directory_;
+    IAggregatorService aggregator_service_;
 
     #region .ctor
     /// <summary>
@@ -37,6 +38,12 @@ namespace Nohros.Ruby
     public string ServicesDirectory {
       get { return services_directory_; }
       protected set { services_directory_ = value; }
+    }
+
+    /// <inheritdoc/>
+    public IAggregatorService AggregatorService {
+      get { return aggregator_service_; }
+      set { aggregator_service_ = value; }
     }
 
     /// <summary>

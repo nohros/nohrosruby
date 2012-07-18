@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
-
 using Google.ProtocolBuffers;
 using Nohros.Concurrent;
+using Nohros.Data.Json;
 using Nohros.Resources;
 using Nohros.Ruby.Protocol;
 using Nohros.Ruby.Protocol.Control;
+using ZMQ;
+using Exception = System.Exception;
 
 namespace Nohros.Ruby
 {
@@ -15,12 +18,16 @@ namespace Nohros.Ruby
   /// </summary>
   internal abstract class AbstractRubyProcess : IRubyProcess
   {
+    delegate void ResponseMessageHandler(ResponseMessage response);
+
     const string kClassName = "Nohros.Ruby.AbstractRubyProcess";
+    const string kLogAggregatorQuery = "query_logger_aggregator_service";
 
     const int kMaxRunningServices = 10;
 
     readonly object hosted_service_mutex_;
     readonly IRubyLogger logger_;
+    readonly Dictionary<string, ResponseMessageHandler> messages_tokens_;
     readonly IRubyMessageChannel ruby_message_channel_;
     readonly IRubySettings settings_;
     int running_services_count_;
@@ -41,6 +48,9 @@ namespace Nohros.Ruby
       logger_ = RubyLogger.ForCurrentProcess;
       settings_ = settings;
       running_services_count_ = 0;
+      messages_tokens_ = new Dictionary<string, ResponseMessageHandler>();
+
+      InitMessageTokens();
     }
     #endregion
 
@@ -53,6 +63,9 @@ namespace Nohros.Ruby
     public virtual void Run(string command_line_string) {
       ruby_message_channel_.Open();
       ruby_message_channel_.AddListener(this, Executors.SameThreadExecutor());
+
+      // Query the service node for the log aggregator service.
+      QueryLogAggregatorService();
     }
 
     /// <inheritdoc/>
@@ -60,6 +73,10 @@ namespace Nohros.Ruby
       switch (packet.Message.Type) {
         case (int) NodeMessageType.kServiceControl:
           OnServiceControlMessage(packet.Message.Message);
+          break;
+
+        case (int) NodeMessageType.kNodeResponse:
+          OnResponseMessage(packet.Message.Message);
           break;
       }
     }
@@ -69,8 +86,12 @@ namespace Nohros.Ruby
       get { return ruby_message_channel_; }
     }
 
+    void InitMessageTokens() {
+      messages_tokens_.Add(kLogAggregatorQuery, OnLogAggregatorQueryReseponse);
+    }
+
     /// <inheritdoc/>
-    public void OnServiceControlMessage(ByteString message) {
+    void OnServiceControlMessage(ByteString message) {
       try {
         ServiceControlMessage service_control_message =
           ServiceControlMessage.ParseFrom(message);
@@ -88,6 +109,88 @@ namespace Nohros.Ruby
           kClassName, "OnMessagePacketReceived"), exception);
       }
     }
+
+    void OnResponseMessage(ByteString message) {
+      try {
+        ResponseMessage response = ResponseMessage.ParseFrom(message);
+        RubyMessage request = response.Request;
+
+        // Every request issued by this class should contains a token that
+        // maps to a message handler (defined at InitMessageHandler method).
+        ResponseMessageHandler handler;
+        if (messages_tokens_.TryGetValue(request.Token, out handler)) {
+          handler(response);
+        } else {
+          // A handler was not found. Either, the request was not issued by
+          // this class or the request was modified. There is nothing we can do
+          // with that message.
+          logger_.Warn("Could not found a reseponse handler for the received"
+            + "message."
+              + new JsonStringBuilder()
+                .WriteBeginObject()
+                .WriteMemberName("message")
+                .WriteMember("id", request.Id)
+                .WriteMember("token", request.Token)
+                .WriteMember("type", request.Type));
+        }
+      } catch (Exception exception) {
+        logger_.Error(
+          string.Format(StringResources.Log_MethodThrowsException, kClassName,
+            "OnResponseMessage"), exception);
+      }
+    }
+
+    // Query reseponses message handlers ------------------------------------
+    //
+
+    void QueryLogAggregatorService() {
+      QueryMessage query = new QueryMessage.Builder()
+        .SetType(QueryMessageType.kQueryFind)
+        .AddFacts(KeyValuePairs.FromKeyValuePair(Strings.kMessageUUIDFact,
+          "cfa950a0ca0611e19b230800200c9a66"))
+        .Build();
+
+      RubyMessage message = new RubyMessage.Builder()
+        .SetId(0)
+        .SetToken(Strings.kNodeQueryToken)
+        .SetType((int) NodeMessageType.kNodeQuery)
+        .SetMessage(query.ToByteString())
+        .Build();
+
+      RubyMessageHeader header = new RubyMessageHeader.Builder()
+        .SetId(message.Id)
+        .AddFacts(KeyValuePairs.FromKeyValuePair(Strings.kServiceNameFact,
+          Strings.kNodeServiceName))
+        .SetSize(message.SerializedSize)
+        .Build();
+
+      RubyMessagePacket packet = new RubyMessagePacket.Builder()
+        .SetHeader(header)
+        .SetHeaderSize(header.SerializedSize)
+        .SetMessage(message)
+        .SetSize(header.SerializedSize + message.SerializedSize + 4)
+        .Build();
+
+      ruby_message_channel_.Send(packet);
+    }
+
+    void OnLogAggregatorQueryReseponse(ResponseMessage response) {
+      IList<KeyValuePair> responses = response.ReponsesList;
+      int index = Find(Strings.kHostServiceFact, responses);
+      if (index != -1) {
+        string log_aggregator_address = responses[index].Value;
+        ZMQ.Context context = new Context();
+        AggregatorService aggregator = new AggregatorService(context,
+          log_aggregator_address);
+        if (aggregator.Configure()) {
+          settings_.AggregatorService = aggregator;
+        }
+      }
+    }
+
+
+    // Service control messages ---------------------------------------------
+    //
 
     /// <summary>
     /// Hosts a <see cref="IRubyService"/> implementation in the running
@@ -125,7 +228,7 @@ namespace Nohros.Ruby
       // A try/catch block is used here to ensure the consistence of the
       // list of running services.
       try {
-        var thread = new Thread(ThreadMain) {IsBackground = true};
+        var thread = new Thread(ServiceThreadMain) {IsBackground = true};
         thread.Start(message);
       } catch (Exception exception) {
         logger_.Error(string.Format(StringResources.Log_MethodThrowsException,
@@ -136,7 +239,14 @@ namespace Nohros.Ruby
     void StopService(ServiceControlMessage message) {
     }
 
-    void ThreadMain(object o) {
+    /// <summary>
+    /// Creates and starts a service in a dedicated thread.
+    /// </summary>
+    /// <param name="o">
+    /// A <see cref="ServiceControlMessage"/> containing information about the
+    /// service to be started.
+    /// </param>
+    void ServiceThreadMain(object o) {
       var message = o as ServiceControlMessage;
 #if DEBUG
       if (message == null) {
@@ -146,7 +256,7 @@ namespace Nohros.Ruby
 #endif
       var factory = new ServicesFactory(settings_);
       var service = factory.CreateService(message);
-      var host = new RubyServiceHost(service, ruby_message_channel_);
+      var host = new RubyServiceHost(service, ruby_message_channel_, settings_);
 
       // A try/catch block is used here to ensure the consistence of the
       // list of running services and to isolate one service from another.
@@ -155,9 +265,38 @@ namespace Nohros.Ruby
         host.Start();
       } catch (Exception exception) {
         logger_.Error(string.Format(StringResources.Log_MethodThrowsException,
-          kClassName, "ThreadMain"), exception);
+          kClassName, "ServiceThreadMain"), exception);
       }
       --running_services_count_;
+    }
+
+    /// <summary>
+    /// Converst a list of <see cref="KeyValuePair"/> to a dictionary of
+    /// strings.
+    /// </summary>
+    /// <param name="key_value_pairs">
+    /// The list of <see cref="KeyValuePair"/> to be converted.
+    /// </param>
+    /// <returns></returns>
+    IDictionary<string, string> ListToDictionary(
+      IList<KeyValuePair> key_value_pairs) {
+      Dictionary<string, string> dictionary =
+        new Dictionary<string, string>(key_value_pairs.Count);
+      for (int i = 0, j = key_value_pairs.Count; i < j; i++) {
+        KeyValuePair pair = key_value_pairs[i];
+        dictionary[pair.Key] = pair.Value;
+      }
+      return dictionary;
+    }
+
+    int Find(string pattern, IList<KeyValuePair> key_value_pairs) {
+      for (int i = 0, j = key_value_pairs.Count; i < j; i++) {
+        KeyValuePair key_value_pair = key_value_pairs[i];
+        if (string.Compare(key_value_pair.Key, pattern, StringComparison.OrdinalIgnoreCase) == 0) {
+          return i;
+        }
+      }
+      return -1;
     }
   }
 }
