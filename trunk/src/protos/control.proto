@@ -10,8 +10,8 @@
 // should be destinated to the [ruby] service (RubyMessageHeader.Service = [ruby])
 //
 
-import "google/protobuf/csharp_options.proto";
-option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby.Protocol.Control";
+//import "google/protobuf/csharp_options.proto";
+//option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby.Protocol.Control";
 
 import "common.proto";
 
@@ -103,8 +103,14 @@ message QueryMessage {
 //  RubyMessage.Type = [NodeMessageType.kNodeResponse]
 //  RubyMessage.Token = [node-response]
 message ResponseMessage {
+  // The type of the request message associated with this response.
+  optional sint32 type = 1;
+  
+  // The token of the request message associated with this response.
+  optional string token = 2;
+  
   // A list of key value pairs containing named return values.
-  repeated ruby.KeyValuePair reponses = 1;
+  repeated ruby.KeyValuePair reponses = 3;
 }
 
 // Announce that the sender node is hosting a service that has the specified
