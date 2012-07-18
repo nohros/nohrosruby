@@ -23,7 +23,7 @@ namespace Nohros.Ruby.Logging
     readonly IRubyLogger logger_ = RubyLogger.ForCurrentProcess;
     readonly Mailbox<LogMessage> mailbox_;
     readonly Context context_;
-    Socket publisher_;
+    readonly Socket publisher_;
     readonly IAggregatorSettings settings_;
     readonly ManualResetEvent start_stop_event_;
 
@@ -37,7 +37,7 @@ namespace Nohros.Ruby.Logging
       mailbox_ = new Mailbox<LogMessage>(ProcessLogMessage);
       context_ = context;
       start_stop_event_ = new ManualResetEvent(false);
-      publisher_ = null;
+      publisher_ = context.Socket(SocketType.PUB);
       context_ = context;
 
       facts_ = new Dictionary<string, string>();
@@ -46,15 +46,9 @@ namespace Nohros.Ruby.Logging
     #endregion
 
     public override void Start(IRubyServiceHost service_host) {
-      publisher_ = GetPublisherSocket(context_, settings_.PublisherPort);
+      publisher_.Bind("tcp://*:" + settings_.PublisherPort);
       start_stop_event_.WaitOne();
       start_stop_event_.Close();
-    }
-
-    Socket GetPublisherSocket(Context context, int port) {
-      Socket socket = context.Socket(SocketType.PUB);
-      socket.Bind("tcp://*:" + port);
-      return socket;
     }
 
     public override void Stop(IRubyMessage message) {
@@ -117,7 +111,7 @@ namespace Nohros.Ruby.Logging
         .SetTimeStamp(TimeUnitHelper.ToUnixTime(DateTime.Now))
         .SetUser(Environment.UserName)
         .AddCategorization(new KeyValuePair.Builder()
-          .SetKey("stack-trace")
+          .SetKey("backtrace")
           .SetValue(exception.StackTrace))
         .Build();
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Nohros.Concurrent;
+using Nohros.Configuration;
 using Nohros.Ruby.Protocol;
 using Nohros.Ruby.Protocol.Control;
 
@@ -17,6 +18,8 @@ namespace Nohros.Ruby
 
     readonly IRubyMessageChannel ruby_message_channel_;
     readonly IRubyService service_;
+    readonly IRubySettings settings_;
+    readonly IRubyLogger service_logger_;
 
     #region .ctor
     /// <summary>
@@ -30,7 +33,8 @@ namespace Nohros.Ruby
     /// A <see cref="IRubyMessageSender"/> that can be used to send messages to
     /// the ruby service node.
     /// </param>
-    public RubyServiceHost(IRubyService service, IRubyMessageChannel channel) {
+    public RubyServiceHost(IRubyService service, IRubyMessageChannel channel,
+      IRubySettings settings) {
 #if DEBUG
       if (service == null || channel == null) {
         throw new ArgumentNullException(service == null ? "service" : "sender");
@@ -38,6 +42,11 @@ namespace Nohros.Ruby
 #endif
       service_ = service;
       ruby_message_channel_ = channel;
+      settings_ = settings;
+      service_logger_ =
+        new AggregatorLogger(
+          ProviderOptions.GetIfExists(service.Facts, Strings.kServiceNameFact,
+            Strings.kNodeServiceName), settings.AggregatorService);
     }
     #endregion
 
@@ -49,6 +58,11 @@ namespace Nohros.Ruby
     /// <inheritdoc/>
     public bool Send(IRubyMessage message) {
       return ruby_message_channel_.Send(message);
+    }
+
+    /// <inherithdoc/>
+    public IRubyLogger Logger {
+      get { return service_logger_; }
     }
 
     /// <summary>

@@ -23,5 +23,11 @@ namespace Nohros.Ruby
     /// binaries.
     /// </summary>
     string ServicesDirectory { get; }
+
+    /// <summary>
+    /// Gets an instance of the <see cref="IAggregatorService"/> class that can
+    /// be used to send message to the log aggregator service.
+    /// </summary>
+    IAggregatorService AggregatorService { get; set; }
   }
 }
