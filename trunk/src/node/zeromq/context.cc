@@ -47,7 +47,8 @@ void Context::SocketRef::Close() {
 }
 
 Context::Context()
-  : zmq_context_(NULL) {
+  : zmq_context_(NULL),
+    is_terminating_(false) {
 }
 
 Context::~Context() {
@@ -60,6 +61,7 @@ bool Context::Open(int io_threads) {
     return false;
   }
 
+  is_terminating_ = false;
   zmq_context_ = zmq_init(io_threads);
   if (zmq_context_ == NULL) {
     OnZeromqError(*static_cast<int*>(zmq_context_), NULL);
@@ -73,6 +75,8 @@ void Context::Close() {
   // zmq_term() needs all open sockets to be finalized. Assert that the client
   // has relesead all socket.
   DCHECK(open_sockets_.empty());
+
+  is_terminating_ = true;
 
   // Additionaly clear the opened sockets, because they contain weak references
   // to this context. This case can come up when error-handling code is hit

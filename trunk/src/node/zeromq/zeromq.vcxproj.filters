@@ -4,6 +4,7 @@
     <ClInclude Include="context.h" />
     <ClInclude Include="socket.h" />
     <ClInclude Include="message.h" />
+    <ClInclude Include="zmq_structs.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="context.cc" />
