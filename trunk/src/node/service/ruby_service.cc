@@ -20,8 +20,6 @@
 #include <sql/connection.h>
 
 #include <ruby_protos.pb.h>
-#include "node/zeromq/context.h"
-#include "node/zeromq/socket.h"
 #include "node/zeromq/message.h"
 #include "node/service/constants.h"
 #include "node/service/service_metadata.h"
@@ -57,17 +55,17 @@ void RubyService::ThreadMain() {
   // Create our router socket to receive commands from clients and services.
   router_.reset(CreateRouterSocket(message_channel_port_));
   if (router_.get()) {
+    zmq::MessageParts parts;
     while (is_running_) {
-      const std::vector<scoped_refptr<zmq::Message>> messages
-        = router_.get()->Receive(zmq::kNoFlags);
-      if (messages.size() > 0) {
-        OnMessage(messages);
+      parts.clear();
+      if (router_->Receive(&parts, zmq::kNoFlags)) {
+        OnMessage(parts);
       }
     }
   }
 }
 
-void RubyService::OnMessage(const MessageParts& message_parts) {
+void RubyService::OnMessage(const zmq::MessageParts& message_parts) {
   int no_of_parts = message_parts.size();
   if (no_of_parts % 3 != 0) {
     LOG (WARNING) << "Received message has a invalid number of parts."

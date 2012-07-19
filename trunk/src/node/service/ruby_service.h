@@ -12,12 +12,8 @@
 #include <base/threading/platform_thread.h>
 
 #include "node/zeromq/context.h"
+#include "node/zeromq/socket.h"
 #include "node/service/service_base.h"
-
-namespace zmq {
-class Socket;
-class Message;
-}
 
 namespace protocol {
 class RubyMessagePacket;
@@ -27,8 +23,6 @@ class RubyMessageHeader;
 namespace node {
 class ServicesDatabase;
 class MessageRouter;
-
-typedef std::vector<scoped_refptr<zmq::Message>> MessageParts;
 
 class RubyService
     : public ServiceBase,
@@ -58,7 +52,7 @@ class RubyService
 
  private:
   // Process the message parts.
-  void OnMessage(const MessageParts& message_parts);
+  void OnMessage(const zmq::MessageParts& message_parts);
   
   // Dispatches a message packet to its destiantion.
   void DispatchMessage(const std::vector<std::string>& destinations,
