@@ -20,6 +20,7 @@
     <ClInclude Include="hash.h" />
     <ClInclude Include="message_router.h" />
     <ClInclude Include="routing_database.h" />
+    <ClInclude Include="message_processor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="service_main.cc" />
@@ -41,6 +42,7 @@
     <ClCompile Include="hash.cc" />
     <ClCompile Include="message_router.cc" />
     <ClCompile Include="routing_database.cc" />
+    <ClCompile Include="message_processor.cc" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="protos">
