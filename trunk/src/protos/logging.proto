@@ -20,7 +20,7 @@ enum LoggingMessageType {
 }
 
 // The format of the log message that is sent to the subscribers.
-// Message UUID: cfa950a0ca0611e19b230800200c9a66
+// Message UUID(msguuid): cfa950a0ca0611e19b230800200c9a66
 //
 // Protocol
 //  RubyMessage.Type = [LoggingMessageType.kLogMessage]

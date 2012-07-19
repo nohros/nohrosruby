@@ -14,6 +14,7 @@
 //option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby.Protocol.Control";
 
 import "common.proto";
+import "ruby_protos.proto";
 
 package protocol.control;
 option optimize_for = LITE_RUNTIME;
@@ -87,7 +88,6 @@ enum QueryMessageType {
 //
 // Protocol
 //  RubyMessage.Type = [NodeMessageType.kNodeQuery]
-//  RubyMessage.Token = [node-query]
 message QueryMessage {
   // The method type of the query.
   optional QueryMessageType type = 1;
@@ -103,14 +103,11 @@ message QueryMessage {
 //  RubyMessage.Type = [NodeMessageType.kNodeResponse]
 //  RubyMessage.Token = [node-response]
 message ResponseMessage {
-  // The type of the request message associated with this response.
-  optional sint32 type = 1;
-  
-  // The token of the request message associated with this response.
-  optional string token = 2;
+  // The request message associated with this response.
+  optional RubyMessage request = 1;
   
   // A list of key value pairs containing named return values.
-  repeated ruby.KeyValuePair reponses = 3;
+  repeated ruby.KeyValuePair reponses = 2;
 }
 
 // Announce that the sender node is hosting a service that has the specified
