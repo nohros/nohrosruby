@@ -25,6 +25,12 @@ enum SocketType {
   kRouter = 6
 };
 
+// Possible values for error in ErrorDelegate.OnError(). These should match
+// the values in zmq.h
+// enum ContextError {
+//  kTerm = 156384712 + 53
+// }
+
 class Socket;
 class Context;
 
@@ -86,6 +92,9 @@ class Context {
 
   // Returns true if the context has been sucessfully opened.
   bool is_open() const { return !!zmq_context_; }
+
+  // Returns true if the context is terminating or has been terminated.
+  bool is_terminating() const { return is_terminating_; }
 
   // Closes the context. This is automatically performed on destruction for
   // you, but this allows you to performs a deterministic close. You must
@@ -177,6 +186,7 @@ class Context {
   int OnZeromqError(int err, Socket* socket);
 
   void* zmq_context_;
+  bool is_terminating_;
 
   // A list of all SocketReds we've given out. Each ref must register with
   // us when it's created or destroyed. This allows us to potentially close

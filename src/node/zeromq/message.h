@@ -6,13 +6,13 @@
 #define NODE_ZEROMQ_MESSAGE_H_
 
 #include <string>
-#include <zmq.h>
 
 #include <base/memory/ref_counted.h>
 
 namespace zmq {
 
 class Socket;
+struct zmq_msg_t;
 
 // Messages are reference counted data buffers used as destination buffers for
 // Read() operations, or as the source buffers for Write() operations.
@@ -61,15 +61,15 @@ class Message : public base::RefCountedThreadSafe<Message> {
   explicit Message(int size);
 
   // The underlying buffer size.
-  size_t size() { return zmq_msg_size(&message_); }
+  size_t size();
   
-  void* mutable_data() { return zmq_msg_data(&message_); }
+  void* mutable_data();
   const std::string data() {
     return std::string(static_cast<char*>(mutable_data()), size());
   }
 
   // A pointer to the raw zeromq message.
-  zmq_msg_t* message() { return &message_; }
+  zmq_msg_t* message() { return message_; }
 
  protected:
   friend class base::RefCountedThreadSafe<Message>;
@@ -90,7 +90,7 @@ class Message : public base::RefCountedThreadSafe<Message> {
   void* data_;
 
   // The raw zeromq message.
-  zmq_msg_t message_;
+  zmq_msg_t* message_;
 };
 
 // This class allows the creation of a temporary Message that doesn't really

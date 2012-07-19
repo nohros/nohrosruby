@@ -21,6 +21,7 @@ enum SocketFlags {
 };
 
 class Message;
+typedef std::vector<scoped_refptr<Message>> MessageParts;
 
 // Normal usage:
 //   zmq::Socket socket(context_.CreateSocket(...))
@@ -95,12 +96,11 @@ class Socket {
 
   // Receive all the parts os a message from a socket. The Socket::Receive()
   // function shall receive all the parts of a multi-part message from a socket
-  // and return an vector contained the received message parts. If there are no
-  // messages available the Socket::Receive() function shall block until the
-  // request can be satisfied. The flags argument is a combination of the
-  // flags defined below:
+  // and store it in |pairs|. If there are no messages available the
+  // Socket::Receive() function shall block until the request can be satisfied.
+  // The flags argument is a combination of the flags defined below:
   //
-  // If the message is not a multi-part message the returned vector will
+  // If the message is not a multi-part message the |parts| vector will
   // contain only one element, which is the representiation of the the received
   // single-part message.
   //
@@ -111,7 +111,7 @@ class Socket {
   //     data.
   //
   // Refer to zeromq docs for a detailed description.
-  std::vector<scoped_refptr<Message>> Receive(SocketFlags flags);
+  bool Receive(MessageParts* parts, SocketFlags flags);
 
   // Returns true if the socket can be used.
   bool is_valid() const { return ref_->is_valid(); }
