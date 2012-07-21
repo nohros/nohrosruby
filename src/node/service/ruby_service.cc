@@ -12,142 +12,99 @@
 #include <base/command_line.h>
 #include <base/logging.h>
 #include <base/memory/ref_counted.h>
-#include <base/threading/platform_thread.h>
 #include <base/string_number_conversions.h>
-#include <base/memory/scoped_ptr.h>
 #include <base/string_util.h>
-#include <google/protobuf/repeated_field.h>
-#include <sql/connection.h>
 
-#include <ruby_protos.pb.h>
-#include "node/zeromq/message.h"
+#include "node/zeromq/context.h"
+#include "node/zeromq/diagnostic_error_delegate.h"
 #include "node/service/constants.h"
-#include "node/service/service_metadata.h"
+#include "node/service/ruby_switches.h"
 #include "node/service/message_router.h"
+#include "node/service/message_receiver.h"
+#include "node/service/control_message_loop.h"
 
 namespace node {
+namespace {
 
-typedef google::protobuf::RepeatedPtrField<ruby::KeyValuePair> KeyValuePairSet;
+zmq::ErrorDelegate* GetErrorHandler() {
+  return new zmq::DiagnosticErrorDelegate();
+}
 
-RubyService::RubyService(zmq::Context* context, MessageRouter* message_router)
+}  // anonymous namespace
+
+RubyService::RubyService(MessageRouter* router)
   : ServiceBase(node::kRubyServiceName),
-    context_(context),
-    router_(NULL),
+    context_(new zmq::Context()),
     message_channel_port_(node::kMessageChannelPort),
-    message_router_(message_router),
-    thread_(NULL),
-    is_running_(false) {
+    message_receiver_(new MessageReceiver(context_.get(), router)),
+    control_message_loop_(new ControlMessageLoop(context_.get(), router)),
+    control_message_delegate_(
+      new ControlMessageThreadDelegate(control_message_loop_.get())) {
+  DCHECK(!context_.get());
+  DCHECK(!control_message_loop_.get());
+  DCHECK(!control_message_delegate_.get());
 }
 
 void RubyService::OnStart(const std::vector<std::wstring>& arguments) {
-  VLOG(1) << "Service has been started";
+  LOG(INFO) << "Service has been started";
 
-  is_running_ = true ;
-  context_->set_error_delegate(this);
+  const CommandLine& switches = *CommandLine::ForCurrentProcess();
 
-  if (!base::PlatformThread::Create(0, this, &thread_)) {
-    NOTREACHED() << "Service worker thread creation failed.";
+  // Override the default message channel port.
+  if (switches.HasSwitch(switches::kMessageChannelPort)) {
+    std::string value =
+      switches.GetSwitchValueASCII(switches::kMessageChannelPort);
+
+    int message_channel_port;
+    if (base::StringToInt(value, &message_channel_port)) {
+      message_channel_port_ = message_channel_port;
+    } else {
+      LOG(WARNING) << "Failed to parse the request reply port: "
+              << value
+              << ". Using the default port: "
+              << node::kMessageChannelPort;
+    }
   }
+
+  // Set up the service tracker address, if supplied.
+  if (switches.HasSwitch(switches::kServiceTrackerAddress)) {
+  }
+
+  context_->set_error_delegate(GetErrorHandler());
+  if (!context_->Open(1)) {
+    LOG(ERROR) << "Context could not be opened. Error: "
+               << context_->GetErrorMessage();
+    return;
+  }
+
+  control_message_delegate_.reset(
+    new ControlMessageThreadDelegate(control_message_loop_.get()));
+  if (!base::PlatformThread::Create(
+    0, control_message_delegate_.get(), &control_message_thread_)) {
+    NOTREACHED() << "Control message thread creation failed.";
+  }
+
+  message_receiver_->Start();
+}
+
+RubyService::ControlMessageThreadDelegate::ControlMessageThreadDelegate(
+  ControlMessageLoop* control_message_loop)
+  : control_message_loop_(control_message_loop_) {
 }
 
 // PlatformThread::Delegate() implementation
-void RubyService::ThreadMain() {
-  // Create our router socket to receive commands from clients and services.
-  router_.reset(CreateRouterSocket(message_channel_port_));
-  if (router_.get()) {
-    zmq::MessageParts parts;
-    while (is_running_) {
-      parts.clear();
-      if (router_->Receive(&parts, zmq::kNoFlags)) {
-        OnMessage(parts);
-      }
-    }
-  }
-}
-
-void RubyService::OnMessage(const zmq::MessageParts& message_parts) {
-  int no_of_parts = message_parts.size();
-  if (no_of_parts % 3 != 0) {
-    LOG (WARNING) << "Received message has a invalid number of parts."
-              << "No of parts: " << no_of_parts;
-    return;
-  }
-
-  // The message format is:
-  //   [sender id][empty frame][message]
-  scoped_refptr<zmq::Message> message = message_parts[2];
-  protocol::RubyMessagePacket packet;
-  if (!packet.ParseFromArray(message->mutable_data(), message->size())) {
-    LOG (WARNING) << "The received message is not a valid ruby message packet.";
-    return;
-  }
-
-  if (!packet.has_message()) {
-    LOG(WARNING) << "Received a packet with no message associated.";
-    return;
-  }
-
-  DispatchMessage(
-    message_router_->GetRoutes(message_parts[0]->data(), &packet), &packet);
-}
-
-void RubyService::DispatchMessage(const RouteSet& destinations,
-  const protocol::RubyMessagePacket* packet) {
-  DCHECK(router_.get());
-  DCHECK(destinations.size());
-
-  int packet_size = packet->ByteSize();
-  for (RouteSet::const_iterator destination = destinations.begin();
-    destination != destinations.end(); ++destination) {
-    // Write the destination address to the router socket as the first
-    // message part.
-    int destination_address_size = destination->size();
-    scoped_refptr<zmq::Message> address(
-      new zmq::Message(destination_address_size));
-    memcpy(address->mutable_data(), destination->data(),
-      destination_address_size);
-
-    // Serialize the message packet into a zmq::Message.
-    scoped_refptr<zmq::Message> packet_data(new zmq::Message(packet_size));
-    packet->SerializeToArray(packet_data->mutable_data(), packet_size);
-
-    // The message envelope to send a message over a ROUTER->REP/REQ should be.
-    //  [DESTINATION ADDRESS]
-    //  [EMPTY FRAME]
-    //  [DATA]
-    router_->Send(address, destination_address_size, zmq::kSendMore);
-    router_->Send(scoped_refptr<zmq::Message>(new zmq::Message()), 0,
-      zmq::kSendMore);
-    router_->Send(packet_data, packet_size, zmq::kNoFlags);
-  }
-}
-
-zmq::Socket* RubyService::CreateRouterSocket(int port) {
-  std::string endpoint("tcp://*:");
-  endpoint.append(base::IntToString(port));
-  scoped_ptr<zmq::Socket> router (new zmq::Socket(
-    context_->CreateSocket(zmq::kRouter)));
-  if (router.get()->Bind(endpoint.c_str())) {
-    return router.release();
-  }
-  return NULL;
+void RubyService::ControlMessageThreadDelegate::ThreadMain() {
+  control_message_loop_->Run();
 }
 
 void RubyService::OnStop() {
-  is_running_ = false;
-  router_->Close();
+  control_message_loop_->Quit();
+  message_receiver_->Stop();
   context_->Close();
 
-  if (thread_) {
-    base::PlatformThread::Join(thread_);
+  if (control_message_thread_) {
+    base::PlatformThread::Join(control_message_thread_);
   }
-}
-
-int RubyService::OnError(int error, zmq::Context* context, zmq::Socket* socket) {
-  LOG(ERROR) << "zmq error " << error
-             << ", errno " << context->GetErrorCode()
-             << ": " << context->GetErrorMessage();
-  return error;
 }
 
 RubyService::~RubyService() {

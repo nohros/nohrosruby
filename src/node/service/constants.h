@@ -19,7 +19,12 @@ extern const char kNodeServiceName[];
 
 // filenames
 extern const FilePath::CharType kServicesDatabaseFilename[];
-extern const FilePath::CharType kServicesDir[];
+extern const FilePath::CharType kServicesDirname[];
+extern const FilePath::CharType kServicesHostsDirname[];
+extern const FilePath::CharType kNetServiceHostDirname[];
+extern const FilePath::CharType kJavaServiceHostDirname[];
+extern const FilePath::CharType kPythonServiceHostDirname[];
+extern const FilePath::CharType kServiceHostExecutableName[];
 
 }
 

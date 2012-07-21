@@ -5,6 +5,7 @@
     <ClInclude Include="socket.h" />
     <ClInclude Include="message.h" />
     <ClInclude Include="zmq_structs.h" />
+    <ClInclude Include="diagnostic_error_delegate.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="context.cc" />

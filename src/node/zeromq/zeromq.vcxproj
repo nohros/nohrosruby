@@ -82,6 +82,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="context.h" />
+    <ClInclude Include="diagnostic_error_delegate.h" />
     <ClInclude Include="message.h" />
     <ClInclude Include="socket.h" />
     <ClInclude Include="zmq_structs.h" />

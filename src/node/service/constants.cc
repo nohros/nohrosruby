@@ -22,6 +22,17 @@ const char kNodeServiceName[] = "ruby";
 
 const FilePath::CharType kServicesDatabaseFilename[] = FPL("services.db");
 
-const FilePath::CharType kServicesDir[] = FPL("services");
+const FilePath::CharType kServicesDirname[] = FPL("services");
+
+const FilePath::CharType kServicesHostsDirname[] = FPL("hosts");
+
+const FilePath::CharType kServiceHostExecutableName[] =
+  FPL("nohros.ruby.servicehost.exe");
+
+const FilePath::CharType kNetServiceHostDirname[] = FPL("net");
+
+const FilePath::CharType kJavaServiceHostDirname[] = FPL("java");
+
+const FilePath::CharType kPythonServiceHostDirname[] = FPL("python");
 
 }  // namespace node

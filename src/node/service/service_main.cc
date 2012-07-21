@@ -13,28 +13,22 @@
 #include <base/string_number_conversions.h>
 #include <base/path_service.h>
 #include <base/base_paths.h>
+#include <base/file_path.h>
 #include <sql/connection.h>
 
-#include "node/zeromq/context.h"
 #include "node/service/ruby_service.h"
 #include "node/service/ruby_switches.h"
 #include "node/service/constants.h"
 #include "node/service/services_database.h"
-#include "node/service/message_router.h"
 #include "node/service/routing_database.h"
+#include "node/service/message_router.h"
 
 int main(int argc, char** argv) {
   CommandLine::Init(argc, argv);
   const CommandLine& switches = *CommandLine::ForCurrentProcess();
 
   if (switches.HasSwitch(switches::kWaitDebugger)) {
-    base::PlatformThread::Sleep(10000);
-  }
-
-  zmq::Context context;
-  if (!context.Open(1)) {
-    LOG(ERROR) << "zmq error, " << context.GetErrorMessage();
-    return -1;
+    //base::PlatformThread::Sleep(10000);
   }
 
   // Set up the services database
@@ -60,24 +54,7 @@ int main(int argc, char** argv) {
   }
 
   node::MessageRouter message_router(&services_database, &routing_database);
-  node::RubyService service(&context, &message_router);
-
-  int message_channel_port = node::kMessageChannelPort;
-  if (switches.HasSwitch(switches::kMessageChannelPort)) {
-    std::string value =
-      switches.GetSwitchValueASCII(switches::kMessageChannelPort);
-    if (!base::StringToInt(value, &message_channel_port)) {
-      LOG(WARNING) << "Failed to parse the request reply port: "
-                   << value
-                   << ". Using the default port: "
-                   << node::kMessageChannelPort;
-    }
-  }
-  service.set_message_channel_port(message_channel_port);
-
-  // Set up the service tracker address, if supplied.
-  if (switches.HasSwitch(switches::kServiceTrackerAddress)) {
-  }
+  node::RubyService service(&message_router);
 
   service.Run();
 }

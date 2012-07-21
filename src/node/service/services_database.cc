@@ -77,6 +77,7 @@ bool ServicesDatabase::InitServicesTable() {
     if (!db_->Execute("CREATE TABLE services ("
                       "id INTEGER PRIMARY KEY,"
                       "name VARCHAR NOT NULL,"
+                      "working_dir VARCHAR NOT NULL,"
                       "language_runtime_type INTEGER DEFAULT 1,"
                       "arguments VARCHAR NOT NULL)")) {
       LOG(WARNING) << db_->GetErrorMessage();
@@ -116,7 +117,7 @@ bool ServicesDatabase::GetServicesMetadata(const ServiceFactSet& facts,
     services_found.insert(s.ColumnInt(0));
   }
 
-  std::string cmd("SELECT id, name, language_runtime_type, arguments "
+  std::string cmd("SELECT id, name, language_runtime_type, working_dir, arguments "
                   "FROM services s "
                   "INNER JOIN facts f on f.service_id = s.id "
                   "WHERE service_id = ? and hash_code in (");
@@ -140,7 +141,8 @@ bool ServicesDatabase::GetServicesMetadata(const ServiceFactSet& facts,
     service->set_service_name(statement.ColumnString(1));
     service->set_language_runtime_type(
       static_cast<LanguageRuntimeType>(statement.ColumnInt(2)));
-    service->set_arguments(statement.ColumnString(3));
+    service->set_service_working_dir(statement.ColumnString(3));
+    service->set_arguments(statement.ColumnString(4));
 
     services->push_back(service);
     statement.Reset();
