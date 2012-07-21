@@ -26,12 +26,9 @@ class ServiceMetadata : public base::RefCountedThreadSafe<ServiceMetadata> {
  public:
   ServiceMetadata();
   ServiceMetadata(int service_id,
-                  std::string service_name,
-                  LanguageRuntimeType language_runtime);
-  ServiceMetadata(int service_id,
-                  std::string service_name,
+                  const std::string& service_name,
                   LanguageRuntimeType language_runtime,
-                  std::string arguments);
+                  const std::string& service_working_dir);
 
   // A string that uniquely identifies a service within a node for a specific
   // language runtime.
@@ -51,7 +48,9 @@ class ServiceMetadata : public base::RefCountedThreadSafe<ServiceMetadata> {
   }
 
   // The language runtime associated with the service.
-  int language_runtime_type() const { return language_runtime_type_; }
+  int language_runtime_type() const {
+    return language_runtime_type_;
+  }
   void set_language_runtime_type(int language_runtime_type) {
     language_runtime_type_ = language_runtime_type;
   }
@@ -62,12 +61,20 @@ class ServiceMetadata : public base::RefCountedThreadSafe<ServiceMetadata> {
     service_id_ = service_id;
   }
 
+  const std::string& service_working_dir() const {
+    return service_working_dir_;
+  }
+  void set_service_working_dir(const std::string& service_working_dir) {
+    service_working_dir_ = service_working_dir;
+  }
+
  private:
   friend class base::RefCountedThreadSafe<ServiceMetadata>;
   ~ServiceMetadata();
 
   std::string service_name_;
   std::string arguments_;
+  std::string service_working_dir_;
   int language_runtime_type_;
   int service_id_;
 

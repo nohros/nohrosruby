@@ -11,21 +11,13 @@ ServiceMetadata::ServiceMetadata() {
 
 ServiceMetadata::ServiceMetadata(
   int service_id,
-  std::string service_name,
-  LanguageRuntimeType language_runtime_type)
-  : service_id_(service_id),
-    service_name_(service_name),
-    language_runtime_type_(language_runtime_type) {
-}
-
-ServiceMetadata::ServiceMetadata(
-  int service_id,
-  std::string service_name,
+  const std::string& service_name,
   LanguageRuntimeType language_runtime_type,
-  std::string arguments)
+  const std::string& service_working_dir)
   : service_id_(service_id),
     service_name_(service_name),
-    language_runtime_type_(language_runtime_type) {
+    language_runtime_type_(language_runtime_type),
+    service_working_dir_(service_working_dir) {
 }
 
 ServiceMetadata::~ServiceMetadata() {

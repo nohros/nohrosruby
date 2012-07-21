@@ -10,68 +10,51 @@
 
 #include <base/compiler_specific.h>
 #include <base/threading/platform_thread.h>
+#include <base/memory/scoped_ptr.h>
 
-#include "node/zeromq/context.h"
-#include "node/zeromq/socket.h"
 #include "node/service/service_base.h"
 
-namespace protocol {
-class RubyMessagePacket;
-class RubyMessageHeader;
+namespace zmq {
+class Context;
+class Socket;
 }
 
 namespace node {
-class ServicesDatabase;
 class MessageRouter;
+class MessageReceiver;
+class ControlMessageLoop;
 
 class RubyService
-    : public ServiceBase,
-      public base::PlatformThread::Delegate,
-      public zmq::ErrorDelegate {
+    : public ServiceBase {
  public:
-  RubyService(zmq::Context* context, MessageRouter* message_router);
+  RubyService(MessageRouter* message_router);
 
   ~RubyService();
-
-  // Pre-Init configuration ------------------------------------------------
-
-  // Sets the ports numbers that is used by sockets to receives commands
-  // from clients and services.
-  void set_message_channel_port (int port) { message_channel_port_ = port; }
 
  protected:
   // Implementation of the SeviceBase methods.
   void OnStart(const std::vector<std::wstring>& arguments) OVERRIDE;
   void OnStop() OVERRIDE;
 
-  // PlatformThread::Delegate implementation.
-  virtual void ThreadMain() OVERRIDE;
-
-  // zmq::ErrorDelegate implementation
-  int OnError(int error, zmq::Context* context, zmq::Socket* socket);
-
  private:
-  // Process the message parts.
-  void OnMessage(const zmq::MessageParts& message_parts);
-  
-  // Dispatches a message packet to its destiantion.
-  void DispatchMessage(const std::vector<std::string>& destinations,
-    const protocol::RubyMessagePacket* packet);
+  class ControlMessageThreadDelegate : public base::PlatformThread::Delegate {
+   public:
+    explicit ControlMessageThreadDelegate(
+      ControlMessageLoop* control_message_loop);
+    virtual void ThreadMain() OVERRIDE;
+   private:
+    ControlMessageLoop* control_message_loop_;
+  };
 
-  // Creates a socket object and bind it to the given |port|.Returns true
-  // if the socket was created succesfully; otherwise, false.
-  zmq::Socket* CreateRouterSocket(int port);
-  zmq::Context* context_;
-
-  MessageRouter* message_router_;
-  bool is_running_;
   int message_channel_port_;
 
-  // The zeromq socket that is used as a message router.
-  scoped_ptr<zmq::Socket> router_;
+  base::PlatformThreadHandle control_message_thread_;
 
-  // Worker thread handle.
-  base::PlatformThreadHandle thread_;
+  // Store it, because it must outlive the thread.
+  scoped_ptr<ControlMessageThreadDelegate> control_message_delegate_;
+  scoped_ptr<ControlMessageLoop> control_message_loop_;
+  scoped_ptr<MessageReceiver> message_receiver_;
+  scoped_ptr<zmq::Context> context_;
 
   DISALLOW_COPY_AND_ASSIGN(RubyService);
 };

@@ -5,6 +5,7 @@
 #ifndef NODE_ZEROMQ_CONTEXT_H_
 #define NODE_ZEROMQ_CONTEXT_H_
 
+#include <vector>
 #include <set>
 
 #include <base/basictypes.h>
@@ -33,6 +34,7 @@ enum SocketType {
 
 class Socket;
 class Context;
+class Message;
 
 // Error delegate defines the interface to implement error handling and
 // recovery for zeromq operations. This allows the rest of the classes to

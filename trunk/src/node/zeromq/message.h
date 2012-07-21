@@ -68,11 +68,12 @@ class Message : public base::RefCountedThreadSafe<Message> {
     return std::string(static_cast<char*>(mutable_data()), size());
   }
 
-  // A pointer to the raw zeromq message.
-  zmq_msg_t* message() { return message_; }
-
  protected:
   friend class base::RefCountedThreadSafe<Message>;
+  friend class Socket;
+
+  // A pointer to the raw zeromq message.
+  zmq_msg_t* message() { return message_; }
 
   // Only allow derived classes to specify data_.
   // In all other cases, we own data_, and must delete it at destruction time.

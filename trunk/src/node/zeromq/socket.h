@@ -5,7 +5,7 @@
 #ifndef NODE_ZEROMQ_SOCKET_H_
 #define NODE_ZEROMQ_SOCKET_H_
 
-#include <vector>
+#include <string>
 #include <base/memory/ref_counted.h>
 
 #include "node/zeromq/context.h"
@@ -19,9 +19,6 @@ enum SocketFlags {
   kNoBlock = 1,
   kSendMore = 2,
 };
-
-class Message;
-typedef std::vector<scoped_refptr<Message>> MessageParts;
 
 // Normal usage:
 //   zmq::Socket socket(context_.CreateSocket(...))
@@ -38,6 +35,8 @@ typedef std::vector<scoped_refptr<Message>> MessageParts;
 // set_error_delegate().
 class Socket {
  public:
+  typedef std::vector<scoped_refptr<Message>> MessageParts;
+
   explicit Socket(scoped_refptr<Context::SocketRef> ref);
   ~Socket();
 

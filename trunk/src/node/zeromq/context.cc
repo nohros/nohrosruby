@@ -114,8 +114,8 @@ const char* Context::GetErrorMessage() const {
 }
 
 void Context::SocketRefCreated(SocketRef* ref) {
-  DCHECK(open_sockets_.find(ref) == open_sockets_.end());
-  open_sockets_.insert(ref);
+  //DCHECK(open_sockets_.find(ref) == open_sockets_.end());
+  //open_sockets_.insert(ref);
 }
 
 void Context::SocketRefDeleted(SocketRef* ref) {
