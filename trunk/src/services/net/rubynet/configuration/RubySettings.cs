@@ -14,7 +14,8 @@ namespace Nohros.Ruby
   {
     readonly string prompt_;
     RunningMode running_mode_;
-    string services_directory_;
+    string services_folder_;
+    string node_directory_;
     IAggregatorService aggregator_service_;
 
     #region .ctor
@@ -24,8 +25,11 @@ namespace Nohros.Ruby
     public RubySettings() {
       running_mode_ = RunningMode.Service;
       prompt_ = Strings.kShellPrompt;
-      services_directory_ = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
-        Strings.kServicesFolderName);
+
+      // By default the language specific service host is stored at path:
+      // "node_services_directory\hosts\language_name\"
+      node_directory_ =
+        Path.GetFullPath(AppDomain.CurrentDomain.BaseDirectory + "..\\..\\");
     }
     #endregion
 
@@ -35,9 +39,20 @@ namespace Nohros.Ruby
     }
 
     /// <inheritdoc/>
-    public string ServicesDirectory {
-      get { return services_directory_; }
-      protected set { services_directory_ = value; }
+    public string GetAbsolutePath(string path) {
+      return Path.GetFullPath(Path.Combine(node_directory_, path));
+    }
+
+    /// <inheritdoc/>
+    public string ServicesFolder {
+      get { return services_folder_; }
+      protected set { services_folder_ = value; }
+    }
+
+    /// <inheritdoc/>
+    public string NodeDirectory {
+      get { return node_directory_; }
+      protected set { node_directory_ = value; }
     }
 
     /// <inheritdoc/>

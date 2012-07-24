@@ -19,10 +19,29 @@ namespace Nohros.Ruby
     RunningMode RunningMode { get; }
 
     /// <summary>
-    /// Gets the path to the folder that is used to store the services
+    /// Gets the name of the folder that is used to store the services
     /// binaries.
     /// </summary>
-    string ServicesDirectory { get; }
+    string ServicesFolder { get; }
+
+    /// <summary>
+    /// Gets the full path to the services' node directory.
+    /// </summary>
+    /// <remarks>
+    /// This is the working directory of the service node executable.
+    /// </remarks>
+    string NodeDirectory { get; }
+
+    /// <summary>
+    /// Gets the absolute path for the specified relative path.
+    /// </summary>
+    /// <param name="path">
+    /// A path that is relative to the node directory.
+    /// </param>
+    /// <remarks>
+    /// <paramref name="path"/> should be relative to the node directory.
+    /// </remarks>
+    string GetAbsolutePath(string path);
 
     /// <summary>
     /// Gets an instance of the <see cref="IAggregatorService"/> class that can
