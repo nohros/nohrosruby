@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using Nohros.Data.Json;
 using ZMQ;
 
 using Nohros.Ruby.Protocol;
@@ -17,6 +18,7 @@ namespace Nohros.Ruby.Logging
   public class Aggregator : AbstractRubyService
   {
     const string kClassName = "Nohros.Ruby.Logging.Aggregator";
+    const string kJsonFeedName = "json";
 
     readonly IDictionary<string, string> facts_;
 
@@ -124,11 +126,29 @@ namespace Nohros.Ruby.Logging
     /// </param>
     void Publish(LogMessage message) {
       try {
+        // publish to the JSON feed.
+        publisher_.SendMore(kJsonFeedName, Encoding.UTF8);
         publisher_.SendMore(message.Application, Encoding.UTF8);
-        publisher_.Send(message.ToByteArray());
+        publisher_.Send(GetJson(message), Encoding.UTF8);
+
+        if (logger_.IsDebugEnabled) {
+          logger_.Debug("Published a message to the JSON feed");
+        }
+
+        // TODO(neylor.silva): Publish the message to the zeromq feed.
       } catch (System.Exception exception) {
         Store(GetInternalLogMessage(exception));
       }
+    }
+
+    string GetJson(LogMessage message) {
+      return new JsonStringBuilder()
+        .WriteBeginObject()
+        .WriteMember("application", message.Application)
+        .WriteMember("level", message.Level)
+        .WriteMember("reason", message.Reason)
+        .WriteMember("timestamp", message.TimeStamp.ToString())
+        .ToString();
     }
 
     /// <summary>
