@@ -17,6 +17,6 @@
     <tags>csharp nohros ruby .net</tags>
   </metadata>
   <files>
-    <file src="..\..\..\bin\release\nohros.ruby.net.dll" target="lib\nohros.ruby.net.dll" />
+    <file src="..\..\..\bin\release\hosts\net\nohros.ruby.net.dll" target="lib\nohros.ruby.net.dll" />
   </files>
 </package>
