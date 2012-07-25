@@ -4,7 +4,6 @@ using System.Text;
 using System.Threading;
 using Nohros.Data.Json;
 using ZMQ;
-
 using Nohros.Ruby.Protocol;
 using Nohros.Concurrent;
 using Nohros.Resources;
@@ -19,12 +18,12 @@ namespace Nohros.Ruby.Logging
   {
     const string kClassName = "Nohros.Ruby.Logging.Aggregator";
     const string kJsonFeedName = "json";
+    readonly Context context_;
 
     readonly IDictionary<string, string> facts_;
 
     readonly IRubyLogger logger_ = RubyLogger.ForCurrentProcess;
     readonly Mailbox<LogMessage> mailbox_;
-    readonly Context context_;
     readonly Socket publisher_;
     readonly IAggregatorSettings settings_;
     readonly ManualResetEvent start_stop_event_;
@@ -49,14 +48,49 @@ namespace Nohros.Ruby.Logging
 
     public override void Start(IRubyServiceHost service_host) {
       publisher_.Bind("tcp://*:" + settings_.PublisherPort);
-      start_stop_event_.WaitOne();
-      start_stop_event_.Close();
+
+      // Self host means that we are not using the ruby node service, the
+      // service is beign hosted ony by the ruby .NET infrastructure, which
+      // does not provide a mechanism to receive messages from outside. We
+      // need to create a channel to receive message for your own.
+      if (settings_.SelfHost) {
+        StartSelfHosting();
+      } else {
+        // Wait stop to be called.
+        start_stop_event_.WaitOne();
+        start_stop_event_.Close();
+      }
+
+      publisher_.Dispose();
+      context_.Dispose();
+    }
+
+    public void StartSelfHosting() {
+      try {
+        Socket receiver = context_.Socket(SocketType.DEALER);
+        receiver.Bind(Transport.TCP, "127.0.0.1", (uint) settings_.SelfHostPort);
+        while (!start_stop_event_.WaitOne(0)) {
+          RubyMessagePacket packet =
+            RubyMessagePacket.ParseFrom(receiver.Recv());
+          OnMessage(packet.Message);
+        }
+      } catch (ZMQ.Exception zmqe) {
+        if (zmqe.Errno == (int) ERRNOS.ETERM) {
+          // We can do nothing with a closed context. Stop the service.
+          if (logger_.IsWarnEnabled) {
+            logger_.Warn("Context was terminated while the service was running.");
+          }
+          Stop(null);
+        }
+      } catch (System.Exception exception) {
+        LogMessage log = GetInternalLogMessage(exception);
+        Publish(log);
+        Store(log);
+      }
     }
 
     public override void Stop(IRubyMessage message) {
       start_stop_event_.Set();
-      publisher_.Dispose();
-      context_.Dispose();
     }
 
     /// <inheritdoc/>
@@ -127,8 +161,8 @@ namespace Nohros.Ruby.Logging
     void Publish(LogMessage message) {
       try {
         // publish to the JSON feed.
-        publisher_.SendMore(kJsonFeedName, Encoding.UTF8);
-        publisher_.SendMore(message.Application, Encoding.UTF8);
+        publisher_.SendMore(
+          kJsonFeedName + ":" + message.Application, Encoding.UTF8);
         publisher_.Send(GetJson(message), Encoding.UTF8);
 
         if (logger_.IsDebugEnabled) {
@@ -148,6 +182,7 @@ namespace Nohros.Ruby.Logging
         .WriteMember("level", message.Level)
         .WriteMember("reason", message.Reason)
         .WriteMember("timestamp", message.TimeStamp.ToString())
+        .WriteEndObject()
         .ToString();
     }
 
@@ -160,7 +195,7 @@ namespace Nohros.Ruby.Logging
     void Store(LogMessage message) {
       try {
         settings_.AggregatorDataProvider.Store(message);
-      } catch(System.Exception exception) {
+      } catch (System.Exception exception) {
         // This is the last place where an internal raised exception could
         // reach. So, at this point we need to log the message using our
         // internal logger.
