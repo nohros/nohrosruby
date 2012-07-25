@@ -8,7 +8,7 @@ namespace Nohros.Ruby
   /// </summary>
   public class ForwardingLogger : IRubyLogger
   {
-    static readonly IRubyLogger current_process_logger_;
+    static readonly ForwardingLogger current_process_logger_;
     IRubyLogger logger_;
 
     #region .ctor
@@ -17,7 +17,7 @@ namespace Nohros.Ruby
     /// <see cref=" NoOpLogger"/> as backing logger.
     /// </summary>
     static ForwardingLogger() {
-      current_process_logger_ = new NoOpLogger();
+      current_process_logger_ = new ForwardingLogger(new NoOpLogger());
     }
 
     /// <summary>
@@ -123,7 +123,7 @@ namespace Nohros.Ruby
     /// <summary>
     /// Gets or the currently configured application logger.
     /// </summary>
-    public static IRubyLogger ForCurrentProcess {
+    public static ForwardingLogger ForCurrentProcess {
       get { return current_process_logger_; }
     }
   }
