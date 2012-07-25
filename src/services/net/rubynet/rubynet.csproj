@@ -27,7 +27,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>$(SolutionDir)debug\bin\hosts\net\</OutputPath>
+    <OutputPath>$(SolutionDir)bin\debug\hosts\net\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -36,7 +36,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>$(SolutionDir)bin\release\bin\hosts\net\</OutputPath>
+    <OutputPath>$(SolutionDir)bin\release\hosts\net\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -44,7 +44,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="clrzmq, Version=2.2.0.0, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\..\..\packages\clrzmq.2.2.3\lib\clrzmq.dll</HintPath>
+      <HintPath>..\..\..\packages\clrzmq.2.2.5\lib\clrzmq.dll</HintPath>
+    </Reference>
+    <Reference Include="clrzmq-ext">
+      <HintPath>..\..\..\packages\clrzmq.2.2.5\lib\clrzmq-ext.dll</HintPath>
     </Reference>
     <Reference Include="Google.ProtocolBuffers, Version=2.4.1.473, Culture=neutral, PublicKeyToken=55f7125234beb589, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Google.ProtocolBuffers.2.4.1.473\lib\net20\Google.ProtocolBuffers.dll</HintPath>
@@ -56,12 +59,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\log4net.2.0.0\lib\net20-full\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="mytoolspack.console, Version=0.2.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\nohros.mytoolspack.0.3.3\lib\mytoolspack.console.dll</HintPath>
-    </Reference>
-    <Reference Include="nohros, Version=0.9.7.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="mytoolspack.console, Version=0.3.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\must.common.0.9.7\lib\nohros.dll</HintPath>
+      <HintPath>..\..\..\packages\nohros.mytoolspack.0.3.5\lib\mytoolspack.console.dll</HintPath>
+    </Reference>
+    <Reference Include="nohros, Version=0.9.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\must.common.0.9.8\lib\nohros.dll</HintPath>
     </Reference>
     <Reference Include="nohros.desktop, Version=0.7.2.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -157,7 +161,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="libzmq.dll" />
+    <None Include="libzmq.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

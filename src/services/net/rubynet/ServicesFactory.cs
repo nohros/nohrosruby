@@ -41,7 +41,7 @@ namespace Nohros.Ruby
       // configured services directory as base path.
       if (!Path.IsPathRooted(service_factory_assembly_location)) {
         service_factory_assembly_location =
-          Path.Combine(settings_.ServicesDirectory,
+          settings_.GetAbsolutePath(settings_.ServicesFolder +
             service_factory_assembly_location);
       }
       string service_factory_assembly =

@@ -40,22 +40,16 @@ namespace Nohros.Ruby
     public const string kRubyHostServiceName = "ruby-service-host";
 
     public const string kNodeQueryToken = "node-query";
+    public const string kNodeResponseToken = "node-response";
 
     public const string kNodeServiceName = "nohros.ruby.node";
 
     public const string kHostServiceFact = "host";
 
-    /// <summary>
-    /// Specifies the path of the service assembly.
-    /// </summary>
+
     public const string kServiceAssembly = "assembly";
-
-    /// <summary>
-    /// Specifies the assembly's fully qualified name of the service class
-    /// factory.
-    /// </summary>
+    public const string kServiceName = "name";
     public const string kServiceType = "type";
-
     public const string kServiceSwitches = "switches";
 
     /// <summary>
