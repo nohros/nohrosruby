@@ -12,7 +12,8 @@ namespace Nohros.Ruby.Logging
   {
     IAggregatorDataProvider aggregator_data_provider_;
     int publisher_port_;
-    int listener_port_;
+    int self_host_port_;
+    bool self_host_;
 
     #region .ctor
     /// <summary>
@@ -21,7 +22,8 @@ namespace Nohros.Ruby.Logging
     /// </summary>
     public Settings() {
       publisher_port_ = 8523;
-      listener_port_ = 8524;
+      self_host_ = false;
+      self_host_port_ = 8520;
       aggregator_data_provider_ = null;
     }
     #endregion
@@ -39,9 +41,15 @@ namespace Nohros.Ruby.Logging
     }
 
     /// <inheritdoc/>
-    public int ListenerPort {
-      get { return listener_port_; }
-      internal set { listener_port_ = value; }
+    public bool SelfHost {
+      get { return self_host_; }
+      internal set { self_host_ = value; }
+    }
+
+    /// <inheritdoc/>
+    public int SelfHostPort {
+      get { return self_host_port_; }
+      internal set { self_host_port_ = value; }
     }
   }
 }

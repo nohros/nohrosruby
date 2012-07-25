@@ -67,11 +67,13 @@
     <Compile Include="Aggregator.cs" />
     <Compile Include="..\..\..\protos\parsers\csharp\Common.cs" />
     <Compile Include="..\..\..\protos\parsers\csharp\Logging.cs" />
+    <Compile Include="..\..\..\protos\parsers\csharp\RubyProtos.cs" />
     <Compile Include="AggregatorFactory.cs" />
     <Compile Include="AppFactory.cs" />
     <Compile Include="data\IAggregatorDataProvider.cs" />
     <Compile Include="data\IAggregatorDataProviderFactory.cs" />
     <Compile Include="data\MongoAggregatorDataProviderFactory.cs" />
+    <Compile Include="RubyMessage.cs" />
     <Compile Include="settings\IAggregatorSettings.cs" />
     <Compile Include="IRubyLogger.cs" />
     <Compile Include="data\LoggerAggregatorDataProvider.cs" />
@@ -99,6 +101,7 @@
       <Name>irubyservice</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
