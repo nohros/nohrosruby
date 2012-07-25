@@ -48,7 +48,7 @@
   <ItemGroup>
     <Compile Include="AbstractRubyService.cs" />
     <Compile Include="IFact.cs" />
-    <Compile Include="IRubyLogger.cs" />
+    <Compile Include="logging\IRubyLogger.cs" />
     <Compile Include="IRubyMessage.cs" />
     <Compile Include="IRubyMessageSender.cs" />
     <Compile Include="IRubyService.cs" />
@@ -56,6 +56,8 @@
     <Compile Include="IRubyServiceHost.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="logging\NoOpLogger.cs" />
+    <Compile Include="logging\ForwardingLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringResources.cs" />
   </ItemGroup>

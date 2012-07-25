@@ -15,7 +15,10 @@ namespace Nohros.Ruby
   /// </summary>
   public abstract class AbstractRubyService : IRubyService
   {
-    readonly IDictionary<string, string> facts_;
+    /// <summary>
+    /// The service's facts.
+    /// </summary>
+    protected readonly IDictionary<string, string> facts;
 
     #region .ctor
     /// <summary>
@@ -33,11 +36,11 @@ namespace Nohros.Ruby
     /// </list>
     /// </remarks>
     protected AbstractRubyService() {
-      facts_ = new Dictionary<string, string>();
-      facts_.Add(StringResources.kOSVersionFact, Environment.OSVersion.ToString());
-      facts_.Add(StringResources.kUserNameFact, Environment.UserName);
-      facts_.Add(StringResources.kMachineNameFact, Environment.MachineName);
-      facts_.Add(StringResources.kCLRVersionFact, Environment.Version.ToString());
+      facts = new Dictionary<string, string>();
+      facts.Add(StringResources.kOSVersionFact, Environment.OSVersion.ToString());
+      facts.Add(StringResources.kUserNameFact, Environment.UserName);
+      facts.Add(StringResources.kMachineNameFact, Environment.MachineName);
+      facts.Add(StringResources.kCLRVersionFact, Environment.Version.ToString());
     }
     #endregion
 
@@ -64,7 +67,7 @@ namespace Nohros.Ruby
 
     /// <inheritdoc/>
     public virtual IDictionary<string, string> Facts {
-      get { return facts_; }
+      get { return facts; }
     }
   }
 }
