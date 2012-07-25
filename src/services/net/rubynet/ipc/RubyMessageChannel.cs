@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 
 using Nohros.Concurrent;
-using Nohros.Resources;
+using R = Nohros.Resources;
 using Nohros.Ruby.Protocol;
 using ZMQ;
 
@@ -102,7 +102,7 @@ namespace Nohros.Ruby
         }
       } catch (System.Exception exception) {
         logger_.Error(
-          string.Format(StringResources.Log_MethodThrowsException, kClassName,
+          string.Format(R.StringResources.Log_MethodThrowsException, kClassName,
             "Send"), exception);
       }
       return false;
@@ -152,7 +152,7 @@ namespace Nohros.Ruby
           Close();
         }
       } catch (System.Exception exception) {
-        logger_.Error(string.Format(StringResources.Log_MethodThrowsException,
+        logger_.Error(string.Format(R.StringResources.Log_MethodThrowsException,
           kClassName, "GetMessagePacket"), exception);
       }
       return new RubyMessagePacket.Builder().SetSize(0).Build();
