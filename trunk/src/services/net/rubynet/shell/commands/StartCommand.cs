@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Google.ProtocolBuffers;
+using Nohros.Configuration;
 using Nohros.Desktop;
 using Nohros.Ruby.Protocol;
 using Nohros.Ruby.Protocol.Control;
@@ -27,6 +28,8 @@ namespace Nohros.Ruby.Shell
   /// </remarks>
   internal class StartCommand : ShellCommand
   {
+    const string kServiceDirectory = "service-dir";
+
     readonly IRubySettings settings_;
     readonly CommandLine switches_;
 
@@ -137,11 +140,23 @@ namespace Nohros.Ruby.Shell
       string service_assembly_location =
         switches_.GetSwitchValue(Strings.kServiceAssembly);
 
+      // If the service name was not specified, use the assembly as the
+      // service name.
+      string service_directory = switches_.GetSwitchValue(kServiceDirectory);
+      if (service_directory == string.Empty) {
+        service_directory =
+          Path.GetFileNameWithoutExtension(service_assembly_location);
+      }
+
       // If the path is not absolute it must be relative to the services
       // directory
       if (!Path.IsPathRooted(service_assembly_location)) {
-        service_assembly_location = Path.Combine(settings_.ServicesDirectory,
-          service_assembly_location);
+        service_assembly_location =
+          Path.Combine(
+            settings_.NodeDirectory,
+            settings_.ServicesFolder,
+            service_directory,
+            service_assembly_location);
       }
 
       if (!File.Exists(service_assembly_location)) {

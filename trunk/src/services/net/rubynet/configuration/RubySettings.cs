@@ -25,6 +25,7 @@ namespace Nohros.Ruby
     public RubySettings() {
       running_mode_ = RunningMode.Service;
       prompt_ = Strings.kShellPrompt;
+      services_folder_ = "services";
 
       // By default the language specific service host is stored at path:
       // "node_services_directory\hosts\language_name\"

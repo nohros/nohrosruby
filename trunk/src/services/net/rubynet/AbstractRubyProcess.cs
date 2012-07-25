@@ -66,6 +66,13 @@ namespace Nohros.Ruby
 
       // Query the service node for the log aggregator service.
       QueryLogAggregatorService();
+
+      // TODO(neylor.silva) Remove the code above as soon as the c++
+      // implementation is done.
+      //
+      
+      // Simulate the receiving of a response for the log aggregator query.
+      SimulateQueryResponse();
     }
 
     /// <inheritdoc/>
@@ -152,7 +159,7 @@ namespace Nohros.Ruby
 
       RubyMessage message = new RubyMessage.Builder()
         .SetId(0)
-        .SetToken(Strings.kNodeQueryToken)
+        .SetToken(kLogAggregatorQuery)
         .SetType((int) NodeMessageType.kNodeQuery)
         .SetMessage(query.ToByteString())
         .Build();
@@ -173,6 +180,65 @@ namespace Nohros.Ruby
 
       ruby_message_channel_.Send(packet);
     }
+
+    void SimulateQueryResponse() {
+      QueryMessage query = new QueryMessage.Builder()
+        .SetType(QueryMessageType.kQueryFind)
+        .AddFacts(KeyValuePairs.FromKeyValuePair(Strings.kMessageUUIDFact,
+          "cfa950a0ca0611e19b230800200c9a66"))
+        .Build();
+
+      RubyMessage message = new RubyMessage.Builder()
+        .SetId(0)
+        .SetToken(kLogAggregatorQuery)
+        .SetType((int)NodeMessageType.kNodeQuery)
+        .SetMessage(query.ToByteString())
+        .Build();
+
+      RubyMessageHeader header = new RubyMessageHeader.Builder()
+        .SetId(message.Id)
+        .AddFacts(KeyValuePairs.FromKeyValuePair(Strings.kServiceNameFact,
+          Strings.kNodeServiceName))
+        .SetSize(message.SerializedSize)
+        .Build();
+
+      RubyMessagePacket packet = new RubyMessagePacket.Builder()
+        .SetHeader(header)
+        .SetHeaderSize(header.SerializedSize)
+        .SetMessage(message)
+        .SetSize(header.SerializedSize + message.SerializedSize + 4)
+        .Build();
+
+      ResponseMessage response = new ResponseMessage.Builder()
+        .AddReponses(KeyValuePairs.FromKeyValuePair(
+          Strings.kHostServiceFact, "192.168.203.252:8520"))
+        .SetRequest(message)
+        .Build();
+
+      RubyMessage response_message = new RubyMessage.Builder()
+        .SetId(0)
+        .SetToken(Strings.kNodeResponseToken)
+        .SetType((int)NodeMessageType.kNodeResponse)
+        .SetMessage(response.ToByteString())
+        .Build();
+
+      RubyMessageHeader response_header = new RubyMessageHeader.Builder()
+        .SetId(response_message.Id)
+        .AddFacts(KeyValuePairs.FromKeyValuePair(Strings.kServiceNameFact,
+          Strings.kNodeServiceName))
+        .SetSize(response_message.SerializedSize)
+        .Build();
+
+      RubyMessagePacket response_packet = new RubyMessagePacket.Builder()
+        .SetHeader(response_header)
+        .SetHeaderSize(response_header.SerializedSize)
+        .SetMessage(response_message)
+        .SetSize(response_header.SerializedSize + response_message.SerializedSize + 4)
+        .Build();
+
+      OnMessagePacketReceived(response_packet);
+    }
+
 
     void OnLogAggregatorQueryReseponse(ResponseMessage response) {
       IList<KeyValuePair> responses = response.ReponsesList;
