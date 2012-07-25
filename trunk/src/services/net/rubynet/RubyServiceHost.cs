@@ -45,7 +45,7 @@ namespace Nohros.Ruby
       settings_ = settings;
       service_logger_ =
         new AggregatorLogger(
-          ProviderOptions.GetIfExists(service.Facts, Strings.kServiceNameFact,
+          ProviderOptions.GetIfExists(service.Facts, StringResources.kServiceNameFact,
             Strings.kNodeServiceName), settings.AggregatorService);
     }
     #endregion
@@ -91,20 +91,7 @@ namespace Nohros.Ruby
 
     void Announce() {
       // Tell the service node that we are hosting a new service.
-      AnnounceMessage.Builder builder = new AnnounceMessage.Builder()
-        .AddFacts(new KeyValuePair.Builder()
-          .SetKey(Strings.kMachineNameFact)
-          .SetValue(Environment.MachineName))
-        .AddFacts(new KeyValuePair.Builder()
-          .SetKey(Strings.kOSVersionFact)
-          .SetValue(Environment.OSVersion.ToString()))
-        .AddFacts(new KeyValuePair.Builder()
-          .SetKey(Strings.kCLRVersion)
-          .SetValue(Environment.Version.ToString()))
-        .AddFacts(new KeyValuePair.Builder()
-          .SetKey(Strings.kUserNameFact)
-          .SetValue(Environment.UserName));
-
+      AnnounceMessage.Builder builder = new AnnounceMessage.Builder();
       foreach (KeyValuePair<string, string> fact in service_.Facts) {
         builder.AddFacts(
           new KeyValuePair.Builder()
@@ -114,7 +101,7 @@ namespace Nohros.Ruby
 
       RubyMessage message = new RubyMessage.Builder()
         .SetId(0)
-        .SetToken(Strings.kAnnounceMessageToken)
+        .SetToken(StringResources.kAnnounceMessageToken)
         .SetType((int) NodeMessageType.kNodeAnnounce)
         .SetMessage(builder.Build().ToByteString())
         .Build();

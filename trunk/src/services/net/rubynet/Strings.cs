@@ -4,17 +4,6 @@ namespace Nohros.Ruby
 {
   internal sealed class Strings
   {
-    // Common message facts ---------------------------------------------------
-
-    public const string kUserNameFact = "host-user-name";
-    public const string kCLRVersion = "host-clr-version";
-    public const string kOSVersionFact = "host-os-version";
-    public const string kMachineNameFact = "host-name";
-
-    // Control message tokens ------------------------------------------------
-
-    public const string kAnnounceMessageToken = "node-announce";
-
     /// <summary>
     /// The name of node that contains the logging provider configuration.
     /// </summary>
@@ -39,14 +28,9 @@ namespace Nohros.Ruby
 
     public const string kRubyHostServiceName = "ruby-service-host";
 
-    public const string kNodeQueryToken = "node-query";
-    public const string kNodeResponseToken = "node-response";
-
     public const string kNodeServiceName = "nohros.ruby.node";
 
     public const string kHostServiceFact = "host";
-
-
     public const string kServiceAssembly = "assembly";
     public const string kServiceName = "name";
     public const string kServiceType = "type";
@@ -58,10 +42,6 @@ namespace Nohros.Ruby
     public const string kServicesFolderName = "services";
 
     public const string kRunningMode = "running-mode";
-
-    public const string kServiceNameFact = "service";
-
-    public const string kMessageUUIDFact = "msguuid";
 
     /// <summary>
     /// The string that is displayed on the shell prompt.

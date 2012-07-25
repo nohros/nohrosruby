@@ -4,6 +4,8 @@ using Nohros.Resources;
 using Nohros.Ruby.Protocol;
 using ZMQ;
 
+using R = Nohros.Resources;
+
 namespace Nohros.Ruby
 {
   /// <summary>
@@ -39,7 +41,7 @@ namespace Nohros.Ruby
           return packet;
         }
       } catch (System.Exception exception) {
-        logger.Error(string.Format(StringResources.Log_MethodThrowsException,
+        logger.Error(string.Format(R.StringResources.Log_MethodThrowsException,
           kClassName, "GetMessagePacket"), exception);
       }
       return new RubyMessagePacket.Builder().SetSize(0).Build();

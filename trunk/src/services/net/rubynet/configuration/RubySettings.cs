@@ -13,10 +13,10 @@ namespace Nohros.Ruby
                                         IRubySettings
   {
     readonly string prompt_;
+    IAggregatorService aggregator_service_;
+    string node_directory_;
     RunningMode running_mode_;
     string services_folder_;
-    string node_directory_;
-    IAggregatorService aggregator_service_;
 
     #region .ctor
     /// <summary>

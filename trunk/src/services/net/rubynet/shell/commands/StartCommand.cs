@@ -90,7 +90,7 @@ namespace Nohros.Ruby.Shell
         .SetId(0)
         .AddFacts(
           new KeyValuePair.Builder()
-            .SetKey(Strings.kServiceNameFact)
+            .SetKey(StringResources.kServiceNameFact)
             .SetValue(Strings.kRubyHostServiceName)
             .Build())
         .SetSize(start_control_message_bytes.Length)

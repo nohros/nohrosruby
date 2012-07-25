@@ -4,7 +4,7 @@ using System.Threading;
 using Google.ProtocolBuffers;
 using Nohros.Concurrent;
 using Nohros.Data.Json;
-using Nohros.Resources;
+using R = Nohros.Resources.StringResources;
 using Nohros.Ruby.Protocol;
 using Nohros.Ruby.Protocol.Control;
 using ZMQ;
@@ -70,7 +70,7 @@ namespace Nohros.Ruby
       // TODO(neylor.silva) Remove the code above as soon as the c++
       // implementation is done.
       //
-      
+
       // Simulate the receiving of a response for the log aggregator query.
       SimulateQueryResponse();
     }
@@ -112,7 +112,7 @@ namespace Nohros.Ruby
             break;
         }
       } catch (Exception exception) {
-        logger_.Error(string.Format(StringResources.Log_MethodThrowsException,
+        logger_.Error(string.Format(R.Log_MethodThrowsException,
           kClassName, "OnMessagePacketReceived"), exception);
       }
     }
@@ -142,7 +142,7 @@ namespace Nohros.Ruby
         }
       } catch (Exception exception) {
         logger_.Error(
-          string.Format(StringResources.Log_MethodThrowsException, kClassName,
+          string.Format(R.Log_MethodThrowsException, kClassName,
             "OnResponseMessage"), exception);
       }
     }
@@ -153,8 +153,9 @@ namespace Nohros.Ruby
     void QueryLogAggregatorService() {
       QueryMessage query = new QueryMessage.Builder()
         .SetType(QueryMessageType.kQueryFind)
-        .AddFacts(KeyValuePairs.FromKeyValuePair(Strings.kMessageUUIDFact,
-          "cfa950a0ca0611e19b230800200c9a66"))
+        .AddFacts(
+          KeyValuePairs.FromKeyValuePair(StringResources.kMessageUUIDFact,
+            "cfa950a0ca0611e19b230800200c9a66"))
         .Build();
 
       RubyMessage message = new RubyMessage.Builder()
@@ -166,8 +167,9 @@ namespace Nohros.Ruby
 
       RubyMessageHeader header = new RubyMessageHeader.Builder()
         .SetId(message.Id)
-        .AddFacts(KeyValuePairs.FromKeyValuePair(Strings.kServiceNameFact,
-          Strings.kNodeServiceName))
+        .AddFacts(
+          KeyValuePairs.FromKeyValuePair(StringResources.kServiceNameFact,
+            Strings.kNodeServiceName))
         .SetSize(message.SerializedSize)
         .Build();
 
@@ -184,21 +186,23 @@ namespace Nohros.Ruby
     void SimulateQueryResponse() {
       QueryMessage query = new QueryMessage.Builder()
         .SetType(QueryMessageType.kQueryFind)
-        .AddFacts(KeyValuePairs.FromKeyValuePair(Strings.kMessageUUIDFact,
-          "cfa950a0ca0611e19b230800200c9a66"))
+        .AddFacts(
+          KeyValuePairs.FromKeyValuePair(StringResources.kMessageUUIDFact,
+            "cfa950a0ca0611e19b230800200c9a66"))
         .Build();
 
       RubyMessage message = new RubyMessage.Builder()
         .SetId(0)
         .SetToken(kLogAggregatorQuery)
-        .SetType((int)NodeMessageType.kNodeQuery)
+        .SetType((int) NodeMessageType.kNodeQuery)
         .SetMessage(query.ToByteString())
         .Build();
 
       RubyMessageHeader header = new RubyMessageHeader.Builder()
         .SetId(message.Id)
-        .AddFacts(KeyValuePairs.FromKeyValuePair(Strings.kServiceNameFact,
-          Strings.kNodeServiceName))
+        .AddFacts(
+          KeyValuePairs.FromKeyValuePair(StringResources.kServiceNameFact,
+            Strings.kNodeServiceName))
         .SetSize(message.SerializedSize)
         .Build();
 
@@ -217,15 +221,16 @@ namespace Nohros.Ruby
 
       RubyMessage response_message = new RubyMessage.Builder()
         .SetId(0)
-        .SetToken(Strings.kNodeResponseToken)
-        .SetType((int)NodeMessageType.kNodeResponse)
+        .SetToken(StringResources.kNodeResponseToken)
+        .SetType((int) NodeMessageType.kNodeResponse)
         .SetMessage(response.ToByteString())
         .Build();
 
       RubyMessageHeader response_header = new RubyMessageHeader.Builder()
         .SetId(response_message.Id)
-        .AddFacts(KeyValuePairs.FromKeyValuePair(Strings.kServiceNameFact,
-          Strings.kNodeServiceName))
+        .AddFacts(
+          KeyValuePairs.FromKeyValuePair(StringResources.kServiceNameFact,
+            Strings.kNodeServiceName))
         .SetSize(response_message.SerializedSize)
         .Build();
 
@@ -233,7 +238,8 @@ namespace Nohros.Ruby
         .SetHeader(response_header)
         .SetHeaderSize(response_header.SerializedSize)
         .SetMessage(response_message)
-        .SetSize(response_header.SerializedSize + response_message.SerializedSize + 4)
+        .SetSize(response_header.SerializedSize +
+          response_message.SerializedSize + 4)
         .Build();
 
       OnMessagePacketReceived(response_packet);
@@ -297,7 +303,7 @@ namespace Nohros.Ruby
         var thread = new Thread(ServiceThreadMain) {IsBackground = true};
         thread.Start(message);
       } catch (Exception exception) {
-        logger_.Error(string.Format(StringResources.Log_MethodThrowsException,
+        logger_.Error(string.Format(R.Log_MethodThrowsException,
           kClassName, "HostService"), exception);
       }
     }
@@ -330,7 +336,7 @@ namespace Nohros.Ruby
         ++running_services_count_;
         host.Start();
       } catch (Exception exception) {
-        logger_.Error(string.Format(StringResources.Log_MethodThrowsException,
+        logger_.Error(string.Format(R.Log_MethodThrowsException,
           kClassName, "ServiceThreadMain"), exception);
       }
       --running_services_count_;
@@ -358,7 +364,9 @@ namespace Nohros.Ruby
     int Find(string pattern, IList<KeyValuePair> key_value_pairs) {
       for (int i = 0, j = key_value_pairs.Count; i < j; i++) {
         KeyValuePair key_value_pair = key_value_pairs[i];
-        if (string.Compare(key_value_pair.Key, pattern, StringComparison.OrdinalIgnoreCase) == 0) {
+        if (
+          string.Compare(key_value_pair.Key, pattern,
+            StringComparison.OrdinalIgnoreCase) == 0) {
           return i;
         }
       }
