@@ -2,7 +2,7 @@
 using MongoDB.Driver;
 using MongoDB.Bson;
 using MongoDB.Driver.Builders;
-using Nohros.Resources;
+using R = Nohros.Resources.StringResources;
 
 namespace Nohros.Ruby.Logging
 {
@@ -61,7 +61,7 @@ namespace Nohros.Ruby.Logging
         storage.Insert(document);
       } catch (Exception exception) {
         logger_.Error(
-          string.Format(StringResources.Log_MethodThrowsException, kClassName,
+          string.Format(R.Log_MethodThrowsException, kClassName,
             "Store"), exception);
         return false;
       }
@@ -115,7 +115,7 @@ namespace Nohros.Ruby.Logging
         });
         return result.Ok;
       } catch (Exception exception) {
-        logger_.Error(string.Format(StringResources.Log_MethodThrowsException,
+        logger_.Error(string.Format(R.Log_MethodThrowsException,
           kClassName, "SetupStorage"), exception);
         return false;
       }

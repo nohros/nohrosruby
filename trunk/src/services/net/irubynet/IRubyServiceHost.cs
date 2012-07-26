@@ -1,4 +1,5 @@
 using System;
+using Nohros.Logging;
 
 namespace Nohros.Ruby
 {
@@ -15,9 +16,9 @@ namespace Nohros.Ruby
   public interface IRubyServiceHost: IRubyMessageSender
   {
     /// <summary>
-    /// Gets a <see cref="IRubyLogger"/> object that can be used by services
-    /// to log messages using the ruby logging infrastructure.
+    /// Gets a <see cref="IForwardingLogger"/> object that can be used by
+    /// services to log messages using the ruby logging infrastructure.
     /// </summary>
-    IRubyLogger Logger { get; }
+    IForwardingLogger Logger { get; }
   }
 }

@@ -5,29 +5,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(services)", "(services)", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(net)", "(net)", "{959F77CD-D65A-494E-9D8C-B0D0D825818A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(third_party)", "(third_party)", "{F027E4F0-E6A4-4A4D-9AB2-F95934ACD5C4}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(server)", "(server)", "{40D055A1-F3D4-4D98-9F8B-3561E2A7678C}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(third_party)", "(third_party)", "{2C8041C1-0775-4874-BB1E-2181FCC94361}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(protobuf-csharp-port)", "(protobuf-csharp-port)", "{EC891FEB-20FC-4EA3-985A-56A5A156EF7B}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(tests)", "(tests)", "{E0A2F434-C7FC-4FBA-86B6-128CA4A35178}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(services)", "(services)", "{B0CB5BEE-87F9-4CE4-B815-1B538812A2AD}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(protos)", "(protos)", "{78AEFBF4-83C8-4FB8-93A8-B96154347AB8}"
-	ProjectSection(SolutionItems) = preProject
-		protos\local_charp_proto_parser_generator_.py = protos\local_charp_proto_parser_generator_.py
-		protos\proto_parser_generator.py = protos\proto_parser_generator.py
-		protos\ruby_message_header.proto = protos\ruby_message_header.proto
-		protos\ruby_message_packet.proto = protos\ruby_message_packet.proto
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(parsers)", "(parsers)", "{69758CCE-B2BB-4A84-BDC4-50CB6F3CC0E4}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(csharp)", "(csharp)", "{FA57983A-1E72-4253-9EDD-423597377794}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rubynet", "services\net\rubynet\rubynet.csproj", "{561B3424-32B8-484E-9E4C-972D341F431E}"
 EndProject
@@ -35,11 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "irubyservice", "services\ne
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rubynet_unittest", "tests\services\rubynet_unittest\rubynet_unittest.csproj", "{0CB5E36D-8305-4D6C-8FE8-4793B039D6C0}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(node)", "(node)", "{3CF61E7D-AE37-4B2A-99AC-188A246EEE7B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rubylog", "services\net\weblog\rubylog.csproj", "{EBEF07D1-5A08-4904-8C88-CE119D1E8E4D}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "(nuget)", "(nuget)", "{98A13114-1161-46A2-A64B-E20505CDB745}"
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
@@ -139,15 +115,10 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{959F77CD-D65A-494E-9D8C-B0D0D825818A} = {34F0FDB9-08D7-4C5F-9C6D-1303EE4C691B}
-		{2C8041C1-0775-4874-BB1E-2181FCC94361} = {34F0FDB9-08D7-4C5F-9C6D-1303EE4C691B}
 		{561B3424-32B8-484E-9E4C-972D341F431E} = {959F77CD-D65A-494E-9D8C-B0D0D825818A}
 		{970C40CD-03F5-4761-9AE3-7E358E108E56} = {959F77CD-D65A-494E-9D8C-B0D0D825818A}
 		{EBEF07D1-5A08-4904-8C88-CE119D1E8E4D} = {959F77CD-D65A-494E-9D8C-B0D0D825818A}
-		{98A13114-1161-46A2-A64B-E20505CDB745} = {959F77CD-D65A-494E-9D8C-B0D0D825818A}
-		{EC891FEB-20FC-4EA3-985A-56A5A156EF7B} = {F027E4F0-E6A4-4A4D-9AB2-F95934ACD5C4}
 		{B0CB5BEE-87F9-4CE4-B815-1B538812A2AD} = {E0A2F434-C7FC-4FBA-86B6-128CA4A35178}
 		{0CB5E36D-8305-4D6C-8FE8-4793B039D6C0} = {B0CB5BEE-87F9-4CE4-B815-1B538812A2AD}
-		{69758CCE-B2BB-4A84-BDC4-50CB6F3CC0E4} = {78AEFBF4-83C8-4FB8-93A8-B96154347AB8}
-		{FA57983A-1E72-4253-9EDD-423597377794} = {69758CCE-B2BB-4A84-BDC4-50CB6F3CC0E4}
 	EndGlobalSection
 EndGlobal

@@ -55,17 +55,13 @@
     <Reference Include="Google.ProtocolBuffers.Serialization, Version=2.4.1.473, Culture=neutral, PublicKeyToken=55f7125234beb589, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Google.ProtocolBuffers.2.4.1.473\lib\net20\Google.ProtocolBuffers.Serialization.dll</HintPath>
     </Reference>
-    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\log4net.2.0.0\lib\net20-full\log4net.dll</HintPath>
-    </Reference>
     <Reference Include="mytoolspack.console, Version=0.3.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\nohros.mytoolspack.0.3.5\lib\mytoolspack.console.dll</HintPath>
     </Reference>
-    <Reference Include="nohros, Version=0.9.8.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="nohros, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\must.common.0.9.8\lib\nohros.dll</HintPath>
+      <HintPath>..\..\..\packages\must.common.1.0.0\lib\nohros.dll</HintPath>
     </Reference>
     <Reference Include="nohros.desktop, Version=0.7.2.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -75,13 +71,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbstractRubyProcess.cs" />
+    <Compile Include="process\AbstractRubyProcess.cs" />
     <Compile Include="AppFactory.cs" />
+    <Compile Include="configuration\IRubyLogger.cs" />
+    <Compile Include="configuration\RubyLogger.cs" />
     <Compile Include="service\AggregatorLogger.cs" />
     <Compile Include="configuration\ConsoleSettings.cs" />
     <Compile Include="service\IAggregatorService.cs" />
     <Compile Include="configuration\IRubySettings.cs" />
-    <Compile Include="configuration\RubyLogger.cs" />
     <Compile Include="configuration\RubySettings.cs" />
     <Compile Include="configuration\RunningMode.cs" />
     <Compile Include="service\AggregatorService.cs" />
@@ -94,8 +91,8 @@
     <Compile Include="ipc\ListenerExecutorPair.cs" />
     <Compile Include="ipc\RubyMessageHandlerDelegate.cs" />
     <Compile Include="ipc\RubyMessageReceiver.cs" />
-    <Compile Include="IRubyProcess.cs" />
-    <Compile Include="IRubyProcessFactory.cs" />
+    <Compile Include="process\IRubyProcess.cs" />
+    <Compile Include="process\IRubyProcessFactory.cs" />
     <Compile Include="proto\KeyValuePairs.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -105,7 +102,7 @@
     <Compile Include="ipc\RubyMessage.cs" />
     <Compile Include="ServicesFactory.cs" />
     <Compile Include="service\LoggerAggregatorService.cs" />
-    <Compile Include="service\ServiceRubyProcess.cs" />
+    <Compile Include="process\ServiceRubyProcess.cs" />
     <Compile Include="shell\commands\ClearCommand.cs" />
     <Compile Include="shell\commands\HelpCommand.cs">
       <SubType>Code</SubType>

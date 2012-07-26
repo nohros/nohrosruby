@@ -6,7 +6,7 @@ using Nohros.Data.Json;
 using ZMQ;
 using Nohros.Ruby.Protocol;
 using Nohros.Concurrent;
-using Nohros.Resources;
+using R = Nohros.Resources.StringResources;
 
 namespace Nohros.Ruby.Logging
 {
@@ -114,7 +114,7 @@ namespace Nohros.Ruby.Logging
         }
       } catch (System.Exception exception) {
         logger_.Error(
-          string.Format(StringResources.Log_MethodThrowsException, kClassName,
+          string.Format(R.Log_MethodThrowsException, kClassName,
             "Start"), exception);
       }
     }
@@ -200,7 +200,7 @@ namespace Nohros.Ruby.Logging
         // reach. So, at this point we need to log the message using our
         // internal logger.
         logger_.Error(
-          string.Format(StringResources.Log_MethodThrowsException, kClassName,
+          string.Format(R.Log_MethodThrowsException, kClassName,
             "Store"), exception);
       }
     }

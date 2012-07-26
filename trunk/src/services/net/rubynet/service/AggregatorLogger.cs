@@ -1,14 +1,13 @@
 ﻿using System;
-
 using Nohros.Logging;
 using Nohros.Ruby.Logging;
 
 namespace Nohros.Ruby
 {
-  internal class AggregatorLogger : IRubyLogger
+  internal class AggregatorLogger : ILogger
   {
     readonly string application_;
-    IAggregatorService aggregator_service_;
+    readonly IRubySettings settings_;
 
     #region .ctor
     /// <summary>
@@ -18,14 +17,9 @@ namespace Nohros.Ruby
     /// <param name="application">
     /// The name of the application associated with the logger.
     /// </param>
-    /// <param name="aggregator_service">
-    /// A <see cref="AggregatorService"/> object that is used to send the log
-    /// message to the log aggregator_service service.
-    /// </param>
-    public AggregatorLogger(string application,
-      IAggregatorService aggregator_service) {
-      aggregator_service_ = aggregator_service;
+    public AggregatorLogger(string application, IRubySettings settings) {
       application_ = application;
+      settings_ = settings;
     }
     #endregion
 
@@ -81,27 +75,27 @@ namespace Nohros.Ruby
 
     /// <inheritdoc/>
     public bool IsDebugEnabled {
-      get { return RubyLogger.ForCurrentProcess.IsDebugEnabled; }
+      get { return settings_.ServiceLoggerLevel <= LogLevel.Debug; }
     }
 
     /// <inheritdoc/>
     public bool IsErrorEnabled {
-      get { return RubyLogger.ForCurrentProcess.IsErrorEnabled; }
+      get { return settings_.ServiceLoggerLevel <= LogLevel.Error; }
     }
 
     /// <inheritdoc/>
     public bool IsFatalEnabled {
-      get { return RubyLogger.ForCurrentProcess.IsFatalEnabled; }
+      get { return settings_.ServiceLoggerLevel <= LogLevel.Fatal; }
     }
 
     /// <inheritdoc/>
     public bool IsInfoEnabled {
-      get { return RubyLogger.ForCurrentProcess.IsInfoEnabled; }
+      get { return settings_.ServiceLoggerLevel <= LogLevel.Info; }
     }
 
     /// <inheritdoc/>
     public bool IsWarnEnabled {
-      get { return RubyLogger.ForCurrentProcess.IsWarnEnabled; }
+      get { return settings_.ServiceLoggerLevel <= LogLevel.Warn; }
     }
 
     /// <inheritdoc/>
@@ -109,20 +103,11 @@ namespace Nohros.Ruby
       get { return RubyLogger.ForCurrentProcess.IsTraceEnabled; }
     }
 
-    /// <summary>
-    /// Gets or sets the <see cref="IAggregatorService"/> object that is used
-    /// to communicate with the aggregator service.
-    /// </summary>
-    public IAggregatorService AggregatorService {
-      get { return aggregator_service_; }
-      set { aggregator_service_ = value; }
-    }
-
     /// <inheritdoc/>
     void Log(string message, LogLevel level) {
       LogMessage.Builder builder = GetLogMessageBuilder(message,
         GetLogLevel(level));
-      aggregator_service_.Log(builder.Build());
+      settings_.AggregatorService.Log(builder.Build());
     }
 
     /// <inheritdoc/>
@@ -137,7 +122,7 @@ namespace Nohros.Ruby
             .SetKey("backtrace")
             .SetValue(exception.StackTrace)
             .Build());
-      aggregator_service_.Log(builder.Build());
+      settings_.AggregatorService.Log(builder.Build());
     }
 
     string GetLogLevel(LogLevel level) {
