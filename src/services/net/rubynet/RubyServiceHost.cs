@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Nohros.Concurrent;
 using Nohros.Configuration;
+using Nohros.Logging;
 using Nohros.Ruby.Protocol;
 using Nohros.Ruby.Protocol.Control;
 
@@ -14,12 +15,12 @@ namespace Nohros.Ruby
   internal class RubyServiceHost : IRubyServiceHost, IRubyMessageListener
   {
     const string kClassName = "Nohros.Ruby.RubyServiceHost";
-    readonly IRubyLogger logger_ = RubyLogger.ForCurrentProcess;
+    readonly RubyLogger logger_ = RubyLogger.ForCurrentProcess;
 
     readonly IRubyMessageChannel ruby_message_channel_;
     readonly IRubyService service_;
     readonly IRubySettings settings_;
-    readonly IRubyLogger service_logger_;
+    readonly IForwardingLogger service_logger_;
 
     #region .ctor
     /// <summary>
@@ -43,10 +44,11 @@ namespace Nohros.Ruby
       service_ = service;
       ruby_message_channel_ = channel;
       settings_ = settings;
-      service_logger_ =
+      service_logger_ = new ForwardingLogger(
         new AggregatorLogger(
-          ProviderOptions.GetIfExists(service.Facts, StringResources.kServiceNameFact,
-            Strings.kNodeServiceName), settings.AggregatorService);
+          ProviderOptions.GetIfExists(service.Facts,
+            StringResources.kServiceNameFact,
+            Strings.kNodeServiceName), settings));
     }
     #endregion
 
@@ -61,7 +63,7 @@ namespace Nohros.Ruby
     }
 
     /// <inherithdoc/>
-    public IRubyLogger Logger {
+    public IForwardingLogger Logger {
       get { return service_logger_; }
     }
 

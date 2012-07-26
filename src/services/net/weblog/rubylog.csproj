@@ -37,11 +37,11 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="clrzmq">
-      <HintPath>..\..\..\packages\clrzmq.2.2.3\lib\clrzmq.dll</HintPath>
+    <Reference Include="clrzmq, Version=2.2.0.0, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\..\..\packages\clrzmq.2.2.5\lib\clrzmq.dll</HintPath>
     </Reference>
-    <Reference Include="clrzmq-ext">
-      <HintPath>..\..\..\packages\clrzmq.2.2.3\lib\clrzmq-ext.dll</HintPath>
+    <Reference Include="clrzmq-ext, Version=2.2.0.0, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\..\..\packages\clrzmq.2.2.5\lib\clrzmq-ext.dll</HintPath>
     </Reference>
     <Reference Include="Google.ProtocolBuffers">
       <HintPath>..\..\..\packages\Google.ProtocolBuffers.2.4.1.473\lib\net20\Google.ProtocolBuffers.dll</HintPath>
@@ -55,9 +55,9 @@
     <Reference Include="MongoDB.Driver">
       <HintPath>..\..\..\packages\mongocsharpdriver.1.5\lib\net35\MongoDB.Driver.dll</HintPath>
     </Reference>
-    <Reference Include="nohros, Version=0.9.7.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="nohros, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\must.common.0.9.7\lib\nohros.dll</HintPath>
+      <HintPath>..\..\..\packages\must.common.1.0.0\lib\nohros.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -91,17 +91,16 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="libzmq.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\irubynet\irubyservice.csproj">
       <Project>{970C40CD-03F5-4761-9AE3-7E358E108E56}</Project>
       <Name>irubyservice</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="libzmq.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

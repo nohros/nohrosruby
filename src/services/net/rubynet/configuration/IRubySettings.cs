@@ -1,5 +1,5 @@
 ﻿using System;
-
+using Nohros.Logging;
 using Nohros.Configuration;
 
 namespace Nohros.Ruby
@@ -17,6 +17,12 @@ namespace Nohros.Ruby
     /// assume that we are running as a service.
     /// </remarks>
     RunningMode RunningMode { get; }
+
+    /// <summary>
+    /// Gets the level of the logger that is used by the services
+    /// </summary>
+    /// <seealso cref="IRubyServiceHost.Logger"/>
+    LogLevel ServiceLoggerLevel { get; }
 
     /// <summary>
     /// Gets the name of the folder that is used to store the services

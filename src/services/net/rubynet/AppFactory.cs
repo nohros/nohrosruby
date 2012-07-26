@@ -118,10 +118,10 @@ namespace Nohros.Ruby
 
     void ConfigureLogger(RubySettings settings) {
       IProviderNode provider = settings.Providers[Strings.kLoggingProviderNode];
-      RubyLogger.ForCurrentProcess = new RubyLogger(
+      RubyLogger.ForCurrentProcess.Logger =
         ProviderFactory<ILoggerFactory>
           .CreateProviderFactory(provider)
-          .CreateLogger(provider.Options, settings));
+          .CreateLogger(provider.Options, settings);
     }
   }
 }

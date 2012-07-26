@@ -41,6 +41,10 @@
     <DocumentationFile>$(SolutionDir)docs\services\net\nohros.rubynet.irubyservice.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="nohros, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\must.common.1.0.0\lib\nohros.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -48,7 +52,6 @@
   <ItemGroup>
     <Compile Include="AbstractRubyService.cs" />
     <Compile Include="IFact.cs" />
-    <Compile Include="logging\IRubyLogger.cs" />
     <Compile Include="IRubyMessage.cs" />
     <Compile Include="IRubyMessageSender.cs" />
     <Compile Include="IRubyService.cs" />
@@ -56,10 +59,11 @@
     <Compile Include="IRubyServiceHost.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="logging\NoOpLogger.cs" />
-    <Compile Include="logging\ForwardingLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringResources.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

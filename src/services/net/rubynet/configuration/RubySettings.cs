@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Xml;
+using Nohros.Logging;
 using Nohros.Configuration;
 using Nohros.MyToolsPack.Console;
 
@@ -16,6 +17,7 @@ namespace Nohros.Ruby
     IAggregatorService aggregator_service_;
     string node_directory_;
     RunningMode running_mode_;
+    LogLevel service_logger_level_;
     string services_folder_;
 
     #region .ctor
@@ -26,6 +28,7 @@ namespace Nohros.Ruby
       running_mode_ = RunningMode.Service;
       prompt_ = Strings.kShellPrompt;
       services_folder_ = "services";
+      service_logger_level_ = LogLevel.Info;
 
       // By default the language specific service host is stored at path:
       // "node_services_directory\hosts\language_name\"
@@ -37,6 +40,11 @@ namespace Nohros.Ruby
     /// <inheritdoc/>
     public RunningMode RunningMode {
       get { return running_mode_; }
+    }
+
+    /// <inheritdoc/>
+    public LogLevel ServiceLoggerLevel {
+      get { return service_logger_level_; }
     }
 
     /// <inheritdoc/>
