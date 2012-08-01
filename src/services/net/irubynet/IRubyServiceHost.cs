@@ -1,11 +1,10 @@
 using System;
-using Nohros.Logging;
 
 namespace Nohros.Ruby
 {
   /// <summary>
   /// A <see cref="IRubyServiceHost"/> is used to host a ruby service and acts
-  /// as a communication channel betwwen a service and the external world.
+  /// as a communication channel between a service and the external world.
   /// </summary>
   /// <remarks>
   /// A <see cref="IRubyServiceHost"/> provides the common structure used to
@@ -16,9 +15,9 @@ namespace Nohros.Ruby
   public interface IRubyServiceHost: IRubyMessageSender
   {
     /// <summary>
-    /// Gets a <see cref="IForwardingLogger"/> object that can be used by
-    /// services to log messages using the ruby logging infrastructure.
+    /// Gets a <see cref="IRubyLogger"/> object that can be used by services
+    /// to log messages using the ruby logging infrastructure.
     /// </summary>
-    IForwardingLogger Logger { get; }
+    IRubyLogger Logger { get; }
   }
 }

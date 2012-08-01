@@ -261,7 +261,8 @@ namespace Nohros.Ruby
           settings_.AggregatorService = aggregator;
         }
 
-        RubyLogger.ForCurrentProcess.Logger = logger;
+        RubyLogger.ForCurrentProcess.BackingLogger =
+          new AggregatorLogger(Strings.kServiceHostServiceName, settings_);
       }
     }
 

@@ -41,9 +41,9 @@
     <DocumentationFile>$(SolutionDir)docs\services\net\nohros.rubynet.irubyservice.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nohros, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="nohros, Version=1.1.4.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\must.common.1.0.0\lib\nohros.dll</HintPath>
+      <HintPath>..\..\..\packages\must.common.1.1.4\lib\nohros.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="AbstractRubyService.cs" />
     <Compile Include="IFact.cs" />
+    <Compile Include="IRubyLogger.cs" />
     <Compile Include="IRubyMessage.cs" />
     <Compile Include="IRubyMessageSender.cs" />
     <Compile Include="IRubyService.cs" />
@@ -61,6 +62,9 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringResources.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="CHANGES.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
