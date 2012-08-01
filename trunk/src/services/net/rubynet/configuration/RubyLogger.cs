@@ -1,11 +1,12 @@
 using System;
+using System.Collections.Generic;
 using Nohros.Logging;
 
 namespace Nohros.Ruby
 {
-  internal class RubyLogger: ForwardingLogger, IRubyLogger
+  internal class RubyLogger : ForwardingLogger, IRubyLogger
   {
-    readonly static RubyLogger current_process_logger_;
+    static readonly RubyLogger current_process_logger_;
     IRubyLogger logger_;
 
     #region .ctor
@@ -15,7 +16,9 @@ namespace Nohros.Ruby
     static RubyLogger() {
       current_process_logger_ = new RubyLogger(new NOPLogger());
     }
+    #endregion
 
+    #region .ctor
     /// <summary>
     /// Initializes a new instance of the <see cref="RubyLogger"/>
     /// class by using the specified <see cref="ILogger"/> interface.
@@ -26,61 +29,66 @@ namespace Nohros.Ruby
     }
     #endregion
 
+    /// <inheritdoc/>
+    public void Debug(string message, IDictionary<string, string> categorization) {
+      logger_.Debug(message, categorization);
+    }
+
+    /// <inheritdoc/>
+    public void Debug(string message, Exception exception,
+      IDictionary<string, string> categorization) {
+      logger_.Debug(message, exception, categorization);
+    }
+
+    /// <inheritdoc/>
+    public void Error(string message, IDictionary<string, string> categorization) {
+      logger_.Error(message, categorization);
+    }
+
+    /// <inheritdoc/>
+    public void Error(string message, Exception exception,
+      IDictionary<string, string> categorization) {
+      logger_.Error(message, exception, categorization);
+    }
+
+    /// <inheritdoc/>
+    public void Fatal(string message, IDictionary<string, string> categorization) {
+      logger_.Fatal(message, categorization);
+    }
+
+    /// <inheritdoc/>
+    public void Fatal(string message, Exception exception,
+      IDictionary<string, string> categorization) {
+      logger_.Fatal(message, exception, categorization);
+    }
+
+    /// <inheritdoc/>
+    public void Info(string message, IDictionary<string, string> categorization) {
+      logger_.Info(message, categorization);
+    }
+
+    /// <inheritdoc/>
+    public void Info(string message, Exception exception,
+      IDictionary<string, string> categorization) {
+      logger_.Info(message, exception, categorization);
+    }
+
+    /// <inheritdoc/>
+    public void Warn(string message, IDictionary<string, string> categorization) {
+      logger_.Warn(message, categorization);
+    }
+
+    /// <inheritdoc/>
+    public void Warn(string message, Exception exception,
+      IDictionary<string, string> categorization) {
+      logger_.Warn(message, exception, categorization);
+    }
+
     /// <summary>
     /// Gets or sets the current application logger.
     /// </summary>
     public static RubyLogger ForCurrentProcess {
       get { return current_process_logger_; }
-    }
-
-    /// <inheritdoc/>
-    public void Debug(string message, string service) {
-      logger_.Debug(message, service);
-    }
-
-    /// <inheritdoc/>
-    public void Debug(string message, Exception exception, string service) {
-      logger_.Debug(message, exception, service);
-    }
-
-    /// <inheritdoc/>
-    public void Error(string message, string service) {
-      logger_.Error(message, service);
-    }
-
-    /// <inheritdoc/>
-    public void Error(string message, Exception exception, string service) {
-      logger_.Error(message, exception, service);
-    }
-
-    /// <inheritdoc/>
-    public void Fatal(string message, string service) {
-      logger_.Fatal(message, service);
-    }
-
-    /// <inheritdoc/>
-    public void Fatal(string message, Exception exception, string service) {
-      logger_.Fatal(message, exception, service);
-    }
-
-    /// <inheritdoc/>
-    public void Info(string message, string service) {
-      logger_.Info(message, service);
-    }
-
-    /// <inheritdoc/>
-    public void Info(string message, Exception exception, string service) {
-      logger_.Info(message, exception, service);
-    }
-
-    /// <inheritdoc/>
-    public void Warn(string message, string service) {
-      logger_.Warn(message, service);
-    }
-
-    /// <inheritdoc/>
-    public void Warn(string message, Exception exception, string service) {
-      logger_.Warn(message, exception, service);
     }
 
     /// <summary>
