@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Nohros.Concurrent;
 using Nohros.Configuration;
+using Nohros.Data.Json;
 using Nohros.Logging;
 using Nohros.Ruby.Protocol;
 using Nohros.Ruby.Protocol.Control;
@@ -20,7 +21,7 @@ namespace Nohros.Ruby
     readonly IRubyMessageChannel ruby_message_channel_;
     readonly IRubyService service_;
     readonly IRubySettings settings_;
-    readonly IForwardingLogger service_logger_;
+    readonly IRubyLogger service_logger_;
 
     #region .ctor
     /// <summary>
@@ -44,7 +45,7 @@ namespace Nohros.Ruby
       service_ = service;
       ruby_message_channel_ = channel;
       settings_ = settings;
-      service_logger_ = new ForwardingLogger(
+      service_logger_ = new RubyLogger(
         new AggregatorLogger(
           ProviderOptions.GetIfExists(service.Facts,
             StringResources.kServiceNameFact,
@@ -53,17 +54,24 @@ namespace Nohros.Ruby
     #endregion
 
     public void OnMessagePacketReceived(RubyMessagePacket packet) {
+      if (logger_.IsDebugEnabled) {
+        logger_.Debug("Received a message with token: "
+          + packet.Message.HasToken);
+      }
       // send the message to the service for processing.
       service_.OnMessage(packet.Message);
     }
 
     /// <inheritdoc/>
     public bool Send(IRubyMessage message) {
+      if (logger_.IsDebugEnabled) {
+        logger_.Debug("Sending a message with token " + message.Token);
+      }
       return ruby_message_channel_.Send(message);
     }
 
     /// <inherithdoc/>
-    public IForwardingLogger Logger {
+    public IRubyLogger Logger {
       get { return service_logger_; }
     }
 
@@ -108,6 +116,15 @@ namespace Nohros.Ruby
         .SetMessage(builder.Build().ToByteString())
         .Build();
       Send(message);
+
+      if (logger_.IsDebugEnabled) {
+        JsonStringBuilder json = new JsonStringBuilder().WriteBeginObject();
+        foreach (KeyValuePair<string, string> fact in service_.Facts) {
+          json.WriteMember(fact.Key, fact.Value);
+        }
+        json.WriteEndObject();
+        logger_.Debug("Announcing service: " + json);
+      }
     }
 
     /// <inherithdoc/>

@@ -4,7 +4,7 @@ using Nohros.Ruby.Logging;
 
 namespace Nohros.Ruby
 {
-  internal class AggregatorLogger : ILogger
+  internal class AggregatorLogger : IRubyLogger
   {
     readonly string application_;
     readonly IRubySettings settings_;
@@ -25,52 +25,102 @@ namespace Nohros.Ruby
 
     /// <inheritdoc/>
     public void Debug(string message) {
-      Log(message, LogLevel.Debug);
+      Log(message, LogLevel.Debug, application_);
     }
 
     /// <inheritdoc/>
     public void Debug(string message, Exception exception) {
-      Log(message, LogLevel.Debug, exception);
+      Log(message, LogLevel.Debug, exception, application_);
     }
 
     /// <inheritdoc/>
     public void Error(string message) {
-      Log(message, LogLevel.Error);
+      Log(message, LogLevel.Error, application_);
     }
 
     /// <inheritdoc/>
     public void Error(string message, Exception exception) {
-      Log(message, LogLevel.Error, exception);
+      Log(message, LogLevel.Error, exception, application_);
     }
 
     /// <inheritdoc/>
     public void Fatal(string message) {
-      Log(message, LogLevel.Fatal);
+      Log(message, LogLevel.Fatal, application_);
     }
 
     /// <inheritdoc/>
     public void Fatal(string message, Exception exception) {
-      Log(message, LogLevel.Fatal, exception);
+      Log(message, LogLevel.Fatal, exception, application_);
     }
 
     /// <inheritdoc/>
     public void Info(string message) {
-      Log(message, LogLevel.Info);
+      Log(message, LogLevel.Info, application_);
     }
 
     /// <inheritdoc/>
     public void Info(string message, Exception exception) {
-      Log(message, LogLevel.Info, exception);
+      Log(message, LogLevel.Info, exception, application_);
     }
 
     /// <inheritdoc/>
     public void Warn(string message) {
-      Log(message, LogLevel.Warn);
+      Log(message, LogLevel.Warn, application_);
     }
 
     /// <inheritdoc/>
     public void Warn(string message, Exception exception) {
-      Log(message, LogLevel.Warn, exception);
+      Log(message, LogLevel.Warn, exception, application_);
+    }
+
+    /// <inheritdoc/>
+    public void Debug(string message, string service) {
+      Log(message, LogLevel.Debug, GetApplication(service));
+    }
+
+    /// <inheritdoc/>
+    public void Debug(string message, Exception exception, string service) {
+      Log(message, LogLevel.Debug, exception, GetApplication(service));
+    }
+
+    /// <inheritdoc/>
+    public void Error(string message, string service) {
+      Log(message, LogLevel.Error, GetApplication(service));
+    }
+
+    /// <inheritdoc/>
+    public void Error(string message, Exception exception, string service) {
+      Log(message, LogLevel.Error, exception, GetApplication(service));
+    }
+
+    /// <inheritdoc/>
+    public void Fatal(string message, string service) {
+      Log(message, LogLevel.Fatal, GetApplication(service));
+    }
+
+    /// <inheritdoc/>
+    public void Fatal(string message, Exception exception, string service) {
+      Log(message, LogLevel.Fatal, exception, GetApplication(service));
+    }
+
+    /// <inheritdoc/>
+    public void Info(string message, string service) {
+      Log(message, LogLevel.Info, GetApplication(service));
+    }
+
+    /// <inheritdoc/>
+    public void Info(string message, Exception exception, string service) {
+      Log(message, LogLevel.Info, exception, GetApplication(service));
+    }
+
+    /// <inheritdoc/>
+    public void Warn(string message, string service) {
+      Log(message, LogLevel.Warn, GetApplication(service));
+    }
+
+    /// <inheritdoc/>
+    public void Warn(string message, Exception exception, string service) {
+      Log(message, LogLevel.Warn, exception, GetApplication(service));
     }
 
     /// <inheritdoc/>
@@ -100,20 +150,24 @@ namespace Nohros.Ruby
 
     /// <inheritdoc/>
     public bool IsTraceEnabled {
-      get { return RubyLogger.ForCurrentProcess.IsTraceEnabled; }
+      get { return settings_.ServiceLoggerLevel <= LogLevel.Trace; }
+    }
+
+    string GetApplication(string service) {
+      return application_ + "." + service;
     }
 
     /// <inheritdoc/>
-    void Log(string message, LogLevel level) {
+    void Log(string message, LogLevel level, string application) {
       LogMessage.Builder builder = GetLogMessageBuilder(message,
-        GetLogLevel(level));
+        GetLogLevel(level), application);
       settings_.AggregatorService.Log(builder.Build());
     }
 
     /// <inheritdoc/>
-    void Log(string message, LogLevel level, Exception exception) {
+    void Log(string message, LogLevel level, Exception exception, string application) {
       LogMessage.Builder builder =
-        GetLogMessageBuilder(message, GetLogLevel(level))
+        GetLogMessageBuilder(message, GetLogLevel(level), application)
           .AddCategorization(new KeyValuePair.Builder()
             .SetKey("exception")
             .SetValue(exception.Message)
@@ -147,9 +201,9 @@ namespace Nohros.Ruby
       throw new ArgumentOutOfRangeException("level");
     }
 
-    LogMessage.Builder GetLogMessageBuilder(string message, string level) {
+    LogMessage.Builder GetLogMessageBuilder(string message, string level, string application) {
       return new LogMessage.Builder()
-        .SetApplication(application_)
+        .SetApplication(application)
         .SetLevel(level)
         .SetReason(message)
         .SetTimeStamp(TimeUnitHelper.ToUnixTime(DateTime.Now))
