@@ -118,12 +118,7 @@ namespace Nohros.Ruby
       Send(message);
 
       if (logger_.IsDebugEnabled) {
-        JsonStringBuilder json = new JsonStringBuilder().WriteBeginObject();
-        foreach (KeyValuePair<string, string> fact in service_.Facts) {
-          json.WriteMember(fact.Key, fact.Value);
-        }
-        json.WriteEndObject();
-        logger_.Debug("Announcing service: " + json);
+        logger_.Debug("announcing service", service_.Facts);
       }
     }
 
