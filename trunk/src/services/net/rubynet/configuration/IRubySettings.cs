@@ -39,17 +39,6 @@ namespace Nohros.Ruby
     string NodeDirectory { get; }
 
     /// <summary>
-    /// Gets the absolute path for the specified relative path.
-    /// </summary>
-    /// <param name="path">
-    /// A path that is relative to the node directory.
-    /// </param>
-    /// <remarks>
-    /// <paramref name="path"/> should be relative to the node directory.
-    /// </remarks>
-    string GetAbsolutePath(string path);
-
-    /// <summary>
     /// Gets an instance of the <see cref="IAggregatorService"/> class that can
     /// be used to send message to the log aggregator service.
     /// </summary>

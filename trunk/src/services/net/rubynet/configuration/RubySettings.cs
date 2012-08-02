@@ -45,11 +45,7 @@ namespace Nohros.Ruby
     /// <inheritdoc/>
     public LogLevel ServiceLoggerLevel {
       get { return service_logger_level_; }
-    }
-
-    /// <inheritdoc/>
-    public string GetAbsolutePath(string path) {
-      return Path.GetFullPath(Path.Combine(node_directory_, path));
+      set { service_logger_level_ = value; }
     }
 
     /// <inheritdoc/>
@@ -76,21 +72,50 @@ namespace Nohros.Ruby
     /// </summary>
     protected override void OnLoadComplete() {
       base.OnLoadComplete();
-      running_mode_ = GetRunningMode();
-    }
-
-    RunningMode GetRunningMode() {
       RunningMode running_mode = RunningMode.Service;
       foreach (XmlAttribute attribute in element.Attributes) {
-        if (string.Compare(attribute.Name, "running-mode",
-          StringComparison.OrdinalIgnoreCase) == 0) {
-          if (string.Compare(attribute.Value, "interactive",
-            StringComparison.OrdinalIgnoreCase) == 0) {
-            running_mode = RunningMode.Interactive;
-          }
+        if (StringsAreEquals(attribute.Name, Strings.kRunningMode)) {
+          running_mode_ = GetRunningMode(attribute);
+        } if (StringsAreEquals(attribute.Name, Strings.kLogLevel)) {
+          service_logger_level_ = GetLogLevel(attribute);
         }
       }
+    }
+
+    RunningMode GetRunningMode(XmlAttribute attribute) {
+      RunningMode running_mode = RunningMode.Service;
+      if (StringsAreEquals(attribute.Value, "interactive")) {
+        running_mode = RunningMode.Interactive;
+      }
       return running_mode;
+    }
+
+    internal static bool StringsAreEquals(string str_a, string str_b) {
+      return string.Compare(str_a, str_b, StringComparison.Ordinal) == 0;
+    }
+
+    LogLevel GetLogLevel(XmlAttribute attribute) {
+      string log_level_string = attribute.Value.ToLower();
+      switch(log_level_string) {
+        case "all":
+          return LogLevel.All;
+        case "trace":
+          return LogLevel.Trace;
+        case "debug":
+          return LogLevel.Debug;
+        case "info":
+          return LogLevel.Info;
+        case "warn":
+          return LogLevel.Warn;
+        case "error":
+          return LogLevel.Error;
+        case "fatal":
+          return LogLevel.Fatal;
+        case "off":
+          return LogLevel.Off;
+        default:
+          return service_logger_level_;
+      }
     }
   }
 }
