@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html class="no-js ng-app ng-scope" lang="en">
+<head>
+  <meta charset="utf8">
+  <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+  <title>Ruby Services Status</title>
+  <script src="../js/angular-1.0.1.min.js"></script>
+  <script src="http://192.168.203.240/socket.io/socket.io.js"></script>
+  <script src="services.js"></script>
+  <script src="status.js"></script>
+  <link rel="stylesheet" href="../css/bootstrap.min.css"/>
+</head>
+<body >
+<header class="header">
+  <h1>Ruby - Services Status</h1>
+</header>
+<div class="container" role="main">
+  <div ng-controller="StatusCtrl">
+    <table class="table table-bordered">
+      <thead>
+      <th>Status</th>
+      <th>Serviço</th>
+      <th>Status</th>
+      </thead>
+      <tbody>
+      <tr ng-repeat="(key, value) in status">
+        <td>
+          <span class="label label-{{key}}">{{value}}</span>
+        </td>
+        <td>
+          <em>{{key}}</em>
+        </td>
+        <td>
+          {{key}}
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+</body>
+</html>
