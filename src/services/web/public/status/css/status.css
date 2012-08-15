@@ -1,0 +1,51 @@
+.row-fluid {
+  text-align: center;
+  padding: 8px;
+  line-height: 28px;
+}
+.row-fluid .left { text-align: left; }
+
+.accordion-heading {
+  cursor: pointer;
+}
+
+.accordion-body {
+  color: #aaa;
+}
+
+.table td {
+  border:none;
+  text-overflow: ellipsis;
+}
+
+.hierarchy1 {
+  padding-left: 8px;
+}
+
+.hierarchy2 {
+  padding-left: 16px;
+}
+
+.inactive .label {
+    background-color: #fdfdfd;
+}
+
+.inactive .label-inverse {
+  background-color: #afafaf;
+}
+
+.inactive .label-important {
+  background-color: #e3a6a4;
+}
+
+.inactive .label-success {
+  background-color: #a2d0a2;
+}
+
+.inactive .label-warning {
+  background-color: #fcce8d;
+}
+
+.inactive .label-info {
+  background-color: #9cc9df;
+}
