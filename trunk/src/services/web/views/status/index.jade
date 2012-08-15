@@ -1,0 +1,31 @@
+!!!
+html(ng-app='status')
+  include head
+  body
+    div.navbar
+      div.navbar-inner
+    div.container(ng-controller='StatusCtrl')
+      div.accordion
+        div.accordion-group(ng-repeat='service in services')
+          div.row-fluid.accordion-heading(data-toggle='collapse', data-target='.state-{{service.$$hashKey}}')
+            div.span1.left
+              span(class='label label-{{service.state().label("css")}}') {{service.state().label("text")}}
+            div.span1 {{service.host()}}
+            div.span3
+              b {{service.name()}}
+            div.span5.left(fadey='500') {{service.state().description(60)}}
+            div.span2 {{service.state().timestamp('HH:mm:ss')}}
+          div(class='collapse state-{{service.$$hashKey}} accordion-body')
+            div.row-fluid.accordion-heading(ng-repeat='state in service.states().all()', data-toggle='collapse', data-target='.categorization-{{state.$$hashKey}}')
+              div.span1.left.inactive.hierarchy1
+                span(class='label label-{{state.label("css")}}') {{state.label("text")}}
+              div.span1 {{service.host()}}
+              div.span3 {{service.name()}}
+              div.span5.left {{state.description(60)}}
+              div.span2 {{state.timestamp('HH:mm:ss')}}
+              div.row-fluid.collapse.hierarchy2(class='categorization-{{state.$$hashKey}}', style='width:99%')
+                table.table.left(onclick='return false;')
+                  tbody
+                    tr(ng-repeat='(key, value) in state.categorization()')
+                      td(width='15%') {{key}}
+                      td {{value}}
