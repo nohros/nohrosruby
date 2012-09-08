@@ -20,4 +20,6 @@ const char kServiceTrackerAddress[] = "service-tracker-address";
 
 const char kWaitDebugger[] = "wait-debugger";
 
+const char kLaunchDebug[] = "debug";
+
 }  // namespace swicthes

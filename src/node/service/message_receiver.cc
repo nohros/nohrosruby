@@ -22,7 +22,7 @@ MessageReceiver::MessageReceiver(zmq::Context* context, MessageRouter* router)
     router_(router),
     message_channel_port_(node::kMessageChannelPort),
     running_(false) {
-  DCHECK(context);
+  //DCHECK(context);
   DCHECK(router);
 }
 
@@ -33,8 +33,8 @@ void MessageReceiver::Start() {
   std::string endpoint("tcp://*:");
   endpoint.append(base::IntToString(message_channel_port_));
 
-  scoped_ptr<zmq::Socket> router;
-    //new zmq::Socket(context_->CreateSocket(zmq::kRouter)));
+  scoped_ptr<zmq::Socket> router(
+    new zmq::Socket(context_->CreateSocket(zmq::kRouter)));
   if (router.get() && router->Bind(endpoint.c_str())) {
     MessageParts parts;
     while (!running_ && !context_->is_terminating()) {

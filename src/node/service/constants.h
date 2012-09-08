@@ -16,6 +16,7 @@ extern const long kMessageChannelPort;
 extern const wchar_t kRubyServiceName[];
 extern const char kServiceTrackerAddress[];
 extern const char kNodeServiceName[];
+extern const char kServiceNameFact[];
 
 // filenames
 extern const FilePath::CharType kServicesDatabaseFilename[];

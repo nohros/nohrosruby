@@ -21,7 +21,7 @@
 #include "node/service/ruby_switches.h"
 #include "node/service/message_router.h"
 #include "node/service/message_receiver.h"
-#include "node/service/control_message_loop.h"
+#include "node/service/node_message_loop.h"
 
 namespace node {
 namespace {
@@ -36,20 +36,20 @@ RubyService::RubyService(MessageRouter* router)
   : ServiceBase(node::kRubyServiceName),
     context_(new zmq::Context()),
     message_channel_port_(node::kMessageChannelPort),
-    message_receiver_(new MessageReceiver(context_.get(), router)),
-    control_message_loop_(new ControlMessageLoop(context_.get(), router)),
-    control_message_delegate_(
-      new ControlMessageThreadDelegate(control_message_loop_.get())) {
+    message_receiver_(new MessageReceiver(NULL, router)),
+    node_message_loop_(new NodeMessageLoop(context_.get(), router)),
+    node_message_loop_delegate_(
+      new NodeMessageLoopThreadDelegate(node_message_loop_.get())) {
   DCHECK(!context_.get());
-  DCHECK(!control_message_loop_.get());
-  DCHECK(!control_message_delegate_.get());
+  DCHECK(!node_message_loop_.get());
+  DCHECK(!node_message_loop_delegate_.get());
 }
 
 void RubyService::OnStart(const std::vector<std::wstring>& arguments) {
   LOG(INFO) << "Service has been started";
 
   const CommandLine& switches = *CommandLine::ForCurrentProcess();
-
+  context_->set_error_delegate(GetErrorHandler());
   // Override the default message channel port.
   if (switches.HasSwitch(switches::kMessageChannelPort)) {
     std::string value =
@@ -77,28 +77,28 @@ void RubyService::OnStart(const std::vector<std::wstring>& arguments) {
     return;
   }
 
-  control_message_delegate_.reset(
-    new ControlMessageThreadDelegate(control_message_loop_.get()));
+  /*node_message_loop_delegate_.reset(
+    new NodeMessageLoopThreadDelegate(node_message_loop_.get()));
   if (!base::PlatformThread::Create(
-    0, control_message_delegate_.get(), &control_message_thread_)) {
+    0, node_message_loop_delegate_.get(), &control_message_thread_)) {
     NOTREACHED() << "Control message thread creation failed.";
-  }
+  }*/
 
   message_receiver_->Start();
 }
 
-RubyService::ControlMessageThreadDelegate::ControlMessageThreadDelegate(
-  ControlMessageLoop* control_message_loop)
-  : control_message_loop_(control_message_loop_) {
+RubyService::NodeMessageLoopThreadDelegate::NodeMessageLoopThreadDelegate(
+  NodeMessageLoop* node_message_loop)
+  : node_message_loop_(node_message_loop) {
 }
 
 // PlatformThread::Delegate() implementation
-void RubyService::ControlMessageThreadDelegate::ThreadMain() {
-  control_message_loop_->Run();
+void RubyService::NodeMessageLoopThreadDelegate::ThreadMain() {
+  node_message_loop_->Run();
 }
 
 void RubyService::OnStop() {
-  control_message_loop_->Quit();
+  node_message_loop_->Quit();
   message_receiver_->Stop();
   context_->Close();
 

@@ -23,6 +23,8 @@ ServicesDatabase::ServicesDatabase() {
 }
 
 ServicesDatabase::~ServicesDatabase() {
+  db_->Close();
+  db_.reset(NULL);
 }
 
 bool ServicesDatabase::Open(const FilePath& db_name) {
@@ -113,39 +115,42 @@ bool ServicesDatabase::GetServicesMetadata(const ServiceFactSet& facts,
   s.BindInt(0, first_service_fact_hash);
 
   std::set<int> services_found;
-  while (s.Step()) {
-    services_found.insert(s.ColumnInt(0));
-  }
+  if (s.Step()) {
+    do {
+      services_found.insert(s.ColumnInt(0));
+    } while (s.Step());
 
-  std::string cmd("SELECT id, name, language_runtime_type, working_dir, arguments "
-                  "FROM services s "
-                  "INNER JOIN facts f on f.service_id = s.id "
-                  "WHERE service_id = ? and hash_code in (");
+    // Check if each of the found services contains the others facts.
+    std::string cmd("SELECT id, name, language_runtime_type, working_dir, arguments "
+                    "FROM services s "
+                    "INNER JOIN facts f on f.service_id = s.id "
+                    "WHERE service_id = ? and hash_code in (");
 
-  cmd += base::IntToString(first_service_fact_hash);
-  for (int i = 1; i< facts_size; ++i) {
-    cmd += "," +  base::IntToString(GetServiceFactHash(facts[i]));
-  }
-  cmd += ")";
-
-  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, cmd.c_str()));
-  for (std::set<int>::iterator k = services_found.begin();
-        k != services_found.end(); ++k) {
-    statement.BindInt(0, *k);
-    if (!statement.Step()) {
-      return false;
+    cmd += base::IntToString(first_service_fact_hash);
+    for (int i = 1; i< facts_size; ++i) {
+      cmd += "," +  base::IntToString(GetServiceFactHash(facts[i]));
     }
+    cmd += ")";
 
-    scoped_refptr<ServiceMetadata> service(new ServiceMetadata());
-    service->set_service_id(statement.ColumnInt(0));
-    service->set_service_name(statement.ColumnString(1));
-    service->set_language_runtime_type(
-      static_cast<LanguageRuntimeType>(statement.ColumnInt(2)));
-    service->set_service_working_dir(statement.ColumnString(3));
-    service->set_arguments(statement.ColumnString(4));
+    sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, cmd.c_str()));
+    for (std::set<int>::iterator k = services_found.begin();
+          k != services_found.end(); ++k) {
+      statement.BindInt(0, *k);
+      if (!statement.Step()) {
+        return false;
+      }
 
-    services->push_back(service);
-    statement.Reset();
+      scoped_refptr<ServiceMetadata> service(new ServiceMetadata());
+      service->set_service_id(statement.ColumnInt(0));
+      service->set_service_name(statement.ColumnString(1));
+      service->set_language_runtime_type(
+        static_cast<LanguageRuntimeType>(statement.ColumnInt(2)));
+      service->set_service_working_dir(statement.ColumnString(3));
+      service->set_arguments(statement.ColumnString(4));
+
+      services->push_back(service);
+      statement.Reset();
+    }
   }
   return services->size() > 0;
 }

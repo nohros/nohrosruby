@@ -20,6 +20,8 @@ const wchar_t kRubyServiceName[] = L"NohrosRuby";
 
 const char kNodeServiceName[] = "ruby";
 
+const char kServiceNameFact[] = "service";
+
 const FilePath::CharType kServicesDatabaseFilename[] = FPL("services.db");
 
 const FilePath::CharType kServicesDirname[] = FPL("services");
