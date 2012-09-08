@@ -93,13 +93,13 @@ void Context::Close() {
 }
 
 scoped_refptr<Context::SocketRef> Context::CreateSocket(SocketType socket_type) {
-  if (!zmq_context_) {
+  if (zmq_context_ == NULL) {
     return new SocketRef(this, NULL); // return inactive socket.
   }
 
   void* socket = zmq_socket(zmq_context_, socket_type);
   if (socket == NULL) {
-    DLOG(FATAL) << "Socket creation error " << GetErrorMessage();
+    DLOG(ERROR) << "Socket creation error " << GetErrorMessage();
     return new SocketRef(this, NULL);
   }
   return new SocketRef(this, socket);
