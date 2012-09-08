@@ -16,6 +16,8 @@
 #include <base/file_path.h>
 #include <sql/connection.h>
 
+#include "node/zeromq/context.h"
+#include "node/zeromq/socket.h"
 #include "node/service/ruby_service.h"
 #include "node/service/ruby_switches.h"
 #include "node/service/constants.h"
@@ -27,8 +29,8 @@ int main(int argc, char** argv) {
   CommandLine::Init(argc, argv);
   const CommandLine& switches = *CommandLine::ForCurrentProcess();
 
-  if (switches.HasSwitch(switches::kWaitDebugger)) {
-    //base::PlatformThread::Sleep(10000);
+  if (switches.HasSwitch(switches::kLaunchDebug)) {
+    DebugBreak();
   }
 
   // Set up the services database
@@ -40,7 +42,7 @@ int main(int argc, char** argv) {
   services_database_path = services_database_path
     .DirName()
     .Append(node::kServicesDatabaseFilename);
-  
+
   node::ServicesDatabase services_database;
   if (!services_database.Open(services_database_path)) {
     LOG(ERROR) << "Unable to open services database.";
@@ -49,12 +51,11 @@ int main(int argc, char** argv) {
 
   node::RoutingDatabase routing_database;
   if (!routing_database.Open()) {
-    LOG(ERROR) << "Unable to open the routing database";
+    LOG(ERROR) << "Unable to open the routing database.";
     return -1;
   }
 
   node::MessageRouter message_router(&services_database, &routing_database);
   node::RubyService service(&message_router);
-
   service.Run();
 }

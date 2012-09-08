@@ -22,7 +22,7 @@ class Socket;
 namespace node {
 class MessageRouter;
 class MessageReceiver;
-class ControlMessageLoop;
+class NodeMessageLoop;
 
 class RubyService
     : public ServiceBase {
@@ -37,13 +37,13 @@ class RubyService
   void OnStop() OVERRIDE;
 
  private:
-  class ControlMessageThreadDelegate : public base::PlatformThread::Delegate {
+  class NodeMessageLoopThreadDelegate : public base::PlatformThread::Delegate {
    public:
-    explicit ControlMessageThreadDelegate(
-      ControlMessageLoop* control_message_loop);
+    explicit NodeMessageLoopThreadDelegate(
+      NodeMessageLoop* control_message_loop);
     virtual void ThreadMain() OVERRIDE;
    private:
-    ControlMessageLoop* control_message_loop_;
+    NodeMessageLoop* node_message_loop_;
   };
 
   int message_channel_port_;
@@ -51,8 +51,8 @@ class RubyService
   base::PlatformThreadHandle control_message_thread_;
 
   // Store it, because it must outlive the thread.
-  scoped_ptr<ControlMessageThreadDelegate> control_message_delegate_;
-  scoped_ptr<ControlMessageLoop> control_message_loop_;
+  scoped_ptr<NodeMessageLoopThreadDelegate> node_message_loop_delegate_;
+  scoped_ptr<NodeMessageLoop> node_message_loop_;
   scoped_ptr<MessageReceiver> message_receiver_;
   scoped_ptr<zmq::Context> context_;
 

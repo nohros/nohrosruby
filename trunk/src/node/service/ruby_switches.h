@@ -16,6 +16,7 @@ namespace switches {
 extern const char kMessageChannelPort[];
 extern const char kServiceTrackerAddress[];
 extern const char kWaitDebugger[];
+extern const char kLaunchDebug[];
 }
 
 #endif  // NODE_SERVICE_RUBY_SWITCHES_H_
