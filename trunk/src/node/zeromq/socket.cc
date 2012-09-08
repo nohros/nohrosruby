@@ -52,6 +52,14 @@ bool Socket::Send(Message* message, int size, SocketFlags flags) {
     zmq_send(ref_->socket(), message->message(), flags)) == ZMQ_OK;
 }
 
+bool Socket::Send(SocketFlags flags) {
+  zmq_msg_t msg;
+  zmq_msg_init(&msg);
+  bool ok = CheckError(zmq_send(ref_->socket(), &msg, flags)) == ZMQ_OK;
+  zmq_msg_close(&msg);
+  return ok;
+}
+
 bool Socket::Receive(MessageParts* parts, SocketFlags flags) {
   DCHECK(parts);
   bool has_more = true;

@@ -93,6 +93,9 @@ class Socket {
   // Refer to zeromq docs for a detailed description.
   bool Send(Message* message, int size, SocketFlags flags);
 
+  // Send a empty message on a socket.
+  bool Send(SocketFlags flags);
+
   // Receive all the parts os a message from a socket. The Socket::Receive()
   // function shall receive all the parts of a multi-part message from a socket
   // and store it in |pairs|. If there are no messages available the
