@@ -6,7 +6,17 @@
 # as the proto compiler. This script was created to be called by double clicking it
 # on windows machines.
 
+import sys
 import os
+import subprocess
 
-os.system('proto_parser_generator.py "protogen.exe --descriptor_set_out=./parsers/csharp/ruby_message_packet.protobin --include_imports -output_directory=./parsers/csharp/" . .proto')
-os.system('pause');
+root = "."
+
+# Get the subfolders path
+subdirs = [subdir for subdir in os.listdir(root) if os.path.isdir(os.path.join(root, subdir))]
+subdirs.append('.')
+for subdir in subdirs:
+  if os.path.exists(os.path.join(subdir, 'proto.makefile')):
+	script = 'proto_parser_generator.py "protogen.exe --include_imports -output_directory=./' + os.path.join(subdir, 'parsers/csharp/') + '" ./' + subdir +' .proto'
+	os.system(script)
+os.system('pause')
