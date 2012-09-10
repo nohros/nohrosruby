@@ -16,7 +16,7 @@
 import "common.proto";
 import "ruby_protos.proto";
 
-package protocol.control;
+package ruby.protocol.control;
 option optimize_for = LITE_RUNTIME;
 
 // The service control message types.
@@ -30,7 +30,9 @@ enum NodeMessageType {
   kNodeQuery = 2;
    
   // A message that is sent upon successfully completion of a node message
-  // processing.
+  // processing. This message is not mandatory, a service could choose to
+  // not send response for particular messages, or not send any responses at
+  // all.
   kNodeResponse = 3;
   
   // A message that should be sent when a query cannot be fulfilled.
