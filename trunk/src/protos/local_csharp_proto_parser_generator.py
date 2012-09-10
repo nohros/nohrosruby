@@ -17,6 +17,6 @@ subdirs = [subdir for subdir in os.listdir(root) if os.path.isdir(os.path.join(r
 subdirs.append('.')
 for subdir in subdirs:
   if os.path.exists(os.path.join(subdir, 'proto.makefile')):
-	script = 'proto_parser_generator.py "protogen.exe --include_imports -output_directory=./' + os.path.join(subdir, 'parsers/csharp/') + '" ./' + subdir +' .proto'
+	script = 'proto_parser_generator.py "protogen.exe --include_imports -output_directory=./' + os.path.join(subdir, 'parsers/csharp/') + ' --proto_path=./' + subdir + '" ./' + subdir +' .proto'
 	os.system(script)
 os.system('pause')
