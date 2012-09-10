@@ -12,7 +12,7 @@ argv_size = len(sys.argv)
 if argv_size != 3 and argv_size != 4:
   print("Usage protos_compiler.py PROTO_COMPILER_FILE_PATH [proto dir] [proto extension]")
   sys.exit(0)
-try:
+try: 
   proto_compiler_file_path = sys.argv[1]
   directory = sys.argv[2]
 
