@@ -32,7 +32,7 @@
 
 import "common.proto";
 
-package protocol;
+package ruby.protocol;
 option optimize_for = LITE_RUNTIME;
 
 // The message header. Contains information about the packed message.
