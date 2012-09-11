@@ -41,6 +41,10 @@ enum NodeMessageType {
   // A message that should be sent to announce that a node is hosting a
   // service.
   kNodeAnnounce = 5;
+  
+  // A message that is sent upon a non ACK message is successfully received
+  // by a node.
+  kNodeAck = 6;
 }
 
 enum ServiceControlMessageType {
@@ -136,4 +140,10 @@ message AnnounceMessage {
 //  RubyMessage.Token = [node-error]
 message ErrorMessage {
   repeated ruby.ExceptionMessage errors = 1;
+}
+
+// A Acknowledgement that is sent when a message is received by the service
+// node. This message is sent only when the sender explicit specifies it.
+message AckMessage {
+  optional RubyMessage request = 1;
 }

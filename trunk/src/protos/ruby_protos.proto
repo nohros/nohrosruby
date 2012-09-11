@@ -112,6 +112,23 @@ message RubyMessage {
   // sender name, the sende IP address, the sender UUID or anything else that
   // could be serialized as a sequence of bytes and identifies the sender.
   optional bytes sender = 6;
+  
+  // The type of ACK to sent.
+  enum AckType {
+    // Does not send an ACK.
+    kRubyNoAck = 1;
+	
+	// Send the most simple form of ACK, which does not include the received
+	// message in the message body.
+	kRubySimpleAck = 2;
+	
+	// An ACK that includes the requested message in the message body.
+	kRubyRequestAck = 3;
+  };
+  
+  // A flag that indicates the type of ACK that the sender wants to receive
+  // when a message is received by the ruby service node. Default to kRubyNoAck.
+  optional AckType ack_type = 7 [default = kRubyNoAck];
 }
 
 // Wraps a protobuf message into a envelope, which defines what is in the
