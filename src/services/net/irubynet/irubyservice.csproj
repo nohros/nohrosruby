@@ -41,8 +41,8 @@
     <DocumentationFile>$(SolutionDir)docs\services\net\nohros.rubynet.irubyservice.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nohros, Version=1.2.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\must.common.1.2.5\lib\nohros.dll</HintPath>
+    <Reference Include="nohros">
+      <HintPath>..\..\..\packages\must.common.1.6.6.26\lib\net20\nohros.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -59,11 +59,10 @@
     <Compile Include="IRubyServiceHost.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="NopRubyLogger.cs" />
+    <Compile Include="NopRubyServiceHost.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringResources.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="CHANGES.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -81,5 +80,4 @@
       <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
     </VisualStudio>
   </ProjectExtensions>
-  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>
