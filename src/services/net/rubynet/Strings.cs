@@ -7,13 +7,15 @@ namespace Nohros.Ruby
     /// <summary>
     /// The name of node that contains the logging provider configuration.
     /// </summary>
-    public const string kLoggingProviderNode = "LoggingProvider";
+    public const string kLogProviderNode = "LogProvider";
 
     /// <summary>
     /// The name of the node that contains the configuration data for the
     /// MyToolsPack library.
     /// </summary>
     public const string kMyToolsPackNode = "mytoolspack";
+
+    public const string kCulture = "culture";
 
     /// <summary>
     /// The address of th IPC channel tha handles the communication between
@@ -26,8 +28,7 @@ namespace Nohros.Ruby
     /// </summary>
     public const string kMessageSenderEndpoint = "message-sender-endpoint";
 
-    public const string kRubyHostServiceName = "ruby-service-host";
-
+    public const string kServiceHostServiceName = "nohros.ruby.net.servicehost";
     public const string kNodeServiceName = "nohros.ruby.node";
 
     public const string kHostServiceFact = "host";
@@ -42,6 +43,7 @@ namespace Nohros.Ruby
     public const string kServicesFolderName = "services";
 
     public const string kRunningMode = "running-mode";
+    public const string kLogLevel = "log-level";
 
     /// <summary>
     /// The string that is displayed on the shell prompt.

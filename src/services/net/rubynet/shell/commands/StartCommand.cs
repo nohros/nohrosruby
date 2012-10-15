@@ -28,10 +28,11 @@ namespace Nohros.Ruby.Shell
   /// </remarks>
   internal class StartCommand : ShellCommand
   {
-    const string kServiceDirectory = "service-dir";
+    const string kServiceDirectory = "service-directory";
 
     readonly IRubySettings settings_;
     readonly CommandLine switches_;
+    readonly IRubyLogger logger_;
 
     #region .ctor
     /// <summary>
@@ -42,6 +43,7 @@ namespace Nohros.Ruby.Shell
       : base(ShellStrings.kStartCommand) {
       switches_ = switches;
       settings_ = settings;
+      logger_ = RubyLogger.ForCurrentProcess;
     }
     #endregion
 
@@ -53,6 +55,10 @@ namespace Nohros.Ruby.Shell
     /// caller.
     /// </remarks>
     public override void Run(ShellRubyProcess process) {
+      if (logger_.IsDebugEnabled) {
+        logger_.Debug("StartCommand/Run");
+      }
+
       string service_assembly_location = GetServiceLocation();
       string service_factory_type_name = GetServiceFactoryTypeName();
       string service_switches = GetServiceSwicthes(service_factory_type_name);
@@ -91,7 +97,7 @@ namespace Nohros.Ruby.Shell
         .AddFacts(
           new KeyValuePair.Builder()
             .SetKey(StringResources.kServiceNameFact)
-            .SetValue(Strings.kRubyHostServiceName)
+            .SetValue(Strings.kServiceHostServiceName)
             .Build())
         .SetSize(start_control_message_bytes.Length)
         .Build();

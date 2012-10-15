@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Xml;
 using Nohros.Logging;
@@ -15,6 +17,7 @@ namespace Nohros.Ruby
   {
     readonly string prompt_;
     IAggregatorService aggregator_service_;
+    CultureInfo culture_;
     string node_directory_;
     RunningMode running_mode_;
     LogLevel service_logger_level_;
@@ -24,11 +27,12 @@ namespace Nohros.Ruby
     /// <summary>
     /// Initializes a new instance of the <see cref="RubySettings"/> class.
     /// </summary>
-    public RubySettings() {
+    public RubySettings(Builder builder) : base(builder) {
       running_mode_ = RunningMode.Service;
       prompt_ = Strings.kShellPrompt;
       services_folder_ = "services";
       service_logger_level_ = LogLevel.Info;
+      culture_ = CultureInfo.InvariantCulture;
 
       // By default the language specific service host is stored at path:
       // "node_services_directory\hosts\language_name\"
@@ -40,6 +44,11 @@ namespace Nohros.Ruby
     /// <inheritdoc/>
     public RunningMode RunningMode {
       get { return running_mode_; }
+    }
+
+    /// <inheritdoc/>
+    public CultureInfo Culture {
+      get { return culture_; }
     }
 
     /// <inheritdoc/>
@@ -64,58 +73,6 @@ namespace Nohros.Ruby
     public IAggregatorService AggregatorService {
       get { return aggregator_service_; }
       set { aggregator_service_ = value; }
-    }
-
-    /// <summary>
-    /// Set the values of some elements that can not be set directly by the
-    /// base class.
-    /// </summary>
-    protected override void OnLoadComplete() {
-      base.OnLoadComplete();
-      RunningMode running_mode = RunningMode.Service;
-      foreach (XmlAttribute attribute in element.Attributes) {
-        if (StringsAreEquals(attribute.Name, Strings.kRunningMode)) {
-          running_mode_ = GetRunningMode(attribute);
-        } if (StringsAreEquals(attribute.Name, Strings.kLogLevel)) {
-          service_logger_level_ = GetLogLevel(attribute);
-        }
-      }
-    }
-
-    RunningMode GetRunningMode(XmlAttribute attribute) {
-      RunningMode running_mode = RunningMode.Service;
-      if (StringsAreEquals(attribute.Value, "interactive")) {
-        running_mode = RunningMode.Interactive;
-      }
-      return running_mode;
-    }
-
-    internal static bool StringsAreEquals(string str_a, string str_b) {
-      return string.Compare(str_a, str_b, StringComparison.Ordinal) == 0;
-    }
-
-    LogLevel GetLogLevel(XmlAttribute attribute) {
-      string log_level_string = attribute.Value.ToLower();
-      switch(log_level_string) {
-        case "all":
-          return LogLevel.All;
-        case "trace":
-          return LogLevel.Trace;
-        case "debug":
-          return LogLevel.Debug;
-        case "info":
-          return LogLevel.Info;
-        case "warn":
-          return LogLevel.Warn;
-        case "error":
-          return LogLevel.Error;
-        case "fatal":
-          return LogLevel.Fatal;
-        case "off":
-          return LogLevel.Off;
-        default:
-          return service_logger_level_;
-      }
     }
   }
 }

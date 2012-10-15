@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Nohros.Logging;
 using Nohros.Ruby.Logging;
 
@@ -9,6 +10,7 @@ namespace Nohros.Ruby
   {
     readonly string application_;
     readonly IRubySettings settings_;
+    readonly int process_id_;
 
     #region .ctor
     /// <summary>
@@ -21,6 +23,7 @@ namespace Nohros.Ruby
     public AggregatorLogger(string application, IRubySettings settings) {
       application_ = application;
       settings_ = settings;
+      process_id_ = Process.GetCurrentProcess().Id;
     }
     #endregion
 
@@ -176,14 +179,10 @@ namespace Nohros.Ruby
     void Log(string message, LogLevel level, Exception exception) {
       LogMessage.Builder builder =
         GetLogMessageBuilder(message, GetLogLevel(level))
-          .AddCategorization(new KeyValuePair.Builder()
-            .SetKey("exception")
-            .SetValue(exception.Message)
-            .Build())
-          .AddCategorization(new KeyValuePair.Builder()
-            .SetKey("backtrace")
-            .SetValue(exception.StackTrace)
-            .Build());
+          .AddCategorization(KeyValuePairs.FromKeyValuePair("exception",
+            exception.Message))
+          .AddCategorization(KeyValuePairs.FromKeyValuePair("backtrace",
+            exception.StackTrace));
       settings_.AggregatorService.Log(builder.Build());
     }
 
@@ -191,14 +190,10 @@ namespace Nohros.Ruby
       IDictionary<string, string> categorization) {
       LogMessage.Builder builder =
         GetLogMessageBuilder(message, GetLogLevel(level))
-          .AddCategorization(new KeyValuePair.Builder()
-            .SetKey("exception")
-            .SetValue(exception.Message)
-            .Build())
-          .AddCategorization(new KeyValuePair.Builder()
-            .SetKey("backtrace")
-            .SetValue(exception.StackTrace)
-            .Build())
+          .AddCategorization(KeyValuePairs.FromKeyValuePair("exception",
+            exception.Message))
+          .AddCategorization(KeyValuePairs.FromKeyValuePair("backtrace",
+            exception.StackTrace))
           .AddRangeCategorization(KeyValuePairs.FromKeyValuePairs(categorization));
       settings_.AggregatorService.Log(builder.Build());
     }
@@ -232,18 +227,12 @@ namespace Nohros.Ruby
         .SetReason(message)
         .SetTimeStamp(TimeUnitHelper.ToUnixTime(DateTime.Now))
         .SetUser(Environment.UserName)
-        .AddCategorization(new KeyValuePair.Builder()
-          .SetKey("host")
-          .SetValue(Environment.MachineName)
-          .Build())
-        .AddCategorization(new KeyValuePair.Builder()
-          .SetKey("os")
-          .SetValue(Environment.OSVersion.ToString())
-          .Build())
-        .AddCategorization(new KeyValuePair.Builder()
-          .SetKey("clr-version")
-          .SetValue(Environment.Version.ToString())
-          .Build());
+        .SetPid(process_id_)
+        .SetHostName(Environment.MachineName)
+        .AddCategorization(KeyValuePairs.FromKeyValuePair("os",
+          Environment.OSVersion.ToString()))
+        .AddCategorization(KeyValuePairs.FromKeyValuePair("clr-version",
+          Environment.Version.ToString()));
     }
   }
 }

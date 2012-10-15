@@ -51,12 +51,10 @@ namespace Nohros.Ruby
       // could be different from the app base directory. So, instead to use
       // the AppDomain.BaseDirectory we need to use the assembly location
       // as the base directory for the configuration file.
-      RubySettings settings = new RubySettings();
-      settings.Load(
-        Path.Combine(
+      RubySettings settings = new RubySettings.Loader()
+        .Load(Path.Combine(
           Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
           kConfigurationFileName), kConfigRootNodeName);
-
       ConfigureLogger(settings);
       return settings;
     }
@@ -117,11 +115,20 @@ namespace Nohros.Ruby
     }
 
     void ConfigureLogger(RubySettings settings) {
-      IProviderNode provider = settings.Providers[Strings.kLoggingProviderNode];
-      RubyLogger.ForCurrentProcess.Logger =
-        ProviderFactory<ILoggerFactory>
-          .CreateProviderFactory(provider)
-          .CreateLogger(provider.Options, settings);
+      IProviderNode provider;
+      if (settings.Providers.GetProviderNode(Strings.kLogProviderNode,
+        out provider)) {
+        // try/catch: logging related oprations should not causes application
+        // issues.
+        try {
+          RubyLogger.ForCurrentProcess.Logger =
+            ProviderFactory<ILoggerFactory>
+              .CreateProviderFactoryFallback(provider, settings)
+              .CreateLogger(provider.Options);
+        } catch {
+          // fails silently.
+        }
+      }
     }
   }
 }
