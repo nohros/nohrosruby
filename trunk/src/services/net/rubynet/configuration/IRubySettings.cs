@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Nohros.Logging;
 using Nohros.Configuration;
 
@@ -37,6 +38,11 @@ namespace Nohros.Ruby
     /// This is the working directory of the service node executable.
     /// </remarks>
     string NodeDirectory { get; }
+
+    /// <summary>
+    /// Gets the configured culture.
+    /// </summary>
+    CultureInfo Culture { get; }
 
     /// <summary>
     /// Gets an instance of the <see cref="IAggregatorService"/> class that can

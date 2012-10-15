@@ -35,7 +35,7 @@ namespace Nohros.Ruby
       RubySettings settings = factory.CreateRubySettings();
       IRubyProcess process =
         settings.RunningMode == RunningMode.Interactive
-          ? factory.CreateShellRubyProcess(settings) as IRubyProcess
+          ? factory.CreateShellRubyProcess(settings)
           : factory.CreateServiceRubyProcess(settings) as IRubyProcess;
       process.Run(legacy_command_line_string);
     }

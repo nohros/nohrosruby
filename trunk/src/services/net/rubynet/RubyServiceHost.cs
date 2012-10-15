@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Threading;
 using Nohros.Concurrent;
 using Nohros.Configuration;
 using Nohros.Data.Json;
@@ -96,7 +98,11 @@ namespace Nohros.Ruby
     public void Start() {
       ruby_message_channel_.AddListener(this, Executors.ThreadPoolExecutor());
       Announce();
+
+      Thread.CurrentThread.CurrentUICulture = settings_.Culture;
       service_.Start(this);
+
+      logger_.Info("the following service has been finished: ", service_.Facts);
     }
 
     void Announce() {

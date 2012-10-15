@@ -55,13 +55,13 @@
     <Reference Include="Google.ProtocolBuffers.Serialization, Version=2.4.1.473, Culture=neutral, PublicKeyToken=55f7125234beb589, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Google.ProtocolBuffers.2.4.1.473\lib\net20\Google.ProtocolBuffers.Serialization.dll</HintPath>
     </Reference>
-    <Reference Include="mytoolspack.console, Version=0.3.5.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="mytoolspack.console, Version=0.3.6.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\nohros.mytoolspack.0.3.5\lib\mytoolspack.console.dll</HintPath>
+      <HintPath>..\..\..\packages\nohros.mytoolspack.0.3.7\lib\mytoolspack.console.dll</HintPath>
     </Reference>
-    <Reference Include="nohros, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="nohros, Version=1.3.7.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\must.common.1.0.0\lib\nohros.dll</HintPath>
+      <HintPath>..\..\..\packages\must.common.1.3.7\lib\nohros.dll</HintPath>
     </Reference>
     <Reference Include="nohros.desktop, Version=0.7.2.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -71,9 +71,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="configuration\NOPLogger.cs" />
+    <Compile Include="configuration\RubySettingsBuilder.cs" />
+    <Compile Include="configuration\RubySettingsLoader.cs" />
     <Compile Include="process\AbstractRubyProcess.cs" />
     <Compile Include="AppFactory.cs" />
-    <Compile Include="configuration\IRubyLogger.cs" />
     <Compile Include="configuration\RubyLogger.cs" />
     <Compile Include="service\AggregatorLogger.cs" />
     <Compile Include="configuration\ConsoleSettings.cs" />
@@ -151,11 +153,6 @@
       <Project>{970C40CD-03F5-4761-9AE3-7E358E108E56}</Project>
       <Name>irubyservice</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="nohros.logging.log4net.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="libzmq.dll">

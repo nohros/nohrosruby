@@ -332,13 +332,15 @@ namespace Nohros.Ruby
           "object 'o' is not an instance of the ServiceControlMessage class");
       }
 #endif
-      var factory = new ServicesFactory(settings_);
-      var service = factory.CreateService(message);
-      var host = new RubyServiceHost(service, ruby_message_channel_, settings_);
-
       // A try/catch block is used here to ensure the consistence of the
-      // list of running services and to isolate one service from another.
+      // list of running services and to handle exceptions taht may occur
+      // during service initialization and is not properly handled by
+      // the service.
       try {
+        var factory = new ServicesFactory(settings_);
+        var service = factory.CreateService(message);
+        var host = new RubyServiceHost(service, ruby_message_channel_, settings_);
+
         ++running_services_count_;
         host.Start();
       } catch (Exception exception) {

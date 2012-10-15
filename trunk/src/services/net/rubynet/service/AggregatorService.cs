@@ -1,5 +1,6 @@
 ﻿using System;
 using Nohros.Ruby.Logging;
+using Nohros.Ruby.Protocol;
 using ZMQ;
 using Nohros.Logging;
 using R = Nohros.Resources;
@@ -50,12 +51,36 @@ namespace Nohros.Ruby
     /// <param name="log">The message to log.</param>
     public void Log(LogMessage log) {
       try {
-        dealer_.Send(log.ToByteArray());
+        RubyMessagePacket packet = GetMessagePacket(log);
+        dealer_.SendMore();
+        dealer_.Send(packet.ToByteArray());
       } catch (System.Exception exception) {
         logger_.Error(
           string.Format(R.StringResources.Log_MethodThrowsException, kClassName,
             "Log"), exception);
       }
+    }
+
+    RubyMessagePacket GetMessagePacket(LogMessage log) {
+      RubyMessage message = new RubyMessage.Builder()
+        .SetId(0)
+        .SetToken("log-message")
+        .SetType((int) LoggingMessageType.kLogMessage)
+        .SetMessage(log.ToByteString())
+        .Build();
+
+      RubyMessageHeader header = new RubyMessageHeader.Builder()
+        .SetId(0)
+        .SetSize(message.SerializedSize)
+        .Build();
+
+      RubyMessagePacket packet = new RubyMessagePacket.Builder()
+        .SetHeader(header)
+        .SetMessage(message)
+        .SetHeaderSize(header.SerializedSize)
+        .SetSize(message.SerializedSize + header.SerializedSize + 2)
+        .Build();
+      return packet;
     }
 
     /// <summary>
@@ -70,6 +95,10 @@ namespace Nohros.Ruby
     /// </returns>
     public bool Configure() {
       try {
+        if (logger_.IsDebugEnabled) {
+          logger_.Debug("connecting to the log aggregator service at "
+            + log_aggregator_address_);
+        }
         dealer_.Connect("tcp://" + log_aggregator_address_);
       } catch (System.Exception exception) {
         logger_.Error(
