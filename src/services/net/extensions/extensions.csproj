@@ -8,8 +8,8 @@
     <ProjectGuid>{84727DA5-79D3-4F42-BA0C-19FD583A6834}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>extensions</RootNamespace>
-    <AssemblyName>extensions</AssemblyName>
+    <RootNamespace>Nohros.Ruby</RootNamespace>
+    <AssemblyName>nohros.ruby.net.extensions</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
