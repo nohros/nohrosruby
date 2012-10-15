@@ -23,6 +23,10 @@ namespace Nohros.Ruby
       return false;
     }
 
+    public bool Send(byte[] data, int type, int id) {
+      return false;
+    }
+
     public IRubyLogger Logger {
       get { return logger_; }
     }
