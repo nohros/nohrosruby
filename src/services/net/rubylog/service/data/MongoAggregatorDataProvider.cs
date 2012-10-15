@@ -19,7 +19,7 @@ namespace Nohros.Ruby.Logging
     const int kLogMessageSize = 3000;
 
     readonly MongoDatabase database_;
-    readonly IRubyLogger logger_;
+    readonly LocalLogger logger_;
 
     #region .ctor
     /// <summary>
@@ -33,7 +33,7 @@ namespace Nohros.Ruby.Logging
     /// </param>
     public MongoAggregatorDataProvider(MongoDatabase database) {
       database_ = database;
-      logger_ = RubyLogger.ForCurrentProcess;
+      logger_ = LocalLogger.ForCurrentProcess;
     }
     #endregion
 
@@ -72,8 +72,8 @@ namespace Nohros.Ruby.Logging
     public bool SetupStorage(StorageInfo storage) {
       if (!(storage.HasName
         && storage.Name.Length > 0
-          && storage.HasApplication
-            && storage.Application.Length > 0)) {
+        && storage.HasApplication
+        && storage.Application.Length > 0)) {
         return false;
       }
 
@@ -109,7 +109,8 @@ namespace Nohros.Ruby.Logging
 
         // Associates the application with the storage.
         collection = database_.GetCollection(kStorageCollectionName);
-        SafeModeResult result = collection.Save(new BsonDocument {
+        SafeModeResult result = collection.Save(new BsonDocument
+        {
           {kStorageNameField, storage.Name},
           {kStorageApplicationField, storage.Application}
         });

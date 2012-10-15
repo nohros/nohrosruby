@@ -38,25 +38,28 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="clrzmq, Version=2.2.0.0, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\..\..\packages\clrzmq.2.2.5\lib\clrzmq.dll</HintPath>
+      <HintPath>..\..\..\..\packages\clrzmq.2.2.5\lib\clrzmq.dll</HintPath>
     </Reference>
     <Reference Include="clrzmq-ext, Version=2.2.0.0, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\..\..\packages\clrzmq.2.2.5\lib\clrzmq-ext.dll</HintPath>
+      <HintPath>..\..\..\..\packages\clrzmq.2.2.5\lib\clrzmq-ext.dll</HintPath>
+    </Reference>
+    <Reference Include="extensions">
+      <HintPath>..\..\..\..\packages\must.extensions.0.0.2.2\lib\net40\extensions.dll</HintPath>
     </Reference>
     <Reference Include="Google.ProtocolBuffers">
-      <HintPath>..\..\..\packages\Google.ProtocolBuffers.2.4.1.473\lib\net20\Google.ProtocolBuffers.dll</HintPath>
+      <HintPath>..\..\..\..\packages\Google.ProtocolBuffers.2.4.1.473\lib\net20\Google.ProtocolBuffers.dll</HintPath>
     </Reference>
     <Reference Include="Google.ProtocolBuffers.Serialization">
-      <HintPath>..\..\..\packages\Google.ProtocolBuffers.2.4.1.473\lib\net20\Google.ProtocolBuffers.Serialization.dll</HintPath>
+      <HintPath>..\..\..\..\packages\Google.ProtocolBuffers.2.4.1.473\lib\net20\Google.ProtocolBuffers.Serialization.dll</HintPath>
     </Reference>
     <Reference Include="MongoDB.Bson">
-      <HintPath>..\..\..\packages\mongocsharpdriver.1.5\lib\net35\MongoDB.Bson.dll</HintPath>
+      <HintPath>..\..\..\..\packages\mongocsharpdriver.1.5\lib\net35\MongoDB.Bson.dll</HintPath>
     </Reference>
     <Reference Include="MongoDB.Driver">
-      <HintPath>..\..\..\packages\mongocsharpdriver.1.5\lib\net35\MongoDB.Driver.dll</HintPath>
+      <HintPath>..\..\..\..\packages\mongocsharpdriver.1.5\lib\net35\MongoDB.Driver.dll</HintPath>
     </Reference>
-    <Reference Include="nohros">
-      <HintPath>..\..\..\packages\must.common.1.6.7.0\lib\net20\nohros.dll</HintPath>
+    <Reference Include="nohros, Version=1.6.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\packages\must.common.1.6.7.0\lib\net20\nohros.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -64,17 +67,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Aggregator.cs" />
-    <Compile Include="..\..\..\protos\parsers\csharp\Common.cs" />
-    <Compile Include="..\..\..\protos\parsers\csharp\Logging.cs" />
-    <Compile Include="..\..\..\protos\parsers\csharp\RubyProtos.cs" />
+    <Compile Include="..\..\..\..\protos\parsers\csharp\Common.cs" />
+    <Compile Include="..\..\..\..\protos\parsers\csharp\Logging.cs" />
+    <Compile Include="..\..\..\..\protos\parsers\csharp\RubyProtos.cs" />
     <Compile Include="AggregatorFactory.cs" />
     <Compile Include="AppFactory.cs" />
     <Compile Include="data\IAggregatorDataProvider.cs" />
     <Compile Include="data\IAggregatorDataProviderFactory.cs" />
     <Compile Include="data\MongoAggregatorDataProviderFactory.cs" />
+    <Compile Include="LocalLogger.cs" />
     <Compile Include="RubyMessage.cs" />
     <Compile Include="settings\IAggregatorSettings.cs" />
-    <Compile Include="IRubyLogger.cs" />
     <Compile Include="data\LoggerAggregatorDataProvider.cs" />
     <Compile Include="data\MongoAggregatorDataProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -82,7 +85,6 @@
     <Compile Include="settings\SettingsBuilder.cs" />
     <Compile Include="settings\SettingsLoader.cs" />
     <Compile Include="Strings.cs" />
-    <Compile Include="RubyLogger.cs" />
     <Compile Include="settings\Settings.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -92,7 +94,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\irubynet\irubyservice.csproj">
+    <ProjectReference Include="..\..\irubynet\irubyservice.csproj">
       <Project>{970C40CD-03F5-4761-9AE3-7E358E108E56}</Project>
       <Name>irubyservice</Name>
     </ProjectReference>
