@@ -18,6 +18,7 @@ namespace Nohros.Ruby.Logging
   {
     const string kClassName = "Nohros.Ruby.Logging.Aggregator";
     const string kJsonFeedName = "json";
+    readonly IAggregatorDataProvider aggregator_data_provider_;
     readonly Context context_;
 
     readonly IDictionary<string, string> facts_;
@@ -33,13 +34,15 @@ namespace Nohros.Ruby.Logging
     /// Initializes a new instance of the <see cref="Aggregator"/> class
     /// by using the specified ZMQ sockets.
     /// </summary>
-    public Aggregator(Context context, IAggregatorSettings settings) {
+    public Aggregator(Context context, IAggregatorSettings settings,
+      IAggregatorDataProvider aggregator_data_provider) {
       settings_ = settings;
       mailbox_ = new Mailbox<LogMessage>(ProcessLogMessage);
       context_ = context;
       start_stop_event_ = new ManualResetEvent(false);
       publisher_ = context.Socket(SocketType.PUB);
       context_ = context;
+      aggregator_data_provider_ = aggregator_data_provider;
 
       facts_ = new Dictionary<string, string>();
       InitFacts();
@@ -63,30 +66,6 @@ namespace Nohros.Ruby.Logging
 
       publisher_.Dispose();
       context_.Dispose();
-    }
-
-    public void StartSelfHosting() {
-      try {
-        Socket receiver = context_.Socket(SocketType.DEALER);
-        receiver.Bind(Transport.TCP, "127.0.0.1", (uint) settings_.SelfHostPort);
-        while (!start_stop_event_.WaitOne(0)) {
-          RubyMessagePacket packet =
-            RubyMessagePacket.ParseFrom(receiver.Recv());
-          OnMessage(packet.Message);
-        }
-      } catch (ZMQ.Exception zmqe) {
-        if (zmqe.Errno == (int) ERRNOS.ETERM) {
-          // We can do nothing with a closed context. Stop the service.
-          if (logger_.IsWarnEnabled) {
-            logger_.Warn("Context was terminated while the service was running.");
-          }
-          Stop(null);
-        }
-      } catch (System.Exception exception) {
-        LogMessage log = GetInternalLogMessage(exception);
-        Publish(log);
-        Store(log);
-      }
     }
 
     public override void Stop(IRubyMessage message) {
@@ -194,7 +173,7 @@ namespace Nohros.Ruby.Logging
     /// </param>
     void Store(LogMessage message) {
       try {
-        settings_.AggregatorDataProvider.Store(message);
+        aggregator_data_provider_.Store(message);
       } catch (System.Exception exception) {
         // This is the last place where an internal raised exception could
         // reach. So, at this point we need to log the message using our
