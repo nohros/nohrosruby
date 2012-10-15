@@ -23,11 +23,12 @@ namespace Nohros.Ruby.Logging
 
     readonly IDictionary<string, string> facts_;
 
-    readonly IRubyLogger logger_ = RubyLogger.ForCurrentProcess;
+    readonly LocalLogger logger_;
     readonly Mailbox<LogMessage> mailbox_;
     readonly Socket publisher_;
     readonly IAggregatorSettings settings_;
     readonly ManualResetEvent start_stop_event_;
+    Thread main_thread_;
 
     #region .ctor
     /// <summary>
@@ -43,6 +44,7 @@ namespace Nohros.Ruby.Logging
       publisher_ = context.Socket(SocketType.PUB);
       context_ = context;
       aggregator_data_provider_ = aggregator_data_provider;
+      logger_ = LocalLogger.ForCurrentProcess;
 
       facts_ = new Dictionary<string, string>();
       InitFacts();
@@ -50,26 +52,19 @@ namespace Nohros.Ruby.Logging
     #endregion
 
     public override void Start(IRubyServiceHost service_host) {
+      main_thread_ = Thread.CurrentThread;
       publisher_.Bind("tcp://*:" + settings_.PublisherPort);
-
-      // Self host means that we are not using the ruby node service, the
-      // service is beign hosted ony by the ruby .NET infrastructure, which
-      // does not provide a mechanism to receive messages from outside. We
-      // need to create a channel to receive message for your own.
-      if (settings_.SelfHost) {
-        StartSelfHosting();
-      } else {
-        // Wait stop to be called.
-        start_stop_event_.WaitOne();
-        start_stop_event_.Close();
-      }
-
+      start_stop_event_.WaitOne();
+      start_stop_event_.Close();
       publisher_.Dispose();
       context_.Dispose();
     }
 
     public override void Stop(IRubyMessage message) {
       start_stop_event_.Set();
+      if (main_thread_ != null) {
+        main_thread_.Join(10000);
+      }
     }
 
     /// <inheritdoc/>

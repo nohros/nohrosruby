@@ -10,16 +10,18 @@ namespace Nohros.Ruby.Logging
   /// </summary>
   public class LoggerAggregatorDataProvider : IAggregatorDataProvider
   {
-    readonly IRubyLogger logger_;
+    readonly LocalLogger logger_;
 
+    #region .ctor
     /// <summary>
     /// Initializes a new instance of the
     /// <see cref="LoggerAggregatorDataProvider"/> that uses the current
     /// configured logger to "store" the log messages.
     /// </summary>
     public LoggerAggregatorDataProvider() {
-      logger_ = RubyLogger.ForCurrentProcess;
+      logger_ = LocalLogger.ForCurrentProcess;
     }
+    #endregion
 
     public bool Store(LogMessage message) {
       logger_.Info(
