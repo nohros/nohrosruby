@@ -27,17 +27,17 @@ namespace Nohros.Ruby
     /// <param name="error">
     /// A string that describes the error.
     /// </param>
-    /// <param name="id">
+    /// <param name="message_id">
     /// The ID associated with the message that originates the error.
     /// </param>
-    /// <param name="code">
+    /// <param name="exception_code">
     /// A number that provides information about the status of the request.
     /// </param>
     /// <returns>
     /// <c>true</c> is the message was succesfully sent; otherwise,
     /// <c>false</c>.
     /// </returns>
-    bool SendError(int id, string error, ExceptionCode code);
+    bool SendError(int message_id, string error, int exception_code);
 
     /// <summary>
     /// Sends a ruby message to the ruby service node informing the receiver
@@ -49,35 +49,35 @@ namespace Nohros.Ruby
     /// <param name="exception">
     /// A <see cref="Exception"/> associated with the error.
     /// </param>
-    /// <param name="code">
+    /// <param name="exception_code">
     /// A number that provides information about the status of the request.
     /// </param>
-    /// <param name="id">
+    /// <param name="message_id">
     /// The ID associated with the message that originates the error.
     /// </param>
     /// <returns>
     /// <c>true</c> is the message was succesfully sent; otherwise,
     /// <c>false</c>.
     /// </returns>
-    bool SendError(int id, string error, ExceptionCode code, Exception exception);
+    bool SendError(int message_id, string error, int exception_code, Exception exception);
 
     /// <summary>
     /// Sends a ruby message to the ruby service node informing the receiver
     /// about an error that has been occurred.
     /// </summary>
-    /// <param name="code">
+    /// <param name="exception_code">
     /// A number that provides information about the status of the request.
     /// </param>
     /// <param name="exception">
     /// A <see cref="Exception"/> associated with the error.
     /// </param>
-    /// <param name="id">
+    /// <param name="message_id">
     /// The ID associated with the message that originates the error.
     /// </param>
     /// <returns>
     /// <c>true</c> is the message was succesfully sent; otherwise,
     /// <c>false</c>.
     /// </returns>
-    bool SendError(int id, ExceptionCode code, Exception exception);
+    bool SendError(int message_id, int exception_code, Exception exception);
   }
 }
