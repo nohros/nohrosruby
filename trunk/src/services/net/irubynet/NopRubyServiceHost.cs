@@ -23,7 +23,21 @@ namespace Nohros.Ruby
       return false;
     }
 
-    public bool Send(byte[] data, int type, int id) {
+    public bool Send(int id, int type, byte[] message) {
+      return false;
+    }
+
+    public bool SendError(int message_id, string error, int exception_code) {
+      return false;
+    }
+
+    public bool SendError(int message_id, string error, int exception_code,
+      Exception exception) {
+      return false;
+    }
+
+    public bool SendError(int message_id, int exception_code,
+      Exception exception) {
       return false;
     }
 
