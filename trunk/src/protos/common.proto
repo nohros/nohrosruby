@@ -4,11 +4,21 @@
 //
 // Basic messages for general use.
 
-//import "google/protobuf/csharp_options.proto";
-//option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby";
+import "google/protobuf/csharp_options.proto";
+option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby";
 
 package ruby;
 option optimize_for = LITE_RUNTIME;
+
+enum ExceptionCode {
+  // The request could not be understood by the service due
+  // to a malformed syntax.
+  kBadRequest = 400;
+  
+  // The service encountered an unexpected condition which prevented
+  // if from fulfilling the request.
+  kServerError = 500;
+}
 
 message KeyValuePair {
   required string key = 1;
@@ -17,7 +27,7 @@ message KeyValuePair {
 
 message ExceptionMessage {
   // A number that uniquely identifies the exception within an service.
-  optional sint64 code = 1;
+  optional sint32 code = 1;
 
   // The message that describes the current exception.
   optional string message = 2;
