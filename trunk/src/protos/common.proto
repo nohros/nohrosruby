@@ -10,7 +10,17 @@ option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby";
 package ruby;
 option optimize_for = LITE_RUNTIME;
 
-enum ExceptionCode {
+// A enumeration of staus code used to provide information about the status
+// of a request. The codes defined here is the first status code of a group
+// of status codes. Services could define its own status codes, but should
+// follow the above schema:
+//
+//   1xx - Informational codes
+//   2xx - Sucess codes
+//   4xx - Client error
+//   5xx - Server error
+//
+enum StatusCode {
   // The request could not be understood by the service due
   // to a malformed syntax.
   kBadRequest = 400;
@@ -26,7 +36,8 @@ message KeyValuePair {
 }
 
 message ExceptionMessage {
-  // A number that uniquely identifies the exception within an service.
+  // A number that uniquely identifies the exception within an
+  // service(see: StatusCode).
   optional sint32 code = 1;
 
   // The message that describes the current exception.
