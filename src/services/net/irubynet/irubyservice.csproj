@@ -59,9 +59,11 @@
     <Compile Include="IRubyServiceHost.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="LoggerRubyServiceHost.cs" />
     <Compile Include="NopRubyLogger.cs" />
     <Compile Include="NopRubyServiceHost.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="LoggerRubyLogger.cs" />
     <Compile Include="StringResources.cs" />
     <None Include="..\nuget\nohros-ruby-net-service-interface.nuspec" />
   </ItemGroup>
