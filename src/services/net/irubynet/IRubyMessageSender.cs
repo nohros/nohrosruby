@@ -35,8 +35,8 @@ namespace Nohros.Ruby
     /// <summary>
     /// Sends a ruby message to the ruby service.
     /// </summary>
-    /// <param name="data">
-    /// The data to be sent.
+    /// <param name="message">
+    /// The encoded message to be sent.
     /// </param>
     /// <param name="type">
     /// A integer that identifies the type of the message.
@@ -59,6 +59,6 @@ namespace Nohros.Ruby
     /// suitable for its operation.
     /// </para>
     /// </remarks>
-    bool Send(byte[] data, int type, int id);
+    bool Send(int id, int type, byte[] message);
   }
 }
