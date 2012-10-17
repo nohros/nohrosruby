@@ -3,7 +3,7 @@ using Nohros.Concurrent;
 
 namespace Nohros.Ruby
 {
-  internal partial class RubyMessageChannel
+  internal partial class AbstractRubyMessageChannel
   {
     class ListenerExecutorPair
     {

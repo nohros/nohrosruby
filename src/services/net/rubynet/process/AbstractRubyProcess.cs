@@ -33,7 +33,7 @@ namespace Nohros.Ruby
     readonly Dictionary<string, ResponseMessageHandler> messages_tokens_;
     readonly IRubyMessageChannel ruby_message_channel_;
     readonly IRubySettings settings_;
-    int running_services_count_;
+    volatile int running_services_count_;
 
     #region .ctor
     /// <summary>
@@ -74,9 +74,8 @@ namespace Nohros.Ruby
       // TODO(neylor.silva) Remove the code above as soon as the c++
       // implementation is done.
       //
-
       // Simulate the receiving of a response for the log aggregator query.
-      SimulateQueryResponse();
+      // SimulateQueryResponse();
     }
 
     /// <inheritdoc/>
@@ -187,7 +186,7 @@ namespace Nohros.Ruby
       ruby_message_channel_.Send(packet);
     }
 
-    void SimulateQueryResponse() {
+    /*void SimulateQueryResponse() {
       QueryMessage query = new QueryMessage.Builder()
         .SetType(QueryMessageType.kQueryFind)
         .AddFacts(
@@ -240,7 +239,7 @@ namespace Nohros.Ruby
         .Build();
 
       OnMessagePacketReceived(response_packet);
-    }
+    }*/
 
 
     void OnLogAggregatorQueryReseponse(ResponseMessage response) {
@@ -248,17 +247,17 @@ namespace Nohros.Ruby
       int index = Find(Strings.kHostServiceFact, responses);
       if (index != -1) {
         string log_aggregator_address = responses[index].Value;
-        Context context = new Context();
+        var context = new Context();
         ILogger logger = RubyLogger.ForCurrentProcess.Logger;
 
         // Ensure that the current configured logger is not an instance of the
         // AggregatorLogger class.
         if (logger is AggregatorLogger) {
-          logger.Warn("Aggregator logger cannot be used as falling back logger.");
+          logger.Warn(Resources.log_aggregator_circular_reference);
           return;
         }
 
-        AggregatorService aggregator =
+        var aggregator =
           new AggregatorService(context, log_aggregator_address, logger);
         if (aggregator.Configure()) {
           forwarding_aggregator_service_.BackingAggregatorService = aggregator;
@@ -319,6 +318,7 @@ namespace Nohros.Ruby
     }
 
     void StopService(ServiceControlMessage message) {
+      // TODO: implement the service stop.
     }
 
     /// <summary>

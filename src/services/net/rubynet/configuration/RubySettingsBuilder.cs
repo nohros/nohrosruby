@@ -10,10 +10,16 @@ namespace Nohros.Ruby
     public class Builder : AbstractConfigurationBuilder<RubySettings>
     {
       CultureInfo culture_;
+      string ipc_channel_address_;
       LogLevel logger_level_;
       string prompt_;
       RunningMode running_mode_;
       string service_folder_;
+
+      public Builder SetIPCChannelAddress(string ipc_channel_address) {
+        ipc_channel_address_ = ipc_channel_address;
+        return this;
+      }
 
       public Builder SetServiceFolder(string service_folder) {
         service_folder_ = service_folder;
@@ -42,6 +48,10 @@ namespace Nohros.Ruby
 
       public override RubySettings Build() {
         return new RubySettings(this);
+      }
+
+      public string IPCChannelAddress {
+        get { return ipc_channel_address_; }
       }
 
       public string ServiceFolder {

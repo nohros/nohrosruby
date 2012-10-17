@@ -2,13 +2,14 @@
 using System.Globalization;
 using Nohros.Logging;
 using Nohros.Configuration;
+using Nohros.MyToolsPack.Console;
 
 namespace Nohros.Ruby
 {
   /// <summary>
   /// <see cref="IRubySettings"/> defines the application settings.
   /// </summary>
-  internal interface IRubySettings : IConfiguration
+  internal interface IRubySettings : IConfiguration, IConsoleSettings
   {
     /// <summary>
     /// Gets the mode on which the application is running.
@@ -43,5 +44,11 @@ namespace Nohros.Ruby
     /// Gets the configured culture.
     /// </summary>
     CultureInfo Culture { get; }
+
+    /// <summary>
+    /// Gets the address of the channel used to comunnicate with the
+    /// ruby service node.
+    /// </summary>
+    string IPCChannelAddress { get; }
   }
 }

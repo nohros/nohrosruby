@@ -9,6 +9,13 @@ namespace Nohros.Ruby
     /// </summary>
     public const string kLogProviderNode = "LogProvider";
 
+    public const string kConfigFileNameSwitch = "config-file-name";
+
+    public const string kConfigFileRootSwitch = "config-file-root";
+
+    public const string kConfigFileName = "ruby.config";
+    public const string kConfigFileRootName = "ruby";
+
     /// <summary>
     /// The name of the node that contains the configuration data for the
     /// MyToolsPack library.
@@ -21,7 +28,7 @@ namespace Nohros.Ruby
     /// The address of th IPC channel tha handles the communication between
     /// the services and clients.
     /// </summary>
-    public const string kIPCChannelAddress = "ipc-channel-address";
+    public const string kIPCChannelAddressSwitch = "ipc-channel-address";
 
     /// <summary>
     /// The zeromq socket's endpoint that send messages to services.
@@ -85,8 +92,8 @@ Use of this software code is governed by a MIT license.
 Runs a .NET assembly like a console application.
 Usage: nohros.rubynet -assembly=ASSEMBLYNAME -type=TYPENAME [-help] -- ARGS
 "
-          + kUsageCommon +
-            @"
+        + kUsageCommon +
+        @"
   -with-shell    specifies that the a command line language interpreter
                  must be started. With a shell users can stop and start
                  services directly from the command line and without

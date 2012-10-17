@@ -17,47 +17,19 @@ namespace Nohros.Ruby
   /// </summary>
   internal class AppFactory
   {
-    // the name of the rubynet configuration file
-    public const string kConfigurationFileName = "rubynet.config";
-
-    //the name of the root node of the configuration file.
-    public const string kConfigRootNodeName = "rubynet";
-
     const string kLogFileName = "rubynet.log";
-
     public const string kShellPrompt = "rubynet$: ";
 
-    readonly CommandLine switches_;
+    readonly IRubySettings settings_;
 
     #region .ctor
     /// <summary>
     /// Initializes a new instance of the <see cref="AppFactory"/> object.
     /// </summary>
-    public AppFactory(CommandLine switches) {
-      switches_ = switches;
+    public AppFactory(IRubySettings settings) {
+      settings_ = settings;
     }
     #endregion
-
-    /// <summary>
-    /// Loads the application setting by reading and parsing the configuration
-    /// file.
-    /// </summary>
-    /// <returns>
-    /// A <see cref="RubySettings"/> object contained the application settings.
-    /// </returns>
-    public RubySettings CreateRubySettings() {
-      // The rubynet process is started from another process(ruby service)
-      // and the directory where the ruby configuration file is stored
-      // could be different from the app base directory. So, instead to use
-      // the AppDomain.BaseDirectory we need to use the assembly location
-      // as the base directory for the configuration file.
-      RubySettings settings = new RubySettings.Loader()
-        .Load(Path.Combine(
-          Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-          kConfigurationFileName), kConfigRootNodeName);
-      ConfigureLogger(settings);
-      return settings;
-    }
 
     /// <summary>
     /// Creates an instacne of the <see cref="ShellRubyProcess"/> class.
@@ -65,10 +37,10 @@ namespace Nohros.Ruby
     /// <returns>
     /// A <see cref="ShellRubyProcess"/> object.
     /// </returns>
-    public ShellRubyProcess CreateShellRubyProcess(RubySettings settings) {
-      MyToolsPackConsole console = GetToolsPackConsole(settings);
-      IRubyMessageChannel ruby_message_channel = GetIPCChannel(settings);
-      ShellRubyProcess process = new ShellRubyProcess(console, settings,
+    public ShellRubyProcess CreateShellRubyProcess() {
+      MyToolsPackConsole console = GetToolsPackConsole();
+      IRubyMessageChannel ruby_message_channel = GetIPCChannel();
+      var process = new ShellRubyProcess(console, settings_,
         ruby_message_channel);
 
       // Tell the tools pack console to send our implementation of
@@ -82,48 +54,46 @@ namespace Nohros.Ruby
     /// Creates an instance of the <see cref="ServiceRubyProcess"/> class.
     /// </summary>
     /// <returns></returns>
-    public ServiceRubyProcess CreateServiceRubyProcess(RubySettings settings) {
-      IRubyMessageChannel channel = GetIPCChannel(settings);
-      return new ServiceRubyProcess(settings, channel);
+    public ServiceRubyProcess CreateServiceRubyProcess() {
+      IRubyMessageChannel channel = GetIPCChannel();
+      return new ServiceRubyProcess(settings_, channel);
     }
 
-    IRubyMessageChannel GetIPCChannel(RubySettings settings) {
-      if (switches_.HasSwitch(Strings.kIPCChannelAddress)) {
-        string ipc_channel_address =
-          switches_.GetSwitchValue(Strings.kIPCChannelAddress);
-        Context context = new Context(Context.DefaultIOThreads);
-        return new RubyMessageChannel(context, ipc_channel_address);
+    IRubyMessageChannel GetIPCChannel() {
+      if (settings_.IPCChannelAddress == string.Empty) {
+        var context = new Context(Context.DefaultIOThreads);
+        return new RubyMessageChannel(context, settings_.IPCChannelAddress);
       }
       return new NullMessageChannel();
     }
 
-    MyToolsPackConsole GetToolsPackConsole(RubySettings settings) {
+    MyToolsPackConsole GetToolsPackConsole() {
       // Create an instance of the class that handle the console commands.
-      MyToolsPackConsole tools_pack_console =
-        new MyToolsPackConsole(settings, new SystemConsole());
+      var tools_pack_console =
+        new MyToolsPackConsole(settings_, new SystemConsole());
 
       // Load the my tools pack internal commands in the context of the ruby
       // console.
       tools_pack_console.LoadInternalCommands();
 
       // load the ruby internal commands
-      ICommandFactory factory = new InternalCommandsFactory(settings);
+      ICommandFactory factory = new InternalCommandsFactory(settings_);
       foreach (string name in factory.CommandNames) {
         tools_pack_console.LoadCommand("Nohros.Ruby", name, factory);
       }
       return tools_pack_console;
     }
 
-    void ConfigureLogger(RubySettings settings) {
+    public void ConfigureLogger() {
       IProviderNode provider;
-      if (settings.Providers.GetProviderNode(Strings.kLogProviderNode,
+      if (settings_.Providers.GetProviderNode(Strings.kLogProviderNode,
         out provider)) {
         // try/catch: logging related operations should not causes application
         // issues.
         try {
           RubyLogger.ForCurrentProcess.Logger =
             RuntimeTypeFactory<ILoggerFactory>
-              .CreateInstanceFallback(provider, settings)
+              .CreateInstanceFallback(provider, settings_)
               .CreateLogger(provider.Options.ToDictionary());
         } catch {
           // fails silently.

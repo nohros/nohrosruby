@@ -73,9 +73,11 @@
     <Compile Include="configuration\NOPLogger.cs" />
     <Compile Include="configuration\RubySettingsBuilder.cs" />
     <Compile Include="configuration\RubySettingsLoader.cs" />
+    <Compile Include="ipc\AbstractRubyMessageChannel.cs" />
     <Compile Include="process\AbstractRubyProcess.cs" />
     <Compile Include="AppFactory.cs" />
     <Compile Include="configuration\RubyLogger.cs" />
+    <Compile Include="process\SelfMessageChannel.cs" />
     <Compile Include="service\AggregatorLogger.cs" />
     <Compile Include="configuration\ConsoleSettings.cs" />
     <Compile Include="service\ForwardingAggregatorService.cs" />
@@ -122,7 +124,7 @@
     <Compile Include="shell\commands\UnknownCommand.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="shell\ShellRubyProcess.cs" />
+    <Compile Include="process\ShellRubyProcess.cs" />
     <Compile Include="shell\CommandType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RubyNet.cs" />
@@ -154,11 +156,6 @@
       <Project>{970C40CD-03F5-4761-9AE3-7E358E108E56}</Project>
       <Name>irubyservice</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="libzmq.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
