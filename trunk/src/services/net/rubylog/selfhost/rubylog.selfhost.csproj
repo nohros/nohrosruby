@@ -48,10 +48,6 @@
       <Project>{970C40CD-03F5-4761-9AE3-7E358E108E56}</Project>
       <Name>irubyservice</Name>
     </ProjectReference>
-    <ProjectReference Include="..\service\rubylog.csproj">
-      <Project>{EBEF07D1-5A08-4904-8C88-CE119D1E8E4D}</Project>
-      <Name>rubylog</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

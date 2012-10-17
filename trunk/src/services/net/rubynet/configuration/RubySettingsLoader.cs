@@ -12,6 +12,16 @@ namespace Nohros.Ruby
     public class Loader : AbstractConfigurationLoader<RubySettings>
     {
       #region .ctor
+      /// <summary>
+      /// Initializes a new instance of the <see cref="Loader"/> class using
+      /// the specified <see cref="Builder"/>.
+      /// </summary>
+      /// <param name="builder">
+      /// A <see cref="Builder"/> object containing pre configured values.
+      /// </param>
+      public Loader(Builder builder) : base(builder) {
+      }
+
       public Loader() : base(new Builder()) {
       }
       #endregion

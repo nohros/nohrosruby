@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nohros.IO;
 using Nohros.Ruby.Shell;
 
 namespace Nohros.Ruby
@@ -7,16 +8,16 @@ namespace Nohros.Ruby
   internal static class RubyNet
   {
     static void Main(string[] args) {
-      CommandLine command_line = CommandLine.ForCurrentProcess;
+      CommandLine switches = CommandLine.ForCurrentProcess;
 
       // Check if the debug is enabled first, so the caller has the chance
       // to debug everything.
-      if (command_line.HasSwitch(Strings.kWaitForDebugger)) {
+      if (switches.HasSwitch(Strings.kWaitForDebugger)) {
         System.Diagnostics.Debugger.Launch();
       }
 
       // Show the usage tips if desired.
-      if (command_line.HasSwitch(Strings.kHelp))
+      if (switches.HasSwitch(Strings.kHelp))
         Console.WriteLine(Strings.kHelp);
 
       // We cannot control the behavior of the service. For, logger purposes,
@@ -28,15 +29,54 @@ namespace Nohros.Ruby
       // Legacy version of this app was used to start a single service without
       // a process. For compatbility with this legacy app we need to send the
       // command line to the run method simulating the start command.
-      string legacy_command_line_string = GetLegacyCommandLine(command_line);
+      string legacy_command_line_string = GetLegacyCommandLine(switches);
 
-      AppFactory factory = new AppFactory(command_line);
-      RubySettings settings = factory.CreateRubySettings();
-      IRubyProcess process =
-        settings.RunningMode == RunningMode.Interactive
-          ? factory.CreateShellRubyProcess(settings)
-          : factory.CreateServiceRubyProcess(settings) as IRubyProcess;
-      process.Run(legacy_command_line_string);
+      RubySettings settings = GetRubySettings(switches);
+      var factory = new AppFactory(settings);
+      factory.ConfigureLogger();
+
+      switch (settings.RunningMode) {
+        case RunningMode.Service:
+          factory.CreateServiceRubyProcess().Run(legacy_command_line_string);
+          break;
+
+        case RunningMode.Interactive:
+          factory.CreateServiceRubyProcess().Run(legacy_command_line_string);
+          break;
+
+        default:
+          throw new NotReachedException();
+      }
+    }
+
+    /// <summary>
+    /// Loads the application setting by reading and parsing the configuration
+    /// file.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="RubySettings"/> object contained the application settings.
+    /// </returns>
+    static RubySettings GetRubySettings(CommandLine switches) {
+      // The rubynet process is started from another process(ruby service)
+      // and the directory where the ruby configuration file is stored
+      // could be different from the app base directory. So, instead to use
+      // the AppDomain.BaseDirectory we need to use the assembly location
+      // as the base directory for the configuration file.
+      string config_file_name = switches
+        .GetSwitchValue(Strings.kConfigFileNameSwitch, Strings.kConfigFileName);
+      string config_file_root_node = switches
+        .GetSwitchValue(Strings.kConfigFileRootName,
+          Strings.kConfigFileRootSwitch);
+
+      var builder = new RubySettings.Builder();
+      if (switches.HasSwitch(Strings.kIPCChannelAddressSwitch)) {
+        builder
+          .SetIPCChannelAddress(
+            switches.GetSwitchValue(Strings.kIPCChannelAddressSwitch));
+      }
+      return new RubySettings.Loader(builder)
+        .Load(Path.AbsoluteForCallingAssembly(config_file_name),
+          config_file_root_node);
     }
 
     /// <summary>

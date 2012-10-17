@@ -25,7 +25,13 @@ namespace Nohros.Ruby
       return true;
     }
 
-    public bool Send(int id, int type, byte[] message, string token) {
+    /// <inheritdoc/>
+    public bool Send(long message_id, int type, byte[] message) {
+      return true;
+    }
+
+    /// <inheritdoc/>
+    public bool Send(long id, int type, byte[] message, string token) {
       return true;
     }
 

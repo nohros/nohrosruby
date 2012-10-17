@@ -63,7 +63,7 @@ namespace Nohros.Ruby
     }
 
     /// <inheritdoc/>
-    public bool Send(int message_id, int type, byte[] message, string token) {
+    public bool Send(long message_id, int type, byte[] message, string token) {
       RubyMessage request = new RubyMessage.Builder()
         .SetId(message_id)
         .SetType(type)
@@ -80,11 +80,16 @@ namespace Nohros.Ruby
       return ruby_message_channel_.Send(message);
     }
 
-    public bool Send(int message_id, int type, byte[] message) {
+    /// <inherithdoc/>
+    public IRubyLogger Logger {
+      get { return service_logger_; }
+    }
+
+    public bool Send(long message_id, int type, byte[] message) {
       return Send(message_id, type, message, string.Empty);
     }
 
-    public bool SendError(int message_id, string error, int exception_code) {
+    public bool SendError(long message_id, string error, int exception_code) {
       ExceptionMessage exception = new ExceptionMessage.Builder()
         .SetCode(exception_code)
         .SetMessage(error)
@@ -94,7 +99,7 @@ namespace Nohros.Ruby
       return SendError(message_id, new[] {exception});
     }
 
-    public bool SendError(int message_id, string error, int exception_code,
+    public bool SendError(long message_id, string error, int exception_code,
       Exception exception) {
       ExceptionMessage exception_message = new ExceptionMessage.Builder()
         .SetCode(exception_code)
@@ -108,7 +113,7 @@ namespace Nohros.Ruby
       return SendError(message_id, new[] {exception_message});
     }
 
-    public bool SendError(int message_id, int exception_code,
+    public bool SendError(long message_id, int exception_code,
       Exception exception) {
       ExceptionMessage exception_message = new ExceptionMessage.Builder()
         .SetCode(exception_code)
@@ -122,12 +127,7 @@ namespace Nohros.Ruby
       return SendError(message_id, new[] {exception_message});
     }
 
-    /// <inherithdoc/>
-    public IRubyLogger Logger {
-      get { return service_logger_; }
-    }
-
-    bool SendError(int message_id, IEnumerable<ExceptionMessage> exceptions) {
+    bool SendError(long message_id, IEnumerable<ExceptionMessage> exceptions) {
       ErrorMessage error_message = new ErrorMessage.Builder()
         .AddRangeErrors(exceptions)
         .Build();
