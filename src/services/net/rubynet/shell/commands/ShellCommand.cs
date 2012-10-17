@@ -1,6 +1,4 @@
 ﻿using System;
-
-using Nohros.Desktop;
 using Nohros.MyToolsPack.Console;
 
 namespace Nohros.Ruby.Shell

@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.IO;
-
-using Nohros.Desktop;
 using Nohros.MyToolsPack.Console;
 
 namespace Nohros.Ruby.Shell

@@ -49,6 +49,9 @@
     <Reference Include="clrzmq-ext">
       <HintPath>..\..\..\packages\clrzmq.2.2.5\lib\clrzmq-ext.dll</HintPath>
     </Reference>
+    <Reference Include="extensions">
+      <HintPath>..\..\..\packages\must.extensions.0.0.2.4\lib\net40\extensions.dll</HintPath>
+    </Reference>
     <Reference Include="Google.ProtocolBuffers, Version=2.4.1.473, Culture=neutral, PublicKeyToken=55f7125234beb589, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Google.ProtocolBuffers.2.4.1.473\lib\net20\Google.ProtocolBuffers.dll</HintPath>
     </Reference>
@@ -56,13 +59,14 @@
       <HintPath>..\..\..\packages\Google.ProtocolBuffers.2.4.1.473\lib\net20\Google.ProtocolBuffers.Serialization.dll</HintPath>
     </Reference>
     <Reference Include="mytoolspack.console">
-      <HintPath>..\..\..\packages\nohros.mytoolspack.0.3.5\lib\mytoolspack.console.dll</HintPath>
+      <HintPath>..\..\..\packages\nohros.mytoolspack.0.3.9\lib\mytoolspack.console.dll</HintPath>
     </Reference>
-    <Reference Include="nohros, Version=1.6.7.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="nohros, Version=1.6.7.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\must.common.1.6.7.0\lib\net20\nohros.dll</HintPath>
+      <HintPath>..\..\..\packages\must.common.1.6.7.2\lib\net20\nohros.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -74,6 +78,7 @@
     <Compile Include="configuration\RubyLogger.cs" />
     <Compile Include="service\AggregatorLogger.cs" />
     <Compile Include="configuration\ConsoleSettings.cs" />
+    <Compile Include="service\ForwardingAggregatorService.cs" />
     <Compile Include="service\IAggregatorService.cs" />
     <Compile Include="configuration\IRubySettings.cs" />
     <Compile Include="configuration\RubySettings.cs" />
@@ -100,6 +105,7 @@
     <Compile Include="ServicesFactory.cs" />
     <Compile Include="service\LoggerAggregatorService.cs" />
     <Compile Include="process\ServiceRubyProcess.cs" />
+    <Compile Include="service\NopAggregatorService.cs" />
     <Compile Include="shell\commands\ClearCommand.cs" />
     <Compile Include="shell\commands\HelpCommand.cs">
       <SubType>Code</SubType>

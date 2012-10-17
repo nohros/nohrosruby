@@ -4,6 +4,7 @@ using System.Threading;
 using Google.ProtocolBuffers;
 using Nohros.Concurrent;
 using Nohros.Data.Json;
+using Nohros.Extensions;
 using Nohros.Logging;
 using R = Nohros.Resources.StringResources;
 using Nohros.Ruby.Protocol;
@@ -25,6 +26,7 @@ namespace Nohros.Ruby
     const string kLogAggregatorQuery = "query_logger_aggregator_service";
 
     const int kMaxRunningServices = 10;
+    readonly ForwardingAggregatorService forwarding_aggregator_service_;
 
     readonly object hosted_service_mutex_;
     readonly IRubyLogger logger_;
@@ -50,7 +52,8 @@ namespace Nohros.Ruby
       settings_ = settings;
       running_services_count_ = 0;
       messages_tokens_ = new Dictionary<string, ResponseMessageHandler>();
-
+      forwarding_aggregator_service_ =
+        new ForwardingAggregatorService(new NopAggregatorService());
       InitMessageTokens();
     }
     #endregion
@@ -134,12 +137,12 @@ namespace Nohros.Ruby
           // with that message.
           logger_.Warn("Could not found a reseponse handler for the received"
             + "message."
-              + new JsonStringBuilder()
-                .WriteBeginObject()
-                .WriteMemberName("message")
-                .WriteMember("id", request.Id)
-                .WriteMember("token", request.Token)
-                .WriteMember("type", request.Type));
+            + new JsonStringBuilder()
+              .WriteBeginObject()
+              .WriteMemberName("message")
+              .WriteMember("id", request.Id)
+              .WriteMember("token", request.Token)
+              .WriteMember("type", request.Type));
         }
       } catch (Exception exception) {
         logger_.Error(
@@ -258,11 +261,12 @@ namespace Nohros.Ruby
         AggregatorService aggregator =
           new AggregatorService(context, log_aggregator_address, logger);
         if (aggregator.Configure()) {
-          settings_.AggregatorService = aggregator;
+          forwarding_aggregator_service_.BackingAggregatorService = aggregator;
         }
 
         RubyLogger.ForCurrentProcess.BackingLogger =
-          new AggregatorLogger(Strings.kServiceHostServiceName, settings_);
+          new AggregatorLogger(Strings.kServiceHostServiceName, settings_,
+            aggregator);
       }
     }
 
@@ -338,8 +342,13 @@ namespace Nohros.Ruby
       // the service.
       try {
         var factory = new ServicesFactory(settings_);
-        var service = factory.CreateService(message);
-        var host = new RubyServiceHost(service, ruby_message_channel_, settings_);
+        IRubyService service = factory.CreateService(message);
+        string service_name = service.Facts
+          .GetString(Strings.kServiceNameFact, Strings.kNodeServiceName);
+        var aggregator_logger = new AggregatorLogger(service_name, settings_,
+          forwarding_aggregator_service_);
+        var host = new RubyServiceHost(service, ruby_message_channel_,
+          aggregator_logger, settings_);
 
         ++running_services_count_;
         host.Start();
@@ -348,25 +357,6 @@ namespace Nohros.Ruby
           kClassName, "ServiceThreadMain"), exception);
       }
       --running_services_count_;
-    }
-
-    /// <summary>
-    /// Converst a list of <see cref="KeyValuePair"/> to a dictionary of
-    /// strings.
-    /// </summary>
-    /// <param name="key_value_pairs">
-    /// The list of <see cref="KeyValuePair"/> to be converted.
-    /// </param>
-    /// <returns></returns>
-    IDictionary<string, string> ListToDictionary(
-      IList<KeyValuePair> key_value_pairs) {
-      Dictionary<string, string> dictionary =
-        new Dictionary<string, string>(key_value_pairs.Count);
-      for (int i = 0, j = key_value_pairs.Count; i < j; i++) {
-        KeyValuePair pair = key_value_pairs[i];
-        dictionary[pair.Key] = pair.Value;
-      }
-      return dictionary;
     }
 
     int Find(string pattern, IList<KeyValuePair> key_value_pairs) {

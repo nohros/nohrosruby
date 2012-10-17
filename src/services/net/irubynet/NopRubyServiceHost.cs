@@ -27,6 +27,10 @@ namespace Nohros.Ruby
       return false;
     }
 
+    public bool Send(int id, int type, byte[] message, string token) {
+      return false;
+    }
+
     public bool SendError(int message_id, string error, int exception_code) {
       return false;
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Nohros.Configuration;
+using Nohros.Extensions;
 using Nohros.Providers;
 using Nohros.Ruby.Protocol;
 using Nohros.Ruby.Protocol.Control;
@@ -27,8 +28,8 @@ namespace Nohros.Ruby
     public IRubyService CreateService(ServiceControlMessage message) {
       IDictionary<string, string> options = GetServiceOptions(message);
       IRubyServiceFactory factory = GetServiceFactory(options);
-      string service_switches = ProviderOptions.GetIfExists(options,
-        Strings.kServiceSwitches, string.Empty);
+      string service_switches = options
+        .GetString(Strings.kServiceSwitches, string.Empty);
       return factory.CreateService(service_switches);
     }
 
@@ -54,7 +55,9 @@ namespace Nohros.Ruby
           .SetLocation(service_factory_assembly_location)
           .SetOptions(options)
           .Build();
-      return ProviderFactory<IRubyServiceFactory>.CreateProviderFactory(provider);
+      return
+        RuntimeTypeFactory<IRubyServiceFactory>
+          .CreateInstanceFallback(provider, settings_);
     }
 
     IDictionary<string, string> GetServiceOptions(ServiceControlMessage message) {

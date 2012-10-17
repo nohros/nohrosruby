@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Nohros.Desktop;
 using Nohros.Ruby.Shell;
 
 namespace Nohros.Ruby

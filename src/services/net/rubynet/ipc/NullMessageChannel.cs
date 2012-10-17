@@ -25,6 +25,10 @@ namespace Nohros.Ruby
       return true;
     }
 
+    public bool Send(int id, int type, byte[] message, string token) {
+      return true;
+    }
+
     /// <inheritdoc/>
     public void AddListener(IRubyMessageListener listener, IExecutor executor) {
     }
@@ -36,6 +40,10 @@ namespace Nohros.Ruby
 
     /// <inheritdoc/>
     public void Open() {
+    }
+
+    public bool Send(int id, int type, byte[] message) {
+      return true;
     }
   }
 }

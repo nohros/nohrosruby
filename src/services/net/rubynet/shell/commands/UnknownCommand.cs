@@ -25,7 +25,7 @@ namespace Nohros.Ruby.Shell
     /// <remarks>
     /// The name of the command that this class represents is "unknown".
     /// </remarks>
-    public string Name {
+    public override string Name {
       get { return "unknown"; }
     }
   }
