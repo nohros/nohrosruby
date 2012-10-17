@@ -2,39 +2,43 @@
 using System.Globalization;
 using System.Xml;
 using Nohros.Configuration;
+using Nohros.Extensions;
 using Nohros.Logging;
-
-using S = Nohros.Strings;
 
 namespace Nohros.Ruby
 {
   internal partial class RubySettings
   {
-    public class Loader : MustConfigurationLoader<RubySettings>
+    public class Loader : AbstractConfigurationLoader<RubySettings>
     {
+      #region .ctor
+      public Loader() : base(new Builder()) {
+      }
+      #endregion
+
       protected override void OnLoadComplete(RubySettings configuration) {
         base.OnLoadComplete(configuration);
-
+        var local_builder = (Builder) builder;
         foreach (XmlAttribute attribute in element.Attributes) {
-          if (S.AreEquals(attribute.Name, Strings.kRunningMode)) {
-            configuration.running_mode_ = GetRunningMode(attribute);
-          } else if (S.AreEquals(attribute.Name, Strings.kLogLevel)) {
-            configuration.service_logger_level_ = GetLogLevel(attribute);
-          } else if (S.AreEquals(attribute.Name, Strings.kCulture)) {
-            configuration.culture_ = new CultureInfo(attribute.Name);
+          if (attribute.Name.CompareOrdinalIgnoreCase(Strings.kRunningMode)) {
+            local_builder.SetRunningMode(GetRunningMode(attribute));
+          } else if (attribute.Name.CompareOrdinalIgnoreCase(Strings.kLogLevel)) {
+            local_builder.SetLoggerLevel(GetLoggerLevel(attribute));
+          } else if (attribute.Name.CompareOrdinalIgnoreCase(Strings.kCulture)) {
+            local_builder.SetCulture(new CultureInfo(attribute.Name));
           }
         }
       }
 
       RunningMode GetRunningMode(XmlAttribute attribute) {
         RunningMode running_mode = RunningMode.Service;
-        if (S.AreEquals(attribute.Value, "interactive")) {
+        if (attribute.Value.CompareOrdinalIgnoreCase("interactive")) {
           running_mode = RunningMode.Interactive;
         }
         return running_mode;
       }
 
-      LogLevel GetLogLevel(XmlAttribute attribute) {
+      LogLevel GetLoggerLevel(XmlAttribute attribute) {
         string log_level_string = attribute.Value.ToLower();
         switch (log_level_string) {
           case "all":

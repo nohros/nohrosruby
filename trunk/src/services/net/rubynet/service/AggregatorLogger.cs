@@ -8,9 +8,10 @@ namespace Nohros.Ruby
 {
   internal class AggregatorLogger : IRubyLogger
   {
+    readonly IAggregatorService aggregator_service_;
     readonly string application_;
-    readonly IRubySettings settings_;
     readonly int process_id_;
+    readonly IRubySettings settings_;
 
     #region .ctor
     /// <summary>
@@ -20,8 +21,10 @@ namespace Nohros.Ruby
     /// <param name="application">
     /// The name of the application associated with the logger.
     /// </param>
-    public AggregatorLogger(string application, IRubySettings settings) {
+    public AggregatorLogger(string application, IRubySettings settings,
+      IAggregatorService aggregator_service) {
       application_ = application;
+      aggregator_service_ = aggregator_service;
       settings_ = settings;
       process_id_ = Process.GetCurrentProcess().Id;
     }
@@ -134,38 +137,38 @@ namespace Nohros.Ruby
 
     /// <inheritdoc/>
     public bool IsDebugEnabled {
-      get { return settings_.ServiceLoggerLevel <= LogLevel.Debug; }
+      get { return settings_.LoggerLevel <= LogLevel.Debug; }
     }
 
     /// <inheritdoc/>
     public bool IsErrorEnabled {
-      get { return settings_.ServiceLoggerLevel <= LogLevel.Error; }
+      get { return settings_.LoggerLevel <= LogLevel.Error; }
     }
 
     /// <inheritdoc/>
     public bool IsFatalEnabled {
-      get { return settings_.ServiceLoggerLevel <= LogLevel.Fatal; }
+      get { return settings_.LoggerLevel <= LogLevel.Fatal; }
     }
 
     /// <inheritdoc/>
     public bool IsInfoEnabled {
-      get { return settings_.ServiceLoggerLevel <= LogLevel.Info; }
+      get { return settings_.LoggerLevel <= LogLevel.Info; }
     }
 
     /// <inheritdoc/>
     public bool IsWarnEnabled {
-      get { return settings_.ServiceLoggerLevel <= LogLevel.Warn; }
+      get { return settings_.LoggerLevel <= LogLevel.Warn; }
     }
 
     /// <inheritdoc/>
     public bool IsTraceEnabled {
-      get { return settings_.ServiceLoggerLevel <= LogLevel.Trace; }
+      get { return settings_.LoggerLevel <= LogLevel.Trace; }
     }
 
     void Log(string message, LogLevel level) {
       LogMessage.Builder builder =
         GetLogMessageBuilder(message, GetLogLevel(level));
-      settings_.AggregatorService.Log(builder.Build());
+      aggregator_service_.Log(builder.Build());
     }
 
     void Log(string message, LogLevel level,
@@ -173,7 +176,7 @@ namespace Nohros.Ruby
       LogMessage.Builder builder =
         GetLogMessageBuilder(message, GetLogLevel(level))
           .AddRangeCategorization(KeyValuePairs.FromKeyValuePairs(categorization));
-      settings_.AggregatorService.Log(builder.Build());
+      aggregator_service_.Log(builder.Build());
     }
 
     void Log(string message, LogLevel level, Exception exception) {
@@ -183,7 +186,7 @@ namespace Nohros.Ruby
             exception.Message))
           .AddCategorization(KeyValuePairs.FromKeyValuePair("backtrace",
             exception.StackTrace));
-      settings_.AggregatorService.Log(builder.Build());
+      aggregator_service_.Log(builder.Build());
     }
 
     void Log(string message, LogLevel level, Exception exception,
@@ -195,7 +198,7 @@ namespace Nohros.Ruby
           .AddCategorization(KeyValuePairs.FromKeyValuePair("backtrace",
             exception.StackTrace))
           .AddRangeCategorization(KeyValuePairs.FromKeyValuePairs(categorization));
-      settings_.AggregatorService.Log(builder.Build());
+      aggregator_service_.Log(builder.Build());
     }
 
     string GetLogLevel(LogLevel level) {
@@ -227,12 +230,14 @@ namespace Nohros.Ruby
         .SetReason(message)
         .SetTimeStamp(TimeUnitHelper.ToUnixTime(DateTime.Now))
         .SetUser(Environment.UserName)
-        .SetPid(process_id_)
-        .SetHostName(Environment.MachineName)
         .AddCategorization(KeyValuePairs.FromKeyValuePair("os",
           Environment.OSVersion.ToString()))
         .AddCategorization(KeyValuePairs.FromKeyValuePair("clr-version",
-          Environment.Version.ToString()));
+          Environment.Version.ToString()))
+        .AddCategorization(KeyValuePairs.FromKeyValuePair("pid",
+          process_id_.ToString()))
+        .AddCategorization(KeyValuePairs.FromKeyValuePair("host-name",
+          Environment.MachineName));
     }
   }
 }

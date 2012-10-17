@@ -1,7 +1,5 @@
 using System;
-using Nohros.Desktop;
 using Nohros.MyToolsPack.Console;
-using Nohros.Ruby.Protocol;
 
 namespace Nohros.Ruby.Shell
 {

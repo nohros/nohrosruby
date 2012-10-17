@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Threading;
+using Google.ProtocolBuffers;
+using Nohros.Extensions;
 using Nohros.Concurrent;
-using Nohros.Configuration;
-using Nohros.Data.Json;
-using Nohros.Logging;
 using Nohros.Ruby.Protocol;
 using Nohros.Ruby.Protocol.Control;
 
@@ -22,8 +20,8 @@ namespace Nohros.Ruby
 
     readonly IRubyMessageChannel ruby_message_channel_;
     readonly IRubyService service_;
-    readonly IRubySettings settings_;
     readonly IRubyLogger service_logger_;
+    readonly IRubySettings settings_;
 
     #region .ctor
     /// <summary>
@@ -37,21 +35,21 @@ namespace Nohros.Ruby
     /// A <see cref="IRubyMessageSender"/> that can be used to send messages to
     /// the ruby service node.
     /// </param>
+    /// <param name="service_logger">
+    /// A <see cref="IRubyLogger"/> object that can be used by the hosted
+    /// service to log things.
+    /// </param>
     public RubyServiceHost(IRubyService service, IRubyMessageChannel channel,
-      IRubySettings settings) {
+      IRubyLogger service_logger, IRubySettings settings) {
 #if DEBUG
       if (service == null || channel == null) {
         throw new ArgumentNullException(service == null ? "service" : "sender");
       }
 #endif
+      settings_ = settings;
       service_ = service;
       ruby_message_channel_ = channel;
-      settings_ = settings;
-      service_logger_ = new RubyLogger(
-        new AggregatorLogger(
-          ProviderOptions.GetIfExists(service.Facts,
-            StringResources.kServiceNameFact,
-            Strings.kNodeServiceName), settings));
+      service_logger_ = service_logger;
     }
     #endregion
 
@@ -65,6 +63,16 @@ namespace Nohros.Ruby
     }
 
     /// <inheritdoc/>
+    public bool Send(int message_id, int type, byte[] message, string token) {
+      RubyMessage request = new RubyMessage.Builder()
+        .SetId(message_id)
+        .SetType(type)
+        .SetMessage(ByteString.CopyFrom(message))
+        .Build();
+      return Send(request);
+    }
+
+    /// <inheritdoc/>
     public bool Send(IRubyMessage message) {
       if (logger_.IsDebugEnabled) {
         logger_.Debug("Sending a message with token " + message.Token);
@@ -72,9 +80,63 @@ namespace Nohros.Ruby
       return ruby_message_channel_.Send(message);
     }
 
+    public bool Send(int message_id, int type, byte[] message) {
+      return Send(message_id, type, message, string.Empty);
+    }
+
+    public bool SendError(int message_id, string error, int exception_code) {
+      ExceptionMessage exception = new ExceptionMessage.Builder()
+        .SetCode(exception_code)
+        .SetMessage(error)
+        .SetSource(service_.Facts.GetString(Strings.kServiceNameFact,
+          Strings.kNodeServiceName))
+        .Build();
+      return SendError(message_id, new[] {exception});
+    }
+
+    public bool SendError(int message_id, string error, int exception_code,
+      Exception exception) {
+      ExceptionMessage exception_message = new ExceptionMessage.Builder()
+        .SetCode(exception_code)
+        .SetMessage(error)
+        .SetSource(service_.Facts.GetString(Strings.kServiceNameFact,
+          Strings.kNodeServiceName))
+        .AddData(KeyValuePairs.FromKeyValuePair("exception", exception.Message))
+        .AddData(KeyValuePairs.FromKeyValuePair("backtrace",
+          exception.StackTrace))
+        .Build();
+      return SendError(message_id, new[] {exception_message});
+    }
+
+    public bool SendError(int message_id, int exception_code,
+      Exception exception) {
+      ExceptionMessage exception_message = new ExceptionMessage.Builder()
+        .SetCode(exception_code)
+        .SetMessage(exception.Message)
+        .SetSource(service_.Facts.GetString(Strings.kServiceNameFact,
+          Strings.kNodeServiceName))
+        .AddData(KeyValuePairs.FromKeyValuePair("exception", exception.Message))
+        .AddData(KeyValuePairs.FromKeyValuePair("backtrace",
+          exception.StackTrace))
+        .Build();
+      return SendError(message_id, new[] {exception_message});
+    }
+
     /// <inherithdoc/>
     public IRubyLogger Logger {
       get { return service_logger_; }
+    }
+
+    bool SendError(int message_id, IEnumerable<ExceptionMessage> exceptions) {
+      ErrorMessage error_message = new ErrorMessage.Builder()
+        .AddRangeErrors(exceptions)
+        .Build();
+      RubyMessage message = new RubyMessage.Builder()
+        .SetId(message_id)
+        .SetType((int) NodeMessageType.kNodeError)
+        .SetMessage(error_message.ToByteString())
+        .Build();
+      return Send(message);
     }
 
     /// <summary>

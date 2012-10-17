@@ -31,6 +31,7 @@ namespace Nohros.Ruby
     public const string kServiceHostServiceName = "nohros.ruby.net.servicehost";
     public const string kNodeServiceName = "nohros.ruby.node";
 
+    public const string kServiceNameFact = "name";
     public const string kHostServiceFact = "host";
     public const string kServiceAssembly = "assembly";
     public const string kServiceName = "name";

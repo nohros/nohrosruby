@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-
+using Google.ProtocolBuffers;
 using Nohros.Concurrent;
 using R = Nohros.Resources;
 using Nohros.Ruby.Protocol;
@@ -18,12 +18,12 @@ namespace Nohros.Ruby
     const string kClassName = "Nohros.Ruby.RubyMessageChannel";
 
     static readonly byte[] empty_frame_;
+    readonly Context context_;
     readonly List<ListenerExecutorPair> listeners_;
     readonly IRubyLogger logger_;
     readonly Mailbox<RubyMessagePacket> mailbox_;
-    readonly Socket socket_;
-    readonly Context context_;
     readonly string message_channel_endpoint_;
+    readonly Socket socket_;
     bool channel_is_opened_;
     Thread receiver_thread_;
 
@@ -31,7 +31,9 @@ namespace Nohros.Ruby
     static RubyMessageChannel() {
       empty_frame_ = new byte[0];
     }
+    #endregion
 
+    #region .ctor
     /// <summary>
     /// Initializes a new instance of the <see cref="RubyMessageChannel"/> class by
     /// using the specified message's sender.
@@ -40,8 +42,7 @@ namespace Nohros.Ruby
     /// The <see cref="RubyMessageChannel"/> object constructed through this
     /// constructor discards any received message.
     /// </remarks>
-    public RubyMessageChannel(Context context, string message_channel_endpoint)
-    {
+    public RubyMessageChannel(Context context, string message_channel_endpoint) {
 #if DEBUG
       if (context == null || message_channel_endpoint == null) {
         throw new ArgumentNullException(context == null
@@ -140,6 +141,11 @@ namespace Nohros.Ruby
       listeners_.Add(new ListenerExecutorPair(listener, executor));
     }
 
+    /// <inheritdoc/>
+    public bool Send(int message_id, int type, byte[] message) {
+      return Send(message_id, type, message, string.Empty);
+    }
+
     RubyMessagePacket GetMessagePacket() {
       try {
         byte[] message = socket_.Recv();
@@ -148,7 +154,7 @@ namespace Nohros.Ruby
           return packet;
         }
       } catch (ZMQ.Exception exception) {
-        if (exception.Errno == (int)ERRNOS.ETERM) {
+        if (exception.Errno == (int) ERRNOS.ETERM) {
           Close();
         }
       } catch (System.Exception exception) {
@@ -171,6 +177,16 @@ namespace Nohros.Ruby
       while (channel_is_opened_) {
         mailbox_.Send(GetMessagePacket());
       }
+    }
+
+    /// <inheritdoc/>
+    public bool Send(int message_id, int type, byte[] message, string token) {
+      RubyMessage request = new RubyMessage.Builder()
+        .SetId(message_id)
+        .SetMessage(ByteString.CopyFrom(message))
+        .SetType(type)
+        .Build();
+      return Send(request);
     }
 
     /// <summary>

@@ -2,7 +2,7 @@
 using System.IO;
 using System.Reflection;
 using Nohros.Configuration;
-using Nohros.Desktop;
+using Nohros.Extensions;
 using Nohros.Logging;
 using Nohros.MyToolsPack.Console;
 using Nohros.Providers;
@@ -118,13 +118,13 @@ namespace Nohros.Ruby
       IProviderNode provider;
       if (settings.Providers.GetProviderNode(Strings.kLogProviderNode,
         out provider)) {
-        // try/catch: logging related oprations should not causes application
+        // try/catch: logging related operations should not causes application
         // issues.
         try {
           RubyLogger.ForCurrentProcess.Logger =
-            ProviderFactory<ILoggerFactory>
-              .CreateProviderFactoryFallback(provider, settings)
-              .CreateLogger(provider.Options);
+            RuntimeTypeFactory<ILoggerFactory>
+              .CreateInstanceFallback(provider, settings)
+              .CreateLogger(provider.Options.ToDictionary());
         } catch {
           // fails silently.
         }

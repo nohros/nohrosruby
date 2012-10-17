@@ -8,7 +8,7 @@ namespace Nohros.Ruby
   /// <summary>
   /// <see cref="IRubySettings"/> defines the application settings.
   /// </summary>
-  internal interface IRubySettings : IMustConfiguration
+  internal interface IRubySettings : IConfiguration
   {
     /// <summary>
     /// Gets the mode on which the application is running.
@@ -23,7 +23,7 @@ namespace Nohros.Ruby
     /// Gets the level of the logger that is used by the services
     /// </summary>
     /// <seealso cref="IRubyServiceHost.Logger"/>
-    LogLevel ServiceLoggerLevel { get; }
+    LogLevel LoggerLevel { get; }
 
     /// <summary>
     /// Gets the name of the folder that is used to store the services
@@ -43,11 +43,5 @@ namespace Nohros.Ruby
     /// Gets the configured culture.
     /// </summary>
     CultureInfo Culture { get; }
-
-    /// <summary>
-    /// Gets an instance of the <see cref="IAggregatorService"/> class that can
-    /// be used to send message to the log aggregator service.
-    /// </summary>
-    IAggregatorService AggregatorService { get; set; }
   }
 }
