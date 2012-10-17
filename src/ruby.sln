@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "irubyservice", "services\ne
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rubynet_unittest", "tests\services\rubynet_unittest\rubynet_unittest.csproj", "{0CB5E36D-8305-4D6C-8FE8-4793B039D6C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rubylog", "services\net\weblog\rubylog.csproj", "{EBEF07D1-5A08-4904-8C88-CE119D1E8E4D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rubylog", "services\net\rubylog\service\rubylog.csproj", "{EBEF07D1-5A08-4904-8C88-CE119D1E8E4D}"
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
