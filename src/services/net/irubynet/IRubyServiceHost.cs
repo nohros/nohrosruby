@@ -37,7 +37,7 @@ namespace Nohros.Ruby
     /// <c>true</c> is the message was succesfully sent; otherwise,
     /// <c>false</c>.
     /// </returns>
-    bool SendError(int message_id, string error, int exception_code);
+    bool SendError(long message_id, string error, int exception_code);
 
     /// <summary>
     /// Sends a ruby message to the ruby service node informing the receiver
@@ -59,7 +59,7 @@ namespace Nohros.Ruby
     /// <c>true</c> is the message was succesfully sent; otherwise,
     /// <c>false</c>.
     /// </returns>
-    bool SendError(int message_id, string error, int exception_code, Exception exception);
+    bool SendError(long message_id, string error, int exception_code, Exception exception);
 
     /// <summary>
     /// Sends a ruby message to the ruby service node informing the receiver
@@ -78,6 +78,6 @@ namespace Nohros.Ruby
     /// <c>true</c> is the message was succesfully sent; otherwise,
     /// <c>false</c>.
     /// </returns>
-    bool SendError(int message_id, int exception_code, Exception exception);
+    bool SendError(long message_id, int exception_code, Exception exception);
   }
 }
