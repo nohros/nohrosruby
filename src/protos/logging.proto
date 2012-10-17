@@ -2,8 +2,8 @@
 // Use of this source code is governed by a MIT-style license that can be
 // found in the LICENSE file.
 
-//import "google/protobuf/csharp_options.proto";
-//option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby.Logging";
+import "google/protobuf/csharp_options.proto";
+option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby.Logging";
 
 import "common.proto";
 

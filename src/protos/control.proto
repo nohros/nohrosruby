@@ -10,8 +10,8 @@
 // should be destinated to the [ruby] service (RubyMessageHeader.Service = [ruby])
 //
 
-//import "google/protobuf/csharp_options.proto";
-//option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby.Protocol.Control";
+import "google/protobuf/csharp_options.proto";
+option (google.protobuf.csharp_file_options).namespace = "Nohros.Ruby.Protocol.Control";
 
 import "common.proto";
 import "ruby_protos.proto";
@@ -35,7 +35,7 @@ enum NodeMessageType {
   // all.
   kNodeResponse = 3;
   
-  // A message that should be sent when a query cannot be fulfilled.
+  // A message that should be sent when an error has been occurred.
   kNodeError = 4;
   
   // A message that should be sent to announce that a node is hosting a
