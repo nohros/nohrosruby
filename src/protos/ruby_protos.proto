@@ -112,7 +112,7 @@ message RubyMessage {
   // This could be the target( name, the target IP address, the target UUID
   // or anything else that could be serialized as a sequence of bytes and
   // identifies the message target.
-  optional bytes target = 6;
+  optional bytes sender = 6;
   
   // The type of ACK to sent.
   enum AckType {
