@@ -12,11 +12,11 @@ option optimize_for = LITE_RUNTIME;
 
 enum LoggingMessageType {
   // A message used to publish and/or store a logging message.
-  kLogMessage = 1;
+  kLogMessage = 90;
   
   // Messages used to manipulate the storage repository used to store the log
   // messages.
-  kStorageInfo = 2;
+  kStorageInfo = 91;
 }
 
 // The format of the log message that is sent to the subscribers.
