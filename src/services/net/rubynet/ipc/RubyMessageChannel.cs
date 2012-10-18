@@ -29,6 +29,13 @@ namespace Nohros.Ruby
     /// constructor discards any received message.
     /// </remarks>
     public RubyMessageChannel(Context context, string message_channel_endpoint) {
+#if DEBUG
+      if (context == null || message_channel_endpoint == null) {
+        throw new ArgumentNullException(context == null
+          ? "socket"
+          : "string message_channel_endpoint");
+      }
+#endif
       message_channel_endpoint_ = message_channel_endpoint;
       socket_ = context.Socket(SocketType.DEALER);
       logger_ = RubyLogger.ForCurrentProcess;
@@ -44,7 +51,7 @@ namespace Nohros.Ruby
     public override void Open() {
       // Open the socket before open the channel to ensure that the socket
       // is valid when GetMessagePacket is called.
-      socket_.Connect(message_channel_endpoint_);
+      socket_.Connect(Transport.TCP, message_channel_endpoint_);
       base.Open();
     }
 

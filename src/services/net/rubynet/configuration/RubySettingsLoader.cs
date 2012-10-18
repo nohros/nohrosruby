@@ -30,7 +30,7 @@ namespace Nohros.Ruby
         base.OnLoadComplete(configuration);
         var local_builder = (Builder) builder;
         foreach (XmlAttribute attribute in element.Attributes) {
-          if (attribute.Name.CompareOrdinalIgnoreCase(Strings.kRunningMode)) {
+          if (attribute.Name.CompareOrdinalIgnoreCase(Strings.kRunningModeSwitch)) {
             local_builder.SetRunningMode(GetRunningMode(attribute));
           } else if (attribute.Name.CompareOrdinalIgnoreCase(Strings.kLogLevel)) {
             local_builder.SetLoggerLevel(GetLoggerLevel(attribute));

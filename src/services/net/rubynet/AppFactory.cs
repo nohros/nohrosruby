@@ -60,8 +60,11 @@ namespace Nohros.Ruby
     }
 
     IRubyMessageChannel GetIPCChannel() {
-      if (settings_.IPCChannelAddress == string.Empty) {
+      if (settings_.IPCChannelAddress != string.Empty) {
         var context = new Context(Context.DefaultIOThreads);
+        if (settings_.SelfHost) {
+          return new SelfMessageChannel(context, settings_.IPCChannelAddress);
+        }
         return new RubyMessageChannel(context, settings_.IPCChannelAddress);
       }
       return new NullMessageChannel();
@@ -95,7 +98,7 @@ namespace Nohros.Ruby
             RuntimeTypeFactory<ILoggerFactory>
               .CreateInstanceFallback(provider, settings_)
               .CreateLogger(provider.Options.ToDictionary());
-        } catch {
+        } catch(System.Exception e) {
           // fails silently.
         }
       }

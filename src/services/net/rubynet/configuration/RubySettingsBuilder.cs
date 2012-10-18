@@ -14,7 +14,23 @@ namespace Nohros.Ruby
       LogLevel logger_level_;
       string prompt_;
       RunningMode running_mode_;
+      bool self_host_;
       string service_folder_;
+
+      public Builder() {
+        culture_ = CultureInfo.CurrentCulture;
+        ipc_channel_address_ = string.Empty;
+        logger_level_ = LogLevel.Info;
+        prompt_ = Strings.kDefaultPrompt;
+        running_mode_ = RunningMode.Service;
+        self_host_ = false;
+        service_folder_ = Strings.kDefaultServiceFolder;
+      }
+
+      public Builder SetSelfHost(bool self_host) {
+        self_host_ = self_host;
+        return this;
+      }
 
       public Builder SetIPCChannelAddress(string ipc_channel_address) {
         ipc_channel_address_ = ipc_channel_address;
@@ -48,6 +64,10 @@ namespace Nohros.Ruby
 
       public override RubySettings Build() {
         return new RubySettings(this);
+      }
+
+      public bool SelfHost {
+        get { return self_host_; }
       }
 
       public string IPCChannelAddress {
