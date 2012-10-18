@@ -36,13 +36,6 @@ namespace Nohros.Ruby
     /// constructor discards any received message.
     /// </remarks>
     protected AbstractRubyMessageChannel() {
-#if DEBUG
-      if (context == null || message_channel_endpoint == null) {
-        throw new ArgumentNullException(context == null
-          ? "socket"
-          : "string message_channel_endpoint");
-      }
-#endif
       mailbox_ = new Mailbox<RubyMessagePacket>(OnMessagePacket);
       listeners_ = new List<ListenerExecutorPair>();
       logger_ = RubyLogger.ForCurrentProcess;

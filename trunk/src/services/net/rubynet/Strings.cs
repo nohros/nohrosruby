@@ -13,8 +13,10 @@ namespace Nohros.Ruby
 
     public const string kConfigFileRootSwitch = "config-file-root";
 
-    public const string kConfigFileName = "ruby.config";
+    public const string kConfigFileName = "ruby.net.config";
     public const string kConfigFileRootName = "ruby";
+
+    public const string kSelfHostSwitch = "self-host";
 
     /// <summary>
     /// The name of the node that contains the configuration data for the
@@ -48,15 +50,17 @@ namespace Nohros.Ruby
     /// <summary>
     /// The name of the fodler that is used to store the services binaries.
     /// </summary>
-    public const string kServicesFolderName = "services";
+    public const string kDefaultServiceFolder = "services";
 
-    public const string kRunningMode = "running-mode";
+    public const string kRunningModeSwitch = "running-mode";
+    public const string kServiceRunningMode = "service";
+    public const string kDefaultRunningMode = kServiceRunningMode;
     public const string kLogLevel = "log-level";
 
     /// <summary>
     /// The string that is displayed on the shell prompt.
     /// </summary>
-    public const string kShellPrompt = "rubynet$: ";
+    public const string kDefaultPrompt = "rubynet$: ";
 
     public const string kHelp = "help";
     public const string kWaitForDebugger = "debug";

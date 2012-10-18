@@ -50,5 +50,11 @@ namespace Nohros.Ruby
     /// ruby service node.
     /// </summary>
     string IPCChannelAddress { get; }
+
+    /// <summary>
+    /// Gets a value indicating if the self host mode is enabled.
+    /// </summary>
+    /// <value><c>true</c> if the sel-host mode is enabled.</value>
+    bool SelfHost { get; }
   }
 }

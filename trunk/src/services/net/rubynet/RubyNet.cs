@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nohros.Extensions;
 using Nohros.IO;
 using Nohros.Ruby.Shell;
 
@@ -41,7 +42,7 @@ namespace Nohros.Ruby
           break;
 
         case RunningMode.Interactive:
-          factory.CreateServiceRubyProcess().Run(legacy_command_line_string);
+          factory.CreateShellRubyProcess().Run(legacy_command_line_string);
           break;
 
         default:
@@ -65,14 +66,21 @@ namespace Nohros.Ruby
       string config_file_name = switches
         .GetSwitchValue(Strings.kConfigFileNameSwitch, Strings.kConfigFileName);
       string config_file_root_node = switches
-        .GetSwitchValue(Strings.kConfigFileRootName,
-          Strings.kConfigFileRootSwitch);
+        .GetSwitchValue(Strings.kConfigFileRootSwitch,
+          Strings.kConfigFileRootName);
+      string running_mode = switches
+        .GetSwitchValue(Strings.kRunningModeSwitch, Strings.kDefaultRunningMode);
 
       var builder = new RubySettings.Builder();
       if (switches.HasSwitch(Strings.kIPCChannelAddressSwitch)) {
         builder
           .SetIPCChannelAddress(
-            switches.GetSwitchValue(Strings.kIPCChannelAddressSwitch));
+            switches.GetSwitchValue(Strings.kIPCChannelAddressSwitch))
+          .SetSelfHost(switches.HasSwitch(Strings.kSelfHostSwitch))
+          .SetRunningMode(
+            running_mode.CompareOrdinalIgnoreCase(Strings.kServiceRunningMode)
+              ? RunningMode.Service
+              : RunningMode.Interactive);
       }
       return new RubySettings.Loader(builder)
         .Load(Path.AbsoluteForCallingAssembly(config_file_name),
