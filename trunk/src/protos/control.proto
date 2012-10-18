@@ -71,10 +71,10 @@ message ServiceControlMessage {
   optional ServiceControlMessageType type = 1;
   
   // The service associated with the control message. Should be the ID of the
-  // service which the message is destinated.
+  // service associated with the control message.
   optional string service = 2;
   
-  // A list of arguments for performing node actions.
+  // A list of arguments associated with the control message.
   repeated ruby.KeyValuePair arguments = 3;
 }
 
