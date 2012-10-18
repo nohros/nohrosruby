@@ -108,10 +108,11 @@ message RubyMessage {
   // the method call.
   optional bytes message = 5;
   
-  // A seguence of bytes that identifies the message sender. This could be the
-  // sender name, the sende IP address, the sender UUID or anything else that
-  // could be serialized as a sequence of bytes and identifies the sender.
-  optional bytes sender = 6;
+  // A seguence of bytes that identifies the message target(receiver/sender).
+  // This could be the target( name, the target IP address, the target UUID
+  // or anything else that could be serialized as a sequence of bytes and
+  // identifies the message target.
+  optional bytes target = 6;
   
   // The type of ACK to sent.
   enum AckType {
