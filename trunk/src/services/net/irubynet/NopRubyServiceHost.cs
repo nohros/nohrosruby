@@ -23,30 +23,33 @@ namespace Nohros.Ruby
       return false;
     }
 
-    public bool Send(byte[] message_id, int type, byte[] message) {
-      return false;
-    }
-
-    public bool SendError(byte[] message_id, string error, int exception_code) {
-      return false;
-    }
-
-    public bool SendError(byte[] message_id, string error, int exception_code,
-      Exception exception) {
-      return false;
-    }
-
-    public bool SendError(byte[] message_id, int exception_code,
-      Exception exception) {
-      return false;
-    }
-
-    public bool Send(byte[] message_id, int type, byte[] message, string token) {
+    public bool Send(byte[] message_id, int type, byte[] message,
+      byte[] destination) {
       return false;
     }
 
     public IRubyLogger Logger {
       get { return logger_; }
+    }
+
+    public bool SendError(byte[] message_id, int exception_code, string error,
+      byte[] destination) {
+      return false;
+    }
+
+    public bool SendError(byte[] message_id, int exception_code, string error,
+      byte[] destination, Exception exception) {
+      return false;
+    }
+
+    public bool SendError(byte[] message_id, int exception_code,
+      byte[] destination, Exception exception) {
+      return false;
+    }
+
+    public bool Send(byte[] message_id, int type, byte[] message,
+      byte[] destination, string token) {
+      return false;
     }
   }
 }

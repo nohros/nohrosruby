@@ -13,18 +13,11 @@ namespace Nohros.Ruby
   {
     const string kClassName = "Nohros.Ruby.AbstractRubyMessageChannel";
 
-    protected static readonly byte[] empty_frame_;
     readonly List<ListenerExecutorPair> listeners_;
     readonly IRubyLogger logger_;
     readonly Mailbox<RubyMessagePacket> mailbox_;
     bool channel_is_opened_;
     Thread receiver_thread_;
-
-    #region .ctor
-    static AbstractRubyMessageChannel() {
-      empty_frame_ = new byte[0];
-    }
-    #endregion
 
     #region .ctor
     /// <summary>
@@ -100,12 +93,14 @@ namespace Nohros.Ruby
     }
 
     /// <inheritdoc/>
-    public bool Send(byte[] message_id, int type, byte[] message) {
-      return Send(message_id, type, message, string.Empty);
+    public bool Send(byte[] message_id, int type, byte[] message,
+      byte[] destination) {
+      return Send(message_id, type, message, destination, string.Empty);
     }
 
     /// <inheritdoc/>
-    public bool Send(byte[] message_id, int type, byte[] message, string token) {
+    public bool Send(byte[] message_id, int type, byte[] message,
+      byte[] destination, string token) {
       RubyMessage request = new RubyMessage.Builder()
         .SetId(ByteString.CopyFrom(message_id))
         .SetMessage(ByteString.CopyFrom(message))

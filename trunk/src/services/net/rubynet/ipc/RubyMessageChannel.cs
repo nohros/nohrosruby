@@ -58,7 +58,7 @@ namespace Nohros.Ruby
     public override bool Send(RubyMessagePacket packet) {
       try {
         // sent message should follow the pattern: [empty frame][message]
-        SendStatus status = socket_.SendMore(empty_frame_);
+        SendStatus status = socket_.SendMore();
         if (status == SendStatus.Sent) {
           socket_.Send(packet.ToByteArray());
           return status == SendStatus.Sent;

@@ -27,11 +27,16 @@ namespace Nohros.Ruby
     /// <param name="exception_code">
     /// A number that provides information about the status of the request.
     /// </param>
+    /// <param name="destination">
+    /// The address of the message receiver or zero(0) if the message is
+    /// destinated to the ruby service host.
+    /// </param>
     /// <returns>
     /// <c>true</c> is the message was succesfully sent; otherwise,
     /// <c>false</c>.
     /// </returns>
-    bool SendError(byte[] message_id, string error, int exception_code);
+    bool SendError(byte[] message_id, int exception_code, string error,
+      byte[] destiantion);
 
     /// <summary>
     /// Sends a ruby message to the ruby service node informing the receiver
@@ -49,12 +54,16 @@ namespace Nohros.Ruby
     /// <param name="message_id">
     /// The ID associated with the message that originates the error.
     /// </param>
+    /// <param name="destination">
+    /// The address of the message receiver or zero(0) if the message is
+    /// destinated to the ruby service host.
+    /// </param>
     /// <returns>
     /// <c>true</c> is the message was succesfully sent; otherwise,
     /// <c>false</c>.
     /// </returns>
-    bool SendError(byte[] message_id, string error, int exception_code,
-      Exception exception);
+    bool SendError(byte[] message_id, int exception_code, string error,
+      byte[] destination, Exception exception);
 
     /// <summary>
     /// Sends a ruby message to the ruby service node informing the receiver
@@ -69,11 +78,16 @@ namespace Nohros.Ruby
     /// <param name="message_id">
     /// The ID associated with the message that originates the error.
     /// </param>
+    /// <param name="destination">
+    /// The address of the message receiver or zero(0) if the message is
+    /// destinated to the ruby service host.
+    /// </param>
     /// <returns>
     /// <c>true</c> is the message was succesfully sent; otherwise,
     /// <c>false</c>.
     /// </returns>
-    bool SendError(byte[] message_id, int exception_code, Exception exception);
+    bool SendError(byte[] message_id, int exception_code, byte[] destination,
+      Exception exception);
 
     /// <summary>
     /// Gets a <see cref="IRubyLogger"/> object that can be used by services

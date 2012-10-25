@@ -63,16 +63,6 @@ namespace Nohros.Ruby
     }
 
     /// <inheritdoc/>
-    public bool Send(byte[] message_id, int type, byte[] message, string token) {
-      RubyMessage request = new RubyMessage.Builder()
-        .SetId(ByteString.CopyFrom(message_id))
-        .SetType(type)
-        .SetMessage(ByteString.CopyFrom(message))
-        .Build();
-      return Send(request);
-    }
-
-    /// <inheritdoc/>
     public bool Send(IRubyMessage message) {
       if (logger_.IsDebugEnabled) {
         logger_.Debug("Sending a message with token " + message.Token);
@@ -85,11 +75,13 @@ namespace Nohros.Ruby
       get { return service_logger_; }
     }
 
-    public bool Send(byte[] message_id, int type, byte[] message) {
-      return Send(message_id, type, message, string.Empty);
+    public bool Send(byte[] message_id, int type, byte[] message,
+      byte[] destination) {
+      return Send(message_id, type, message, destination, string.Empty);
     }
 
-    public bool SendError(byte[] message_id, string error, int exception_code) {
+    public bool SendError(byte[] message_id, int exception_code, string error,
+      byte[] destination) {
       ExceptionMessage exception = new ExceptionMessage.Builder()
         .SetCode(exception_code)
         .SetMessage(error)
@@ -99,8 +91,8 @@ namespace Nohros.Ruby
       return SendError(message_id, new[] {exception});
     }
 
-    public bool SendError(byte[] message_id, string error, int exception_code,
-      Exception exception) {
+    public bool SendError(byte[] message_id, int exception_code, string error,
+      byte[] destination, Exception exception) {
       ExceptionMessage exception_message = new ExceptionMessage.Builder()
         .SetCode(exception_code)
         .SetMessage(error)
@@ -113,8 +105,19 @@ namespace Nohros.Ruby
       return SendError(message_id, new[] {exception_message});
     }
 
+    /// <inheritdoc/>
+    public bool Send(byte[] message_id, int type, byte[] message,
+      byte[] destination, string token) {
+      RubyMessage request = new RubyMessage.Builder()
+        .SetId(ByteString.CopyFrom(message_id))
+        .SetType(type)
+        .SetMessage(ByteString.CopyFrom(message))
+        .Build();
+      return Send(request);
+    }
+
     public bool SendError(byte[] message_id, int exception_code,
-      Exception exception) {
+      byte[] destination, Exception exception) {
       ExceptionMessage exception_message = new ExceptionMessage.Builder()
         .SetCode(exception_code)
         .SetMessage(exception.Message)

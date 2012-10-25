@@ -76,7 +76,6 @@
     <Compile Include="data\IAggregatorDataProviderFactory.cs" />
     <Compile Include="data\MongoAggregatorDataProviderFactory.cs" />
     <Compile Include="LocalLogger.cs" />
-    <Compile Include="RubyMessage.cs" />
     <Compile Include="settings\IAggregatorSettings.cs" />
     <Compile Include="data\LoggerAggregatorDataProvider.cs" />
     <Compile Include="data\MongoAggregatorDataProvider.cs" />

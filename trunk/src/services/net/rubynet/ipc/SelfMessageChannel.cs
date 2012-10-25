@@ -67,7 +67,7 @@ namespace Nohros.Ruby
       try {
         RubyMessage message = packet.Message;
         if (socket_.SendMore(message.Sender.ToByteArray()) == SendStatus.Sent) {
-          if (socket_.SendMore(empty_frame_) == SendStatus.Sent) {
+          if (socket_.SendMore() == SendStatus.Sent) {
             if (socket_.Send(packet.ToByteArray()) == SendStatus.Sent) {
               return true;
             }
