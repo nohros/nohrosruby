@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using Nohros.Configuration;
 using Nohros.Extensions;
-using Nohros.Providers;
-using Nohros.Ruby.Protocol;
 using Nohros.Ruby.Protocol.Control;
 
 namespace Nohros.Ruby

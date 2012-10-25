@@ -63,9 +63,9 @@ namespace Nohros.Ruby
     }
 
     /// <inheritdoc/>
-    public bool Send(long message_id, int type, byte[] message, string token) {
+    public bool Send(byte[] message_id, int type, byte[] message, string token) {
       RubyMessage request = new RubyMessage.Builder()
-        .SetId(message_id)
+        .SetId(ByteString.CopyFrom(message_id))
         .SetType(type)
         .SetMessage(ByteString.CopyFrom(message))
         .Build();
@@ -85,11 +85,11 @@ namespace Nohros.Ruby
       get { return service_logger_; }
     }
 
-    public bool Send(long message_id, int type, byte[] message) {
+    public bool Send(byte[] message_id, int type, byte[] message) {
       return Send(message_id, type, message, string.Empty);
     }
 
-    public bool SendError(long message_id, string error, int exception_code) {
+    public bool SendError(byte[] message_id, string error, int exception_code) {
       ExceptionMessage exception = new ExceptionMessage.Builder()
         .SetCode(exception_code)
         .SetMessage(error)
@@ -99,7 +99,7 @@ namespace Nohros.Ruby
       return SendError(message_id, new[] {exception});
     }
 
-    public bool SendError(long message_id, string error, int exception_code,
+    public bool SendError(byte[] message_id, string error, int exception_code,
       Exception exception) {
       ExceptionMessage exception_message = new ExceptionMessage.Builder()
         .SetCode(exception_code)
@@ -113,7 +113,7 @@ namespace Nohros.Ruby
       return SendError(message_id, new[] {exception_message});
     }
 
-    public bool SendError(long message_id, int exception_code,
+    public bool SendError(byte[] message_id, int exception_code,
       Exception exception) {
       ExceptionMessage exception_message = new ExceptionMessage.Builder()
         .SetCode(exception_code)
@@ -127,12 +127,12 @@ namespace Nohros.Ruby
       return SendError(message_id, new[] {exception_message});
     }
 
-    bool SendError(long message_id, IEnumerable<ExceptionMessage> exceptions) {
+    bool SendError(byte[] message_id, IEnumerable<ExceptionMessage> exceptions) {
       ErrorMessage error_message = new ErrorMessage.Builder()
         .AddRangeErrors(exceptions)
         .Build();
       RubyMessage message = new RubyMessage.Builder()
-        .SetId(message_id)
+        .SetId(ByteString.CopyFrom(message_id))
         .SetType((int) NodeMessageType.kNodeError)
         .SetMessage(error_message.ToByteString())
         .Build();
@@ -178,7 +178,6 @@ namespace Nohros.Ruby
       }
 
       RubyMessage message = new RubyMessage.Builder()
-        .SetId(0)
         .SetToken(StringResources.kAnnounceMessageToken)
         .SetType((int) NodeMessageType.kNodeAnnounce)
         .SetMessage(builder.Build().ToByteString())
