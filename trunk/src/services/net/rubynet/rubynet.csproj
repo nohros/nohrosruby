@@ -112,6 +112,7 @@
     <Compile Include="process\ServiceRubyProcess.cs" />
     <Compile Include="service\NopAggregatorService.cs" />
     <Compile Include="shell\commands\ClearCommand.cs" />
+    <Compile Include="shell\commands\DebugCommand.cs" />
     <Compile Include="shell\commands\HelpCommand.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -155,6 +156,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\extensions\extensions.csproj">
+      <Project>{84727DA5-79D3-4F42-BA0C-19FD583A6834}</Project>
+      <Name>extensions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\irubynet\irubyservice.csproj">
       <Project>{970C40CD-03F5-4761-9AE3-7E358E108E56}</Project>
       <Name>irubyservice</Name>

@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Ruby .NET process starter interfaces")]
-[assembly: AssemblyDescription("Ruby .NET process starter interfaces")]
+[assembly: AssemblyDescription("nohros.ruby.net")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Nohros Systems Inc")]
 [assembly: AssemblyProduct("Nohros Ruby")]
@@ -31,5 +31,5 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("0.5.2.1")]
-[assembly: AssemblyFileVersion("0.5.2.1")]
+[assembly: AssemblyVersion("0.5.2.3")]
+[assembly: AssemblyFileVersion("0.5.2.3")]
