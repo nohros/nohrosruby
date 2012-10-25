@@ -59,7 +59,7 @@ namespace Nohros.Ruby
     /// suitable for its operation.
     /// </para>
     /// </remarks>
-    bool Send(long message_id, int type, byte[] message);
+    bool Send(byte[] message_id, int type, byte[] message);
 
     /// <summary>
     /// Sends a ruby message to the ruby service.
@@ -91,6 +91,6 @@ namespace Nohros.Ruby
     /// suitable for its operation.
     /// </para>
     /// </remarks>
-    bool Send(long message_id, int type, byte[] message, string token);
+    bool Send(byte[] message_id, int type, byte[] message, string token);
   }
 }

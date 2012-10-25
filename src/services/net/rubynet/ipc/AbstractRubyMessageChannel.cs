@@ -58,7 +58,7 @@ namespace Nohros.Ruby
       // Create the reply packed using the service processing result.
       int message_size = message.ToByteArray().Length;
       RubyMessageHeader header = new RubyMessageHeader.Builder()
-        .SetId(message.Id)
+        .SetId(ByteString.CopyFrom(message.Id))
         .SetSize(message_size)
         .Build();
 
@@ -100,14 +100,14 @@ namespace Nohros.Ruby
     }
 
     /// <inheritdoc/>
-    public bool Send(long message_id, int type, byte[] message) {
+    public bool Send(byte[] message_id, int type, byte[] message) {
       return Send(message_id, type, message, string.Empty);
     }
 
     /// <inheritdoc/>
-    public bool Send(long message_id, int type, byte[] message, string token) {
+    public bool Send(byte[] message_id, int type, byte[] message, string token) {
       RubyMessage request = new RubyMessage.Builder()
-        .SetId(message_id)
+        .SetId(ByteString.CopyFrom(message_id))
         .SetMessage(ByteString.CopyFrom(message))
         .SetType(type)
         .Build();

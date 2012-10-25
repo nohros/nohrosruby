@@ -63,14 +63,12 @@ namespace Nohros.Ruby
 
     RubyMessagePacket GetMessagePacket(LogMessage log) {
       RubyMessage message = new RubyMessage.Builder()
-        .SetId(0)
         .SetToken("log-message")
         .SetType((int) LoggingMessageType.kLogMessage)
         .SetMessage(log.ToByteString())
         .Build();
 
       RubyMessageHeader header = new RubyMessageHeader.Builder()
-        .SetId(0)
         .SetSize(message.SerializedSize)
         .Build();
 
