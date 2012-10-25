@@ -29,7 +29,7 @@ namespace Nohros.Ruby
     }
 
     /// <inheritdoc/>
-    public bool Send(long id, int type, byte[] message) {
+    public bool Send(byte[] id, int type, byte[] message) {
       logger_.Info("Send => id:" + id + ",type:" + type);
       return true;
     }
@@ -39,40 +39,38 @@ namespace Nohros.Ruby
     }
 
     /// <inheritdoc/>
-    public bool SendError(long message_id, string error, int exception_code) {
-      logger_.Error(exception_code + " " + error, new Dictionary<string, string>
-      {
-        {"messageId", message_id.ToString()},
-      });
-      return true;
-    }
-
-    /// <inheritdoc/>
-    public bool SendError(long message_id, string error, int exception_code,
-      Exception exception) {
-      logger_.Error(exception_code + " " + error, exception,
-        new Dictionary<string, string>
-        {
-          {"messageId", message_id.ToString()},
-        });
-      return true;
-    }
-
-    /// <inheritdoc/>
-    public bool SendError(long message_id, int exception_code,
-      Exception exception) {
-      logger_.Error(exception_code.ToString(), exception,
-        new Dictionary<string, string>
-        {
-          {"messageId", message_id.ToString()},
-        });
-      return true;
-    }
-
-    /// <inheritdoc/>
-    public bool Send(long id, int type, byte[] message, string token) {
+    public bool Send(byte[] id, int type, byte[] message, string token) {
       logger_.Info("Send => id:" + id + ",type:" + type
         + ",token:" + token);
+      return true;
+    }
+
+    /// <inheritdoc/>
+    public bool SendError(byte[] message_id, string error, int exception_code) {
+      logger_.Error(exception_code + " " + error,
+        new Dictionary<string, string> {
+          {"messageId", message_id.ToString()},
+        });
+      return true;
+    }
+
+    /// <inheritdoc/>
+    public bool SendError(byte[] message_id, string error, int exception_code,
+      Exception exception) {
+      logger_.Error(exception_code + " " + error, exception,
+        new Dictionary<string, string> {
+          {"messageId", message_id.ToString()},
+        });
+      return true;
+    }
+
+    /// <inheritdoc/>
+    public bool SendError(byte[] message_id, int exception_code,
+      Exception exception) {
+      logger_.Error(exception_code.ToString(), exception,
+        new Dictionary<string, string> {
+          {"messageId", message_id.ToString()},
+        });
       return true;
     }
   }

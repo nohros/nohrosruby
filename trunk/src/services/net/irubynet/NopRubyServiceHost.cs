@@ -23,25 +23,25 @@ namespace Nohros.Ruby
       return false;
     }
 
-    public bool Send(long message_id, int type, byte[] message) {
+    public bool Send(byte[] message_id, int type, byte[] message) {
       return false;
     }
 
-    public bool SendError(long message_id, string error, int exception_code) {
+    public bool SendError(byte[] message_id, string error, int exception_code) {
       return false;
     }
 
-    public bool SendError(long message_id, string error, int exception_code,
+    public bool SendError(byte[] message_id, string error, int exception_code,
       Exception exception) {
       return false;
     }
 
-    public bool SendError(long message_id, int exception_code,
+    public bool SendError(byte[] message_id, int exception_code,
       Exception exception) {
       return false;
     }
 
-    public bool Send(long message_id, int type, byte[] message, string token) {
+    public bool Send(byte[] message_id, int type, byte[] message, string token) {
       return false;
     }
 

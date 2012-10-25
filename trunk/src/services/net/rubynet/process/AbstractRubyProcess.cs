@@ -139,7 +139,7 @@ namespace Nohros.Ruby
             + new JsonStringBuilder()
               .WriteBeginObject()
               .WriteMemberName("message")
-              .WriteMember("id", request.Id)
+              .WriteMember("id", request.Id.ToBase64())
               .WriteMember("token", request.Token)
               .WriteMember("type", request.Type));
         }
@@ -162,7 +162,6 @@ namespace Nohros.Ruby
         .Build();
 
       RubyMessage message = new RubyMessage.Builder()
-        .SetId(0)
         .SetToken(kLogAggregatorQuery)
         .SetType((int) NodeMessageType.kNodeQuery)
         .SetMessage(query.ToByteString())
@@ -336,6 +335,7 @@ namespace Nohros.Ruby
           "object 'o' is not an instance of the ServiceControlMessage class");
       }
 #endif
+      ++running_services_count_;
       // A try/catch block is used here to ensure the consistence of the
       // list of running services and to handle exceptions taht may occur
       // during service initialization and is not properly handled by
@@ -349,8 +349,6 @@ namespace Nohros.Ruby
           forwarding_aggregator_service_);
         var host = new RubyServiceHost(service, ruby_message_channel_,
           aggregator_logger, settings_);
-
-        ++running_services_count_;
         host.Start();
       } catch (Exception exception) {
         logger_.Error(string.Format(R.Log_MethodThrowsException,

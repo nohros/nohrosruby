@@ -20,7 +20,7 @@ namespace Nohros.Ruby.Protocol
     /// The value of this property is can be used to match request/response
     /// messages.
     /// </remarks>
-    long Id { get; }
+    byte[] Id { get; }
 
     /// <summary>
     /// Gets a number that identifies the type of message.
