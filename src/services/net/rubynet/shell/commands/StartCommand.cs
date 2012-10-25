@@ -91,7 +91,6 @@ namespace Nohros.Ruby.Shell
       ByteString start_control_message_bytes =
         start_control_message.ToByteString();
       RubyMessageHeader header = new RubyMessageHeader.Builder()
-        .SetId(0)
         .AddFacts(
           new KeyValuePair.Builder()
             .SetKey(StringResources.kServiceNameFact)
@@ -101,7 +100,6 @@ namespace Nohros.Ruby.Shell
         .Build();
 
       RubyMessage message = new RubyMessage.Builder()
-        .SetId(0)
         .SetToken("node-service-control")
         .SetType((int) NodeMessageType.kServiceControl)
         .SetMessage(start_control_message_bytes)
