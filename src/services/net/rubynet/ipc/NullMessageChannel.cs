@@ -26,13 +26,14 @@ namespace Nohros.Ruby
     }
 
     /// <inheritdoc/>
-    public bool Send(byte[] message_id, int type, byte[] message) {
+    public bool Send(byte[] message_id, int type, byte[] message,
+      byte[] destination) {
       return true;
     }
 
     /// <inheritdoc/>
-    public bool Send(byte[] message_id, int type, byte[] message, string token)
-    {
+    public bool Send(byte[] message_id, int type, byte[] message,
+      byte[] destination, string token) {
       return true;
     }
 
@@ -47,10 +48,6 @@ namespace Nohros.Ruby
 
     /// <inheritdoc/>
     public void Open() {
-    }
-
-    public bool Send(int id, int type, byte[] message) {
-      return true;
     }
   }
 }

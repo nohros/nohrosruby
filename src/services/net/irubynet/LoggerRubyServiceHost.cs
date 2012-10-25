@@ -29,7 +29,7 @@ namespace Nohros.Ruby
     }
 
     /// <inheritdoc/>
-    public bool Send(byte[] id, int type, byte[] message) {
+    public bool Send(byte[] id, int type, byte[] message, byte[] destination) {
       logger_.Info("Send => id:" + id + ",type:" + type);
       return true;
     }
@@ -39,14 +39,26 @@ namespace Nohros.Ruby
     }
 
     /// <inheritdoc/>
-    public bool Send(byte[] id, int type, byte[] message, string token) {
+    public bool SendError(byte[] message_id, int exception_code,
+      byte[] destination, Exception exception) {
+      logger_.Error(exception_code.ToString(), exception,
+        new Dictionary<string, string> {
+          {"messageId", message_id.ToString()},
+        });
+      return true;
+    }
+
+    /// <inheritdoc/>
+    public bool Send(byte[] id, int type, byte[] message, byte[] destination,
+      string token) {
       logger_.Info("Send => id:" + id + ",type:" + type
         + ",token:" + token);
       return true;
     }
 
     /// <inheritdoc/>
-    public bool SendError(byte[] message_id, string error, int exception_code) {
+    public bool SendError(byte[] message_id, int exception_code, string error,
+      byte[] destination) {
       logger_.Error(exception_code + " " + error,
         new Dictionary<string, string> {
           {"messageId", message_id.ToString()},
@@ -55,19 +67,9 @@ namespace Nohros.Ruby
     }
 
     /// <inheritdoc/>
-    public bool SendError(byte[] message_id, string error, int exception_code,
-      Exception exception) {
+    public bool SendError(byte[] message_id, int exception_code, string error,
+      byte[] destination, Exception exception) {
       logger_.Error(exception_code + " " + error, exception,
-        new Dictionary<string, string> {
-          {"messageId", message_id.ToString()},
-        });
-      return true;
-    }
-
-    /// <inheritdoc/>
-    public bool SendError(byte[] message_id, int exception_code,
-      Exception exception) {
-      logger_.Error(exception_code.ToString(), exception,
         new Dictionary<string, string> {
           {"messageId", message_id.ToString()},
         });
