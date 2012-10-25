@@ -37,6 +37,11 @@ namespace Nohros.Ruby.Shell
     public const string kHelpCommand = "help";
 
     /// <summary>
+    /// Launches and attaches a debugger to the process.s
+    /// </summary>
+    public const string kDebugCommand = "debug";
+
+    /// <summary>
     /// Start the process with a interactive shell. This flag could not be used
     /// when the service is running in service mode.
     /// </summary>

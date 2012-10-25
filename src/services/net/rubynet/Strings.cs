@@ -15,8 +15,11 @@ namespace Nohros.Ruby
 
     public const string kConfigFileName = "ruby.net.config";
     public const string kConfigFileRootName = "ruby";
-
+    public const string kServicesFolderSwitch = "services-folder";
+    public const string kDefaultSelfHostIPCChannelAddress = "*:8520";
+    public const string kDefaultServiceIPCChannelAddress = "127.0.0.1:8520";
     public const string kSelfHostSwitch = "self-host";
+    public const string kInteractiveRunningMode = "interactive";
 
     /// <summary>
     /// The name of the node that contains the configuration data for the
