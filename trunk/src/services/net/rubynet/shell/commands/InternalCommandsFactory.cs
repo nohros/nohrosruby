@@ -19,6 +19,7 @@ namespace Nohros.Ruby.Shell
       dispatch_table_.Add(ShellStrings.kStartCommand, CreateStartCommand);
       dispatch_table_.Add(ShellStrings.kStopCommand, CreateStopCommand);
       dispatch_table_.Add(ShellStrings.kHelpCommand, CreateHelpCommand);
+      dispatch_table_.Add(ShellStrings.kDebugCommand, CreateDebugCommand);
     }
 
     /// <summary>
@@ -38,11 +39,21 @@ namespace Nohros.Ruby.Shell
     }
 
     /// <summary>
+    /// Creates a <see cref="DebugCommand"/> object by parsing the command line
+    /// arguments.
+    /// </summary>
+    /// <param name="command_line_args">
+    /// A string containing the command line arguments
+    /// </param>
+    /// <returns></returns>
+    public DebugCommand CreateDebugCommand(string command_line_args) {
+      return new DebugCommand();
+    }
+
+    /// <summary>
     /// Creates a <see cref="StopCommand"/> object by parsing the command line
     /// arguments.
     /// </summary>
-    /// <param name="command_line_args">A <see cref="CommandLine"/> object
-    /// containing the command line arguments.</param>
     /// <returns></returns>
     public StopCommand CreateStopCommand(string command_line_args) {
       CommandLine command_line = CommandLine.FromString(command_line_args);
