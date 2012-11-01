@@ -88,7 +88,7 @@ namespace Nohros.Ruby
         .SetSource(service_.Facts.GetString(Strings.kServiceNameFact,
           Strings.kNodeServiceName))
         .Build();
-      return SendError(message_id, new[] {exception});
+      return SendError(message_id, destination, new[] {exception});
     }
 
     public bool SendError(byte[] message_id, int exception_code, string error,
@@ -102,7 +102,7 @@ namespace Nohros.Ruby
         .AddData(KeyValuePairs.FromKeyValuePair("backtrace",
           exception.StackTrace))
         .Build();
-      return SendError(message_id, new[] {exception_message});
+      return SendError(message_id, destination, new[] {exception_message});
     }
 
     /// <inheritdoc/>
@@ -127,10 +127,11 @@ namespace Nohros.Ruby
         .AddData(KeyValuePairs.FromKeyValuePair("backtrace",
           exception.StackTrace))
         .Build();
-      return SendError(message_id, new[] {exception_message});
+      return SendError(message_id, destination, new[] {exception_message});
     }
 
-    bool SendError(byte[] message_id, IEnumerable<ExceptionMessage> exceptions) {
+    bool SendError(byte[] message_id, byte[] destination,
+      IEnumerable<ExceptionMessage> exceptions) {
       ErrorMessage error_message = new ErrorMessage.Builder()
         .AddRangeErrors(exceptions)
         .Build();
@@ -138,6 +139,7 @@ namespace Nohros.Ruby
         .SetId(ByteString.CopyFrom(message_id))
         .SetType((int) NodeMessageType.kNodeError)
         .SetMessage(error_message.ToByteString())
+        .SetSender(ByteString.CopyFrom(destination))
         .Build();
       return Send(message);
     }
