@@ -53,7 +53,7 @@ namespace Nohros.Ruby
       running_services_count_ = 0;
       messages_tokens_ = new Dictionary<string, ResponseMessageHandler>();
       forwarding_aggregator_service_ =
-        new ForwardingAggregatorService(new NopAggregatorService());
+        new ForwardingAggregatorService(new LoggerAggregatorService());
       InitMessageTokens();
     }
     #endregion
