@@ -105,6 +105,7 @@ namespace Nohros.Ruby
         .SetId(ByteString.CopyFrom(message_id))
         .SetMessage(ByteString.CopyFrom(message))
         .SetType(type)
+        .SetSender(ByteString.CopyFrom(destination))
         .Build();
       return Send(request);
     }
