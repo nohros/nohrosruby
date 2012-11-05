@@ -111,6 +111,7 @@ namespace Nohros.Ruby
       RubyMessage request = new RubyMessage.Builder()
         .SetId(ByteString.CopyFrom(message_id))
         .SetType(type)
+        .SetSender(ByteString.CopyFrom(destination))
         .SetMessage(ByteString.CopyFrom(message))
         .Build();
       return Send(request);
