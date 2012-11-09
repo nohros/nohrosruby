@@ -38,6 +38,7 @@ namespace Nohros.Ruby
           : "string message_channel_endpoint");
       }
 #endif
+      context_ = context;
       socket_ = context.Socket(SocketType.ROUTER);
       message_channel_endpoint_ = message_channel_endpoint;
       logger_ = RubyLogger.ForCurrentProcess;
@@ -55,6 +56,9 @@ namespace Nohros.Ruby
       // is valid when GetMessagePacket is called.
       socket_.Bind(Transport.TCP, message_channel_endpoint_);
       base.Open();
+      if (logger_.IsDebugEnabled) {
+        logger_.Debug("self-message-channel is opened.");
+      }
     }
 
     /// <inheritdoc/>
@@ -105,6 +109,8 @@ namespace Nohros.Ruby
         }
       } catch (ZMQ.Exception exception) {
         if (exception.Errno == (int) ERRNOS.ETERM) {
+          logger_.Warn("The ZMQ context associated with the " +
+            "self-message-channel was terminated. Closing the channel.");
           Close();
         }
       } catch (System.Exception exception) {
