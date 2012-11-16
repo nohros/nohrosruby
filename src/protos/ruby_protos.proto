@@ -116,12 +116,22 @@ message RubyMessage {
     // Does not send an ACK.
     kRubyNoAck = 1;
 	
-	// Send the most simple form of ACK, which does not include the received
+	// The most simple form of ACK, which does not include the received
 	// message in the message body.
 	kRubySimpleAck = 2;
 	
 	// An ACK that includes the requested message in the message body.
-	kRubyRequestAck = 3;
+	kRubyRequestAck = 3
+	
+	// An kRubySimpleAck ACK that should be sent by the destination
+	// service. The service node does not respond to this type of ACK
+	// request, it is the responsability of the destination service.
+	kServiceSimpleAck = 4;
+	
+	// An kRubyRequestAck ACK that should be sent by the destination
+	// service. The service node does not respond to this type of ACK
+	// request, it is the responsability of the destination service.
+	kServiceRequestAck = 5;
   };
   
   // A flag that indicates the type of ACK that the sender wants to receive
