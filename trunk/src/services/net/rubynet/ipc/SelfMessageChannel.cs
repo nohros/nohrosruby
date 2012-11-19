@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Nohros.Ruby.Protocol.Control;
 using R = Nohros.Resources;
+using S = Nohros.Resources.StringResources;
 using Nohros.Ruby.Protocol;
 using Google.ProtocolBuffers;
 using ZMQ;
@@ -77,10 +79,25 @@ namespace Nohros.Ruby
             }
           }
         }
-      } catch (ZMQ.Exception) {
-        // TODO: Add logging
+      } catch (ZMQ.Exception e) {
+        logger_.Error(string.Format(
+          S.Log_MethodThrowsException, "Send", kClassName), e);
       }
       return false;
+    }
+
+    void SendAck(RubyMessage message) {
+      if (message.AckType == RubyMessage.Types.AckType.kRubyNoAck) {
+        return;
+      }
+
+      AckMessage ack_message =
+        (message.AckType == RubyMessage.Types.AckType.kRubyRequestAck)
+          ? new AckMessage.Builder().SetRequest(message).Build()
+          : new AckMessage.Builder().Build();
+
+      Send(message.Id.ToByteArray(), (int) NodeMessageType.kNodeAck,
+        ack_message.ToByteArray(), message.Sender.ToByteArray());
     }
 
     /// <inheritdoc/>
@@ -103,6 +120,9 @@ namespace Nohros.Ruby
           RubyMessage message = new RubyMessage.Builder(packet.Message)
             .SetSender(ByteString.CopyFrom(sender))
             .Build();
+
+          SendAck(message);
+
           return new RubyMessagePacket.Builder(packet)
             .SetMessage(message)
             .Build();

@@ -127,7 +127,8 @@ namespace Nohros.Ruby
       // get the next message packet and store it in mailbox for futher
       // processing.
       while (channel_is_opened_) {
-        mailbox_.Send(GetMessagePacket());
+        RubyMessagePacket packet = GetMessagePacket();
+        mailbox_.Send(packet);
       }
     }
 
