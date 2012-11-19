@@ -36,7 +36,7 @@ namespace Nohros.Ruby
     /// <c>false</c>.
     /// </returns>
     bool SendError(byte[] message_id, int exception_code, string error,
-      byte[] destiantion);
+      byte[] destianation);
 
     /// <summary>
     /// Sends a ruby message to the ruby service node informing the receiver
