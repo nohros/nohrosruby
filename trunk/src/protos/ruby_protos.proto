@@ -121,7 +121,7 @@ message RubyMessage {
 	kRubySimpleAck = 2;
 	
 	// An ACK that includes the requested message in the message body.
-	kRubyRequestAck = 3
+	kRubyRequestAck = 3;
 	
 	// An kRubySimpleAck ACK that should be sent by the destination
 	// service. The service node does not respond to this type of ACK
