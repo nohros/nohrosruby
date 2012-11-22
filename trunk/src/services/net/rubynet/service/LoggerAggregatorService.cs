@@ -23,13 +23,20 @@ namespace Nohros.Ruby
 
     /// <inheritdoc/>
     public void Log(LogMessage log) {
-      logger_.Info(new JsonStringBuilder()
+      var json_builder = new JsonStringBuilder()
         .WriteBeginObject()
         .WriteMember("application", log.Application)
         .WriteMember("level", log.Level)
         .WriteMember("reason", log.Reason)
         .WriteMember("user", log.User)
-        .ToString());
+        .WriteMemberName("categorization")
+        .WriteBeginObject();
+      foreach (KeyValuePair pair in log.CategorizationList) {
+        json_builder.WriteMember(pair.Key, pair.Value);
+      }
+      json_builder.WriteEndObject();
+
+      logger_.Info(json_builder.ToString());
     }
   }
 }
