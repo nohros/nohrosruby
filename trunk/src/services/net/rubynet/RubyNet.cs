@@ -71,35 +71,40 @@ namespace Nohros.Ruby
       string running_mode = switches
         .GetSwitchValue(Strings.kRunningModeSwitch);
       string services_folder = switches
-        .GetSwitchValue(Strings.kServicesFolderSwitch,
-          Strings.kDefaultServiceFolder);
+        .GetSwitchValue(Strings.kServicesFolderSwitch);
       string ipc_channel_address =
         switches.GetSwitchValue(Strings.kIPCChannelAddressSwitch);
 
-      // Set the IPC channel address to default if it was not specified and
-      // self host is enabled.
-      bool self_host = switches.HasSwitch(Strings.kSelfHostSwitch);
-      if (self_host && ipc_channel_address == string.Empty) {
-        ipc_channel_address = Strings.kDefaultSelfHostIPCChannelAddress;
-      }
-
-      // The default running mode for sel hosting is interactive.
-      if (self_host && running_mode == string.Empty) {
-        running_mode = Strings.kInteractiveRunningMode;
-      }
-
       var builder = new RubySettings.Builder();
-      builder
-        .SetIPCChannelAddress(ipc_channel_address)
-        .SetSelfHost(switches.HasSwitch(Strings.kSelfHostSwitch))
-        .SetServiceFolder(services_folder)
-        .SetRunningMode(
-          running_mode.CompareOrdinalIgnoreCase(Strings.kServiceRunningMode)
-            ? RunningMode.Service
-            : RunningMode.Interactive);
-      return new RubySettings.Loader(builder)
-        .Load(Path.AbsoluteForCallingAssembly(config_file_name),
-          config_file_root_node);
+      var loader = new RubySettings.Loader(builder);
+
+      // override the values set by class loader.
+      loader.ParseComplete += sender => {
+        bool self_host = switches.HasSwitch(Strings.kSelfHostSwitch);
+        if (self_host) {
+          int self_host_port =
+            switches.GetSwitchValueAsInt(Strings.kSelfHostSwitch,
+              RubySettings.kDefaultSelfHostPort);
+          builder.SetSelfHostAddress("*:" + self_host_port.ToString());
+
+          // The default running mode for self hosting is interactive.
+          if (running_mode == string.Empty) {
+            loader.RunningMode = Strings.kInteractiveRunningMode;
+          }
+        }
+
+        if (ipc_channel_address != string.Empty) {
+          builder.SetIPCChannelAddress(
+            Strings.kDefaultSelfHostIPCChannelAddress);
+        }
+
+        if (services_folder != string.Empty) {
+          builder.SetServiceFolder(services_folder);
+        }
+      };
+
+      return loader.Load(Path.AbsoluteForCallingAssembly(config_file_name),
+        config_file_root_node);
     }
 
     /// <summary>

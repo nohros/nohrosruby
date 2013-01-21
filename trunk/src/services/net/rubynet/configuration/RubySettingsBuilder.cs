@@ -14,22 +14,31 @@ namespace Nohros.Ruby
       LogLevel logger_level_;
       string prompt_;
       RunningMode running_mode_;
-      bool self_host_;
+      string self_host_address_;
       string service_folder_;
+      bool self_host_;
 
+      #region .ctor
       public Builder() {
         culture_ = CultureInfo.CurrentCulture;
         ipc_channel_address_ = string.Empty;
         logger_level_ = LogLevel.Info;
         prompt_ = Strings.kDefaultPrompt;
         running_mode_ = RunningMode.Service;
-        self_host_ = false;
+        self_host_address_ = Strings.kDefaultSelfHostIPCChannelAddress;
         service_folder_ = Strings.kDefaultServiceFolder;
+        self_host_ = false;
+      }
+      #endregion
+
+      public Builder SetSelfHostAddress(string self_host_address) {
+        self_host_address_ = self_host_address;
+        self_host_ = true;
+        return this;
       }
 
-      public Builder SetSelfHost(bool self_host) {
-        self_host_ = self_host;
-        return this;
+      public bool SelfHost {
+        get { return self_host_; }
       }
 
       public Builder SetIPCChannelAddress(string ipc_channel_address) {
@@ -66,20 +75,24 @@ namespace Nohros.Ruby
         return new RubySettings(this);
       }
 
-      public bool SelfHost {
-        get { return self_host_; }
+      public string SelfHostAddress {
+        get { return self_host_address_; }
+        internal set { SetSelfHostAddress(value); }
       }
 
       public string IPCChannelAddress {
         get { return ipc_channel_address_; }
+        internal set { SetIPCChannelAddress(ipc_channel_address_); }
       }
 
       public string ServiceFolder {
         get { return service_folder_; }
+        internal set { SetServiceFolder(service_folder_); }
       }
 
       public string Prompt {
         get { return prompt_; }
+        internal set { SetPrompt(prompt_); }
       }
 
       public CultureInfo Culture {

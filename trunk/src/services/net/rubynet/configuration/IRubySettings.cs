@@ -52,6 +52,11 @@ namespace Nohros.Ruby
     string IPCChannelAddress { get; }
 
     /// <summary>
+    /// Gets a address to use while we are selh hosting.
+    /// </summary>
+    string SelfHostAddress { get; }
+
+    /// <summary>
     /// Gets a value indicating if the self host mode is enabled.
     /// </summary>
     /// <value><c>true</c> if the sel-host mode is enabled.</value>
