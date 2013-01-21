@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
     <metadata>
         <id>nohros.ruby.protos</id>
         <version>0.0.1</version>
-        <title>Nohros Ruby .NET language binding</title>
+        <title>Nohros Ruby .NET precompiled classes</title>
         <authors>Nohros Inc</authors>
         <owners>Nohros Inc</owners>
         <projectUrl>http://code.google.com/p/nohrosruby/</projectUrl>
@@ -13,11 +13,13 @@
         <copyright>Nohros Inc</copyright>
         <language>en-US</language>
         <tags>csharp nohros ruby .net pre-compiled</tags>
+        <dependencies>
+            <group targetFramework=".NETFramework2.0">
+                <dependency id="Google.ProtocolBuffers" version="2.4.1" />
+            </group>
+        </dependencies>
     </metadata>
-    <dependencies>
-      <dependency id="Google.ProtocolBuffers" version="2.4" />
-    </dependencies>
     <files>
-        <file src="..\..\..\bin\release\protos\net\nohros.ruby.net.dll" target="lib\net20\nohros.ruby.protos.dll" />
+        <file src="..\..\..\bin\release\protos\net\nohros.ruby.protos.dll" target="lib\net20\nohros.ruby.protos.dll" />
     </files>
 </package>
