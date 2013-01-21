@@ -16,6 +16,8 @@ namespace Nohros.Ruby
                                         IConfiguration, IConsoleSettings,
                                         IRubySettings
   {
+    public const int kDefaultSelfHostPort = 8520;
+
     readonly CultureInfo culture_;
     readonly string ipc_channel_address_;
     readonly LogLevel logger_level_;
@@ -23,6 +25,7 @@ namespace Nohros.Ruby
     readonly string prompt_;
     readonly RunningMode running_mode_;
     readonly bool self_host_;
+    readonly string self_host_address_;
     readonly string services_folder_;
 
     #region .ctor
@@ -36,6 +39,7 @@ namespace Nohros.Ruby
       logger_level_ = builder.LoggerLevel;
       culture_ = builder.Culture;
       ipc_channel_address_ = builder.IPCChannelAddress;
+      self_host_address_ = builder.SelfHostAddress;
       self_host_ = builder.SelfHost;
 
       // By default the language specific service host is stored at path:
@@ -44,6 +48,10 @@ namespace Nohros.Ruby
         Path.GetFullPath(AppDomain.CurrentDomain.BaseDirectory + "..\\..\\");
     }
     #endregion
+
+    public string SelfHostAddress {
+      get { return self_host_address_; }
+    }
 
     public bool SelfHost {
       get { return self_host_; }
