@@ -7,7 +7,7 @@ namespace Nohros.Ruby
   public class QueryRequest
   {
     readonly byte[] id_;
-    readonly ByteString message_;
+    readonly byte[] message_;
     readonly string message_token_;
     readonly int message_type_;
 
@@ -25,7 +25,7 @@ namespace Nohros.Ruby
     /// <param name="message_type">
     /// A number that identifies the message's type.
     /// </param>
-    public QueryRequest(byte[] id, ByteString message, int message_type)
+    public QueryRequest(byte[] id, byte[] message, int message_type)
       : this(id, message, message_type, string.Empty) {
     }
 
@@ -45,7 +45,7 @@ namespace Nohros.Ruby
     /// <param name="message_token">
     /// A string that identifies the message's type.
     /// </param>
-    public QueryRequest(byte[] id, ByteString message, int message_type,
+    public QueryRequest(byte[] id, byte[] message, int message_type,
       string message_token) {
       id_ = id;
       message_ = message;
@@ -65,7 +65,7 @@ namespace Nohros.Ruby
     /// <summary>
     /// Gets a <see cref="ByteString"/> representing the message to be sent.
     /// </summary>
-    public ByteString Message {
+    public byte[] Message {
       get { return message_; }
     }
 
