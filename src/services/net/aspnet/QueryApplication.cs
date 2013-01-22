@@ -22,21 +22,20 @@ namespace Nohros.Ruby
     readonly Dictionary<string, QueryRequestFuture> futures_;
     readonly QueryLogger logger_;
     readonly string query_server_address_;
-    readonly IThreadFactory receiver_thread_factory_;
     readonly Socket socket_;
+    readonly object sync_;
     Thread receiver_thread_;
     bool running_;
 
     #region .ctor
-    public QueryApplication(Context context, string query_server_address,
-      IThreadFactory receiver_thread_factory) {
+    public QueryApplication(Context context, string query_server_address) {
       socket_ = context.Socket(SocketType.DEALER);
-      receiver_thread_factory_ = receiver_thread_factory;
       context_ = context;
       running_ = false;
       futures_ = new Dictionary<string, QueryRequestFuture>();
       logger_ = QueryLogger.ForCurrentProcess;
       query_server_address_ = query_server_address;
+      sync_ = new object();
     }
     #endregion
 
@@ -45,30 +44,96 @@ namespace Nohros.Ruby
       socket_.Dispose();
     }
 
-    public IFuture<byte[]> ProcessQuery(QueryRequest request,
-      AsyncCallback callback) {
-      return ProcessQuery(request, callback, null);
+    public IFuture<byte[]> ExecuteQuery(QueryRequest request) {
+      return ExecuteQuery(request, Timeout.Infinite);
     }
 
-    public IFuture<byte[]> ProcessQuery(QueryRequest request,
+    public IFuture<byte[]> ExecuteQuery(QueryRequest request, int timeout) {
+      return ExecuteQuery(request, timeout, delegate { });
+    }
+
+    public IFuture<byte[]> ExecuteQuery(QueryRequest request,
+      AsyncCallback callback) {
+      return ExecuteQuery(request, Timeout.Infinite, callback);
+    }
+
+    public IFuture<byte[]> ExecuteQuery(QueryRequest request,
+      int timeout, AsyncCallback callback) {
+      return ExecuteQuery(request, timeout, callback, null);
+    }
+
+    public IFuture<byte[]> ExecuteQuery(QueryRequest request,
       AsyncCallback callback, object state) {
+      return ExecuteQuery(request, Timeout.Infinite, callback, state);
+    }
+
+    public IFuture<byte[]> ExecuteQuery(QueryRequest request, int timeout,
+      AsyncCallback callback, object state) {
+      if (callback == null || request == null) {
+        throw new ArgumentNullException(callback == null
+          ? "callback"
+          : "request");
+      }
+
+      if (timeout != Timeout.Infinite && timeout < 0) {
+        throw new ArgumentOutOfRangeException(
+          StringResources.ArgumentOutOfRange_NeedNonNegNum);
+      }
+
       RubyMessagePacket packet = GetMessagePacket(request);
       try {
         SettableFuture<byte[]> future =
           new SettableFuture<byte[]>(state);
-        futures_.Add(Convert.ToBase64String(request.ID),
-          new QueryRequestFuture(future, callback, state));
+        string base64_request_id = Convert.ToBase64String(request.ID);
+        QueryRequestFuture response = new QueryRequestFuture(future, callback,
+          state);
+
+        lock (sync_) {
+          futures_.Add(base64_request_id, response);
+        }
+
+        // Set the timeout before send the message to ensure that the
+        // response comes before the timeout definition.
+        if (timeout != Timeout.Infinite) {
+          WaitHandle waiter = ((IAsyncResult) future).AsyncWaitHandle;
+          ThreadPool.RegisterWaitForSingleObject(waiter,
+            delegate(object obj, bool timed_out) {
+              IsTimedOut(timed_out, ((QueryRequestFuture) obj).Callback,
+                base64_request_id);
+            }, response, timeout, true);
+        }
 
         // Send the request and wait for the response. The request should
         // follow the REQ/REP pattern, which contains the following parts:
         //   1. [EMPTY FRAME]
         //   2. [MESSAGE]
-        // 
+        //
         socket_.SendMore();
         socket_.Send(packet.ToByteArray());
         return future;
       } catch (Exception e) {
+        logger_.Error(
+          string.Format(StringResources.Log_MethodThrowsException,
+            "ProcessResponse", kClassName), e);
         return Futures.ImmediateFailedFuture<byte[]>(e);
+      }
+    }
+
+    void IsTimedOut(bool timed_out, AsyncCallback callback,
+      string base64_request_id) {
+      QueryRequestFuture future;
+      if (timed_out && futures_.TryGetValue(base64_request_id, out future)) {
+        bool removed;
+        lock (sync_) {
+          // Removes the future from the futures collection inside the lock
+          // to prevent the callback to be executed more than once, in the case
+          // that the request completes while we are evaluating the timeout.
+          removed = futures_.Remove(base64_request_id);
+        }
+        if (removed) {
+          future.Response.SetException(new TimeoutException(), false);
+          callback(future.Response);
+        }
       }
     }
 
@@ -107,18 +172,19 @@ namespace Nohros.Ruby
     }
 
     void ProcessResponse(byte[] response) {
-      try {
-        var packet = RubyMessagePacket.ParseFrom(response);
-        byte[] request_id = packet.Message.Id.ToByteArray();
-        string base64_request_id = Convert.ToBase64String(request_id);
-        QueryRequestFuture request;
-        if (futures_.TryGetValue(base64_request_id, out request)) {
-          futures_.Remove(base64_request_id);
+      var packet = RubyMessagePacket.ParseFrom(response);
+      byte[] request_id = packet.Message.Id.ToByteArray();
+      string base64_request_id = Convert.ToBase64String(request_id);
+      QueryRequestFuture request;
+      if (futures_.TryGetValue(base64_request_id, out request)) {
+        bool removed;
+        lock (sync_) {
+          removed = futures_.Remove(base64_request_id);
         }
-      } catch (Exception exception) {
-        logger_.Error(
-          string.Format(StringResources.Log_MethodThrowsException,
-            "ProcessResponse", kClassName), exception);
+        if (removed) {
+          request.Response.Set(response, false);
+          request.Callback(request.Response);
+        }
       }
     }
 
@@ -147,7 +213,7 @@ namespace Nohros.Ruby
         .SetAckType(RubyMessage.Types.AckType.kRubyNoAck)
         .SetType(request.MessageType)
         .SetToken(request.MessageToken)
-        .SetMessage(request.Message)
+        .SetMessage(ByteString.CopyFrom(request.Message))
         .Build();
 
       RubyMessageHeader header = new RubyMessageHeader.Builder()
@@ -164,27 +230,42 @@ namespace Nohros.Ruby
     }
 
     /// <summary>
-    /// Starts the application.
+    /// Runs the application.
     /// </summary>
-    public void Start() {
-      socket_.Connect(Transport.TCP, query_server_address_);
-      receiver_thread_ = receiver_thread_factory_
-        .CreateThread(GetResponse);
+    /// <remarks>
+    /// <see cref="Run()"/> method blocks the calling thread until
+    /// <see cref="Stop"/> is called.
+    /// </remarks>
+    public void Run() {
+      socket_.Connect(query_server_address_);
+      receiver_thread_ = Thread.CurrentThread;
       running_ = true;
-      receiver_thread_.Start();
+      GetResponse();
+    }
+
+    /// <summary>
+    /// Runs the application.
+    /// </summary>
+    /// <remarks>
+    /// <see cref="Run(IExecutor)"/> method blocks the executor thread until
+    /// <see cref="Stop"/> is called.
+    /// </remarks>
+    public void Run(IExecutor executor) {
+      executor.Execute(Run);
     }
 
     /// <summary>
     /// Stops the application.
     /// </summary>
     public void Stop() {
-      futures_.Clear();
       if (receiver_thread_ != null) {
         // forces the socket to close.
         socket_.Dispose();
 
-        // wait the main thread to finish its work.
-        receiver_thread_.Join();
+        // Give some time to the main thread to finish its work.
+        if (!receiver_thread_.Join(30*1000)) {
+          receiver_thread_.Abort();
+        }
       }
     }
   }
