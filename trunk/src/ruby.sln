@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "extensions", "services\net\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rubylog", "services\net\rubylog\service\rubylog.csproj", "{EBEF07D1-5A08-4904-8C88-CE119D1E8E4D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "extensions", "services\net\extensions\extensions.csproj", "{84727DA5-79D3-4F42-BA0C-19FD583A6834}"
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -109,6 +111,24 @@ Global
 		{EBEF07D1-5A08-4904-8C88-CE119D1E8E4D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{EBEF07D1-5A08-4904-8C88-CE119D1E8E4D}.Release|Win32.ActiveCfg = Release|Any CPU
 		{EBEF07D1-5A08-4904-8C88-CE119D1E8E4D}.Release|x64.ActiveCfg = Release|Any CPU
+		{84727DA5-79D3-4F42-BA0C-19FD583A6834}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84727DA5-79D3-4F42-BA0C-19FD583A6834}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84727DA5-79D3-4F42-BA0C-19FD583A6834}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{84727DA5-79D3-4F42-BA0C-19FD583A6834}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{84727DA5-79D3-4F42-BA0C-19FD583A6834}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{84727DA5-79D3-4F42-BA0C-19FD583A6834}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{84727DA5-79D3-4F42-BA0C-19FD583A6834}.Purify|Any CPU.ActiveCfg = Release|Any CPU
+		{84727DA5-79D3-4F42-BA0C-19FD583A6834}.Purify|Any CPU.Build.0 = Release|Any CPU
+		{84727DA5-79D3-4F42-BA0C-19FD583A6834}.Purify|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{84727DA5-79D3-4F42-BA0C-19FD583A6834}.Purify|Mixed Platforms.Build.0 = Release|Any CPU
+		{84727DA5-79D3-4F42-BA0C-19FD583A6834}.Purify|Win32.ActiveCfg = Release|Any CPU
+		{84727DA5-79D3-4F42-BA0C-19FD583A6834}.Purify|x64.ActiveCfg = Release|Any CPU
+		{84727DA5-79D3-4F42-BA0C-19FD583A6834}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84727DA5-79D3-4F42-BA0C-19FD583A6834}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84727DA5-79D3-4F42-BA0C-19FD583A6834}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{84727DA5-79D3-4F42-BA0C-19FD583A6834}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{84727DA5-79D3-4F42-BA0C-19FD583A6834}.Release|Win32.ActiveCfg = Release|Any CPU
+		{84727DA5-79D3-4F42-BA0C-19FD583A6834}.Release|x64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -119,6 +139,7 @@ Global
 		{970C40CD-03F5-4761-9AE3-7E358E108E56} = {959F77CD-D65A-494E-9D8C-B0D0D825818A}
 		{84727DA5-79D3-4F42-BA0C-19FD583A6834} = {959F77CD-D65A-494E-9D8C-B0D0D825818A}
 		{EBEF07D1-5A08-4904-8C88-CE119D1E8E4D} = {959F77CD-D65A-494E-9D8C-B0D0D825818A}
+		{84727DA5-79D3-4F42-BA0C-19FD583A6834} = {959F77CD-D65A-494E-9D8C-B0D0D825818A}
 		{B0CB5BEE-87F9-4CE4-B815-1B538812A2AD} = {E0A2F434-C7FC-4FBA-86B6-128CA4A35178}
 	EndGlobalSection
 EndGlobal
