@@ -6,7 +6,6 @@
 
 #include <base/logging.h>
 #include <base/string_number_conversions.h>
-#include <google/protobuf/repeated_field.h>
 #include <ruby_protos.pb.h>
 
 #include "node/zeromq/context.h"
@@ -17,12 +16,14 @@
 
 namespace node {
 
+namespace rp = ruby::protocol;
+
 MessageReceiver::MessageReceiver(zmq::Context* context, MessageRouter* router)
   : context_(context),
     router_(router),
     message_channel_port_(node::kMessageChannelPort),
     running_(false) {
-  //DCHECK(context);
+  DCHECK(context);
   DCHECK(router);
 }
 
@@ -62,7 +63,7 @@ void MessageReceiver::OnMessageReceived(zmq::Socket* socket,
   // The message format is:
   //   [sender id][empty frame][message]
   scoped_refptr<zmq::Message> message = message_parts[2];
-  protocol::RubyMessagePacket packet;
+  rp::RubyMessagePacket packet;
   if (!packet.ParseFromArray(message->mutable_data(), message->size())) {
     LOG (WARNING) << "The received message is not a valid ruby message packet.";
     return;
@@ -81,7 +82,7 @@ void MessageReceiver::OnMessageReceived(zmq::Socket* socket,
 
 void MessageReceiver::DispatchMessage(zmq::Socket* socket,
   const RouteSet& destinations,
-  const protocol::RubyMessagePacket* packet) {
+  const rp::RubyMessagePacket* packet) {
   DCHECK(destinations.size());
 
   int packet_size = packet->ByteSize();

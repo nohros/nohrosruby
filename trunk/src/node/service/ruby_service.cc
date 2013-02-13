@@ -34,22 +34,16 @@ zmq::ErrorDelegate* GetErrorHandler() {
 
 RubyService::RubyService(MessageRouter* router)
   : ServiceBase(node::kRubyServiceName),
-    context_(new zmq::Context()),
     message_channel_port_(node::kMessageChannelPort),
-    message_receiver_(new MessageReceiver(NULL, router)),
-    node_message_loop_(new NodeMessageLoop(context_.get(), router)),
-    node_message_loop_delegate_(
-      new NodeMessageLoopThreadDelegate(node_message_loop_.get())) {
-  DCHECK(!context_.get());
-  DCHECK(!node_message_loop_.get());
-  DCHECK(!node_message_loop_delegate_.get());
+    router_(router) {
+  DCHECK(!router_);
 }
 
 void RubyService::OnStart(const std::vector<std::wstring>& arguments) {
   LOG(INFO) << "Service has been started";
 
   const CommandLine& switches = *CommandLine::ForCurrentProcess();
-  context_->set_error_delegate(GetErrorHandler());
+
   // Override the default message channel port.
   if (switches.HasSwitch(switches::kMessageChannelPort)) {
     std::string value =
@@ -67,22 +61,25 @@ void RubyService::OnStart(const std::vector<std::wstring>& arguments) {
   }
 
   // Set up the service tracker address, if supplied.
+  // TODO(neylor.silva) Tracker address code.
   if (switches.HasSwitch(switches::kServiceTrackerAddress)) {
   }
 
+  // Set up the zeromq context.
+  context_.reset(new zmq::Context());
   context_->set_error_delegate(GetErrorHandler());
   if (!context_->Open(1)) {
-    LOG(ERROR) << "Context could not be opened. Error: "
-               << context_->GetErrorMessage();
-    return;
+    NOTREACHED() << "zmq::Context open failed.";
   }
 
-  /*node_message_loop_delegate_.reset(
+  message_receiver_.reset(new MessageReceiver(context_.get(), router_));
+  node_message_loop_.reset(new NodeMessageLoop(context_.get(), router_));
+  node_message_loop_delegate_.reset(
     new NodeMessageLoopThreadDelegate(node_message_loop_.get()));
   if (!base::PlatformThread::Create(
     0, node_message_loop_delegate_.get(), &control_message_thread_)) {
     NOTREACHED() << "Control message thread creation failed.";
-  }*/
+  }
 
   message_receiver_->Start();
 }

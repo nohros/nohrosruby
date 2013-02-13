@@ -11,9 +11,11 @@
 
 #include <base/memory/ref_counted.h>
 
+namespace ruby {
 namespace protocol {
 class RubyMessagePacket;
 class RubyMessageHeader;
+}
 }
 
 namespace zmq {
@@ -51,7 +53,7 @@ class MessageReceiver {
   // Dispatches a message packet to its destiantion.
   void DispatchMessage(zmq::Socket* socket,
     const std::vector<std::string>& destinations,
-    const protocol::RubyMessagePacket* packet);
+    const ruby::protocol::RubyMessagePacket* packet);
 
   zmq::Context* context_;
   MessageRouter* router_;

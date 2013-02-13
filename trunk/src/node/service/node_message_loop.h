@@ -19,6 +19,16 @@ class Socket;
 class Message;
 }
 
+namespace ruby {
+namespace protocol {
+namespace control {
+class AnnounceMessage;
+class QueryMessage;
+}
+class RubyMessage;
+}
+}
+
 class FilePath;
 
 namespace node {
@@ -28,6 +38,15 @@ class MessageRouter;
 class NodeMessageLoop {
  public:
   typedef std::vector<scoped_refptr<zmq::Message>> MessageParts;
+
+  // Error codes during message processing.
+  enum ProcessingError {
+    RUBY_CONTROL_NO_ERROR = 0,
+    RUBY_CONTROL_INVALID_MESSAGE = 1
+  };
+
+  // String version of message processing error codes.
+  static const char* kInvalidMessage;
 
   NodeMessageLoop(zmq::Context* context, MessageRouter* message_router);
   ~NodeMessageLoop();
@@ -54,6 +73,18 @@ class NodeMessageLoop {
 
   // Method that is called when a message is received.
   void OnMessageReceived(const MessageParts& message_parts);
+
+  // Message processing methods.
+  void ProcessMessage(const ruby::protocol::RubyMessage& message);
+  void Announce(const std::string& message);
+  void QueryService(const std::string& message);
+  
+  // Converts a error code to a human readable message.
+  // Returns an empty string if error_code is NODE_CONTROL_NO_ERROR
+  std::string ErrorCodeToString(ProcessingError error_code);
+
+  // Sends an error message to the message sender.
+  void ReportError(ProcessingError error_code);
 
   zmq::Context* context_;
   MessageRouter* message_router_;

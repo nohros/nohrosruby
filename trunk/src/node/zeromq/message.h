@@ -81,14 +81,14 @@ class Message : public base::RefCountedThreadSafe<Message> {
 
   virtual ~Message();
 
+  void* data_;
+
  private:
   // Release the message referenced by the |hint| argument. This method is
-  // called by zeromq lirary once the message buffer is no longer required. We
+  // called by zeromq library once the message buffer is no longer required. We
   // just decrement the reference count of the message referenced by |hint|,
   // the resources are freed by the destructor.
   static void ReleaseMessage(void* data, void* hint);
-
-  void* data_;
 
   // The raw zeromq message.
   zmq_msg_t* message_;

@@ -46,7 +46,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>obj\$(Configuration)\</IntDir>
-    <TargetName>RubyServiceNode</TargetName>
+    <TargetName>nrsnode</TargetName>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -76,14 +77,15 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
       <TreatWarningAsError>true</TreatWarningAsError>
       <ExceptionHandling>Sync</ExceptionHandling>
       <AdditionalIncludeDirectories>.;..;..\..;..\third_party\chrome\src;..\third_party\zeromq\include;..\third_party\protobuf\src;..\..\protos\parsers\c;</AdditionalIncludeDirectories>
       <AdditionalOptions>/wd4310  /wd4100  /wd4481 /wd4512 /wd4244  /wd4127 /wd4748</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PreprocessorDefinitions>_MBCS;OFFICIAL_BUILD;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -110,6 +112,7 @@
     <ClInclude Include="service_base.h" />
     <ClInclude Include="service_logging.h" />
     <ClInclude Include="service_metadata.h" />
+    <ClInclude Include="zero_copy_message.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\protos\parsers\c\common.pb.cc" />
@@ -123,6 +126,7 @@
     <ClCompile Include="routing_database.cc" />
     <ClCompile Include="services_database.cc" />
     <ClCompile Include="service_metadata.cc" />
+    <ClCompile Include="zero_copy_message.cc" />
     <ClInclude Include="constants.h">
       <FileType>CppCode</FileType>
     </ClInclude>

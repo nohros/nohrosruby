@@ -8,6 +8,7 @@
 
 #include <base/logging.h>
 #include <base/string_number_conversions.h>
+#include <google/protobuf/repeated_field.h>
 
 #include <ruby_protos.pb.h>
 #include <control.pb.h>
@@ -16,8 +17,17 @@
 #include "node/zeromq/message.h"
 #include "node/service/constants.h"
 #include "node/service/message_router.h"
+#include "node/service//zero_copy_message.h"
 
 namespace node {
+
+const char* NodeMessageLoop::kInvalidMessage = 
+  "Invalid message format.";
+
+namespace rpc = ::ruby::protocol::control;
+namespace rp = ::ruby::protocol;
+namespace gpb = google::protobuf;
+
 class ServicesDatabase;
 
 NodeMessageLoop::NodeMessageLoop(zmq::Context* context,
@@ -28,7 +38,8 @@ NodeMessageLoop::NodeMessageLoop(zmq::Context* context,
     run_called_(false),
     quit_called_(false),
     running_(false) {
-  //DCHECK(context);
+  DCHECK(context);
+  DCHECK(message_router);
 }
 
 NodeMessageLoop::~NodeMessageLoop() {
@@ -69,6 +80,9 @@ void NodeMessageLoop::Run() {
 
 void NodeMessageLoop::Quit() {
   quit_called_ = true;
+  if (dealer_.get()) {
+    dealer_->Close();
+  }
 }
 
 void NodeMessageLoop::OnMessageReceived(const MessageParts& message_parts) {
@@ -83,7 +97,7 @@ void NodeMessageLoop::OnMessageReceived(const MessageParts& message_parts) {
   for (MessageParts::const_iterator i = message_parts.begin() + 1;
     i != message_parts.end(); i += 2) {
     zmq::Message* message = i->get();
-    protocol::RubyMessagePacket packet;
+    rp::RubyMessagePacket packet;
     if (!packet.ParseFromArray(message->mutable_data(), message->size())) {
       LOG(WARNING) << "The received message is not a valid ruby message packet.";
       continue;
@@ -99,15 +113,18 @@ void NodeMessageLoop::OnMessageReceived(const MessageParts& message_parts) {
 bool NodeMessageLoop::RegisterRoute() {
   // We need to send a message to the message receiver to discover our
   // routing address.
-  protocol::RubyMessagePacket packet;
-  packet.mutable_message();
+  rp::RubyMessagePacket packet;
+  rp::RubyMessage* msg = packet.mutable_message();
+  msg->set_id(0);
 
   int zmq_message_size = packet.ByteSize();
-  scoped_refptr<zmq::Message> zmq_message(new zmq::Message(zmq_message_size));
+  scoped_refptr<ZeroCopyMessage> zero_copy_message(
+    new ZeroCopyMessage(zmq_message_size));
+  packet.SerializeToZeroCopyStream(zero_copy_message);
 
   //  Packet pattern should be [EMPTY FRAME] [DATA]
   if (!dealer_->Send(zmq::kSendMore) ||
-    !dealer_->Send(zmq_message, zmq_message_size, zmq::kNoFlags)) {
+    !dealer_->Send(zero_copy_message, zmq_message_size, zmq::kNoFlags)) {
     return false;
   }
 
@@ -136,20 +153,57 @@ bool NodeMessageLoop::RegisterRoute() {
     message_router_->AddRoute(packet.message().sender(), facts);
 }
 
-/*void NodeMessageLoop::ProcessMessage(const protocol::RubyMessage& message) {
-  switch(message.type()) {
-    case protocol::control::kServiceControlStart:
+void NodeMessageLoop::ProcessMessage(const rp::RubyMessage& ruby_message) {
+  if (!ruby_message.has_message()) {
+    ReportError(RUBY_CONTROL_INVALID_MESSAGE);
+    return;
+  }
+
+  std::string message = ruby_message.message();
+  switch(ruby_message.type()) {
+    case rpc::kServiceControl:
       break;
 
-    case protocol::control::kServiceControlStop:
+    case rpc::kNodeAnnounce:
+      Announce(message);
       break;
 
-    case protocol::control::kServiceControlPause:
-      break;
-
-    case protocol::control::kServiceControlContinue:
+    case rpc::kNodeQuery:
+      QueryService(message);
       break;
   }
-}*/
+}
+
+void NodeMessageLoop::Announce(const std::string& message) {
+  rpc::AnnounceMessage announce_message;
+  if (!announce_message.ParseFromString(message)) {
+    ReportError(RUBY_CONTROL_INVALID_MESSAGE);
+    return;
+  }
+
+  ServiceFactSet facts;
+  announce_message.facts();
+  for (gpb::
+}
+
+void NodeMessageLoop::QueryService(const std::string& message) {
+}
+
+void NodeMessageLoop::ReportError(ProcessingError error_code) {
+  ruby::ExceptionMessage exception;
+  exception.set_code(error_code);
+  exception.set_message(ErrorCodeToString(error_code));
+  exception.set_source(kNodeServiceName);
+}
+
+std::string NodeMessageLoop::ErrorCodeToString(ProcessingError error_code) {
+  switch(error_code) {
+    case RUBY_CONTROL_NO_ERROR:
+      return std::string();
+
+    case RUBY_CONTROL_INVALID_MESSAGE:
+      return kInvalidMessage;
+  }
+}
 
 }  // namespace node

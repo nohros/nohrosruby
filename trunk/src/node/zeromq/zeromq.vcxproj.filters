@@ -11,5 +11,7 @@
     <ClCompile Include="context.cc" />
     <ClCompile Include="socket.cc" />
     <ClCompile Include="message.cc" />
+    <ClCompile Include="context_unittests.cc" />
+    <ClCompile Include="run_all_unittests.cc" />
   </ItemGroup>
 </Project>

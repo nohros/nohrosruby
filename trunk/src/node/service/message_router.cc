@@ -13,6 +13,8 @@
 
 namespace node {
 
+namespace rp = ::ruby::protocol;
+
 typedef 
   google::protobuf::RepeatedPtrField<ruby::KeyValuePair> KeyValuePairSet;
 
@@ -28,7 +30,7 @@ MessageRouter::~MessageRouter() {
 }
 
 RouteSet MessageRouter::GetRoutes(const std::string& sender,
-  protocol::RubyMessagePacket* packet) {
+  rp::RubyMessagePacket* packet) {
   DCHECK(packet);
 
   RouteSet routes;
@@ -90,7 +92,7 @@ bool MessageRouter::AddRoute(const std::string& address,
 }
 
 bool MessageRouter::GetServiceFacts(
-  const protocol::RubyMessageHeader& header, ServiceFactSet* set) {
+  const rp::RubyMessageHeader& header, ServiceFactSet* set) {
   KeyValuePairSet facts = header.facts();
   for (KeyValuePairSet::iterator fact = facts.begin();
     fact != facts.end(); ++fact) {
