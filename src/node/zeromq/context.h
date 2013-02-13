@@ -43,7 +43,7 @@ class Message;
 //
 // The tipical usage is to centralize the code designed to handle low-level IO
 // errors.
-class ErrorDelegate : public base::RefCountedThreadSafe<ErrorDelegate> {
+class ErrorDelegate : public base::RefCounted<ErrorDelegate> {
  public:
   ErrorDelegate();
 
@@ -60,7 +60,7 @@ class ErrorDelegate : public base::RefCountedThreadSafe<ErrorDelegate> {
   virtual int OnError(int error, Context* context, Socket* socket) = 0;
 
  protected:
-  friend class base::RefCountedThreadSafe<ErrorDelegate>;
+  friend class base::RefCounted<ErrorDelegate>;
 
   virtual ~ErrorDelegate();
 };

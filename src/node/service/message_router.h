@@ -13,9 +13,11 @@
 
 #include "node/service/services_database.h"
 
+namespace ruby {
 namespace protocol {
 class RubyMessagePacket;
 class RubyMessageHeader;
+}
 }
 
 namespace sql {
@@ -45,13 +47,13 @@ class MessageRouter {
   // Gets the routes for a message. |sender| is the the sender ID and |packet|
   // is the message packet that need to be routed.
   RouteSet GetRoutes(const std::string& sender,
-    protocol::RubyMessagePacket* packet);
+    ruby::protocol::RubyMessagePacket* packet);
 
   // Adds a route for the specified service facts.
   bool AddRoute(const std::string& route, const ServiceFactSet& facts);
 
  private:
-  bool GetServiceFacts(const protocol::RubyMessageHeader& header,
+  bool GetServiceFacts(const ruby::protocol::RubyMessageHeader& header,
     ServiceFactSet* set);
 
   // The database used to store information about the installed services.

@@ -29,10 +29,10 @@ Message::Message(int size) {
 }
 
 Message::~Message() {
+  zmq_msg_close(message_);
   delete[] data_;
   delete message_;
   data_ = NULL;
-  zmq_msg_close(message_);
 }
 
 size_t Message::size() {

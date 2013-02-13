@@ -46,6 +46,11 @@ class RubyService
     NodeMessageLoop* node_message_loop_;
   };
 
+  // Member initialization functions.
+  bool InitializeContext();
+  bool InitializeMessageLoop();
+  bool InitializeMessageReceiver();
+
   int message_channel_port_;
 
   base::PlatformThreadHandle control_message_thread_;
@@ -55,6 +60,8 @@ class RubyService
   scoped_ptr<NodeMessageLoop> node_message_loop_;
   scoped_ptr<MessageReceiver> message_receiver_;
   scoped_ptr<zmq::Context> context_;
+
+  MessageRouter* router_;
 
   DISALLOW_COPY_AND_ASSIGN(RubyService);
 };

@@ -22,6 +22,7 @@
     <ClInclude Include="routing_database.h" />
     <ClInclude Include="message_receiver.h" />
     <ClInclude Include="node_message_loop.h" />
+    <ClInclude Include="zero_copy_message.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="service_main.cc" />
@@ -45,6 +46,7 @@
     <ClCompile Include="routing_database.cc" />
     <ClCompile Include="message_receiver.cc" />
     <ClCompile Include="node_message_loop.cc" />
+    <ClCompile Include="zero_copy_message.cc" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="protos">
