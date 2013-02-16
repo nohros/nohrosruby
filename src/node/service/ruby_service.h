@@ -22,46 +22,57 @@ class Socket;
 namespace node {
 class MessageRouter;
 class MessageReceiver;
-class NodeMessageLoop;
+class MessageLoop;
+class ServicesDatabase;
+class RoutingDatabase;
 
-class RubyService
-    : public ServiceBase {
+class RubyService : public ServiceBase {
  public:
-  RubyService(MessageRouter* message_router);
-
+  RubyService();
   ~RubyService();
 
  protected:
   // Implementation of the SeviceBase methods.
-  void OnStart(const std::vector<std::wstring>& arguments) OVERRIDE;
+  bool OnStart(const std::vector<std::wstring>& arguments) OVERRIDE;
   void OnStop() OVERRIDE;
 
  private:
-  class NodeMessageLoopThreadDelegate : public base::PlatformThread::Delegate {
+  class MessageLoopThreadDelegate : public base::PlatformThread::Delegate {
    public:
-    explicit NodeMessageLoopThreadDelegate(
-      NodeMessageLoop* control_message_loop);
+    explicit MessageLoopThreadDelegate(MessageLoop* control_message_loop);
     virtual void ThreadMain() OVERRIDE;
    private:
-    NodeMessageLoop* node_message_loop_;
+    MessageLoop* message_loop_;
+  };
+
+  class ServiceThreadDelegate : public base::PlatformThread::Delegate {
+   public:
+    explicit ServiceThreadDelegate(RubyService* service);
+    virtual void ThreadMain() OVERRIDE;
+   private:
+    RubyService* service_;
   };
 
   // Member initialization functions.
   bool InitializeContext();
   bool InitializeMessageLoop();
   bool InitializeMessageReceiver();
+  void Run();
 
   int message_channel_port_;
 
-  base::PlatformThreadHandle control_message_thread_;
+  base::PlatformThreadHandle service_thread_;
 
   // Store it, because it must outlive the thread.
-  scoped_ptr<NodeMessageLoopThreadDelegate> node_message_loop_delegate_;
-  scoped_ptr<NodeMessageLoop> node_message_loop_;
+  scoped_ptr<ServiceThreadDelegate> service_thread_delegate_;
+  scoped_ptr<MessageLoop> message_loop_;
   scoped_ptr<MessageReceiver> message_receiver_;
   scoped_ptr<zmq::Context> context_;
+  scoped_ptr<MessageRouter> message_router_;
 
-  MessageRouter* router_;
+  // Databases
+  scoped_ptr<ServicesDatabase> services_db_;
+  scoped_ptr<RoutingDatabase> routing_db_;
 
   DISALLOW_COPY_AND_ASSIGN(RubyService);
 };

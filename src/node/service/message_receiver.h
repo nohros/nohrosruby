@@ -33,7 +33,7 @@ class MessageReceiver {
   ~MessageReceiver();
 
   // Start the MessageReceiver. This blocks until Stop is called.
-  void Start();
+  void Run();
 
   // Stop an earlier call to Start(), causing the receiver to stop receiving
   // messages.

@@ -33,7 +33,7 @@ class ServiceBase {
   // Manager issues a Start command, which results in a call to the OnStart
   // method in the service. The service is not started until the Start command
   // is executed.
-  void Run();
+  void Start();
 
   // Gets the service's name as seen by the SCM.
   const std::wstring& service_name() const { return service_name_; };
@@ -41,9 +41,9 @@ class ServiceBase {
  protected:
   // Executed when a Start command is sent to the service by the Service
   // Control Manager (SCM). OnStart is the method in which you specify the
-  // behavior of the service. OnStart can take arugments as a way to pass
+  // behavior of the service. OnStart can take arguments as a way to pass
   // data, but this usage is rare.
-  virtual void OnStart(const std::vector<std::wstring>& arguments) = 0;
+  virtual bool OnStart(const std::vector<std::wstring>& arguments) = 0;
 
   // Executed when a Stop command is sent to the service by the Service Control
   // Manager (SCM).
