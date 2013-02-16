@@ -90,9 +90,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="context.cc" />
-    <ClCompile Include="context_unittests.cc" />
     <ClCompile Include="message.cc" />
-    <ClCompile Include="run_all_unittests.cc" />
     <ClCompile Include="socket.cc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -37,7 +37,7 @@ ServiceBase::ServiceBase(const wchar_t* service_name)
   g_service = this;
 }
 
-void ServiceBase::Run() {
+void ServiceBase::Start() {
   SERVICE_TABLE_ENTRY entry[] = {
     { TEXT(""), ServiceMainCallback }, { NULL, NULL }
   };
@@ -96,12 +96,17 @@ void ServiceBase::ServiceQueuedMainCallback(
     return;
   }
 
+  DWORD service_state = SERVICE_STOPPED;
+  if (OnStart(arguments)) {
+    service_state = SERVICE_RUNNING;
+  }
+
   service_status_.dwCheckPoint = 0;
   service_status_.dwWaitHint = 0;
-  if (!SetServiceState(SERVICE_RUNNING)) {
+  if (!SetServiceState(service_state)) {
     LOG_SERVICE_START(ERROR, service_name_.c_str());
     VLOG(1)
-      << "Failed to set the state of the service to RUNNING. Error code: "
+      << "Failed to set the state of the service. Error code: "
       << logging::GetLastSystemErrorCode();
     
     // Try to put the service into the STOPPED state, if this calls fail
@@ -109,8 +114,6 @@ void ServiceBase::ServiceQueuedMainCallback(
     SetServiceState(SERVICE_STOPPED);
     return;
   }
-
-  OnStart(arguments);
 }
 
 // static

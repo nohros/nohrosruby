@@ -30,7 +30,7 @@ MessageReceiver::MessageReceiver(zmq::Context* context, MessageRouter* router)
 MessageReceiver::~MessageReceiver() {
 }
 
-void MessageReceiver::Start() {
+void MessageReceiver::Run() {
   std::string endpoint("tcp://*:");
   endpoint.append(base::IntToString(message_channel_port_));
 

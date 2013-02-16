@@ -17,12 +17,16 @@
 #include "node/zeromq/message.h"
 #include "node/service/constants.h"
 #include "node/service/message_router.h"
-#include "node/service//zero_copy_message.h"
+#include "node/service/zero_copy_message.h"
+#include "node/service/services_database.h"
 
 namespace node {
 
-const char* NodeMessageLoop::kInvalidMessage = 
+const char* MessageLoop::kInvalidMessage = 
   "Invalid message format.";
+
+const char* MessageLoop::kInvalidErrorCode =
+  "Unknown error code.";
 
 namespace rpc = ::ruby::protocol::control;
 namespace rp = ::ruby::protocol;
@@ -30,22 +34,24 @@ namespace gpb = google::protobuf;
 
 class ServicesDatabase;
 
-NodeMessageLoop::NodeMessageLoop(zmq::Context* context,
-  MessageRouter* message_router)
+MessageLoop::MessageLoop(zmq::Context* context, MessageRouter* message_router,
+  ServicesDatabase* services_db)
   : context_(context),
     message_router_(message_router),
     message_channel_port_(node::kMessageChannelPort),
     run_called_(false),
     quit_called_(false),
-    running_(false) {
+    running_(false),
+    services_db_(services_db) {
   DCHECK(context);
   DCHECK(message_router);
+  DCHECK(services_db);
 }
 
-NodeMessageLoop::~NodeMessageLoop() {
+MessageLoop::~MessageLoop() {
 }
 
-void NodeMessageLoop::Run() {
+void MessageLoop::Run() {
   DCHECK(!run_called_);
   run_called_ = true;
 
@@ -78,14 +84,14 @@ void NodeMessageLoop::Run() {
   running_ = false;
 }
 
-void NodeMessageLoop::Quit() {
+void MessageLoop::Quit() {
   quit_called_ = true;
   if (dealer_.get()) {
     dealer_->Close();
   }
 }
 
-void NodeMessageLoop::OnMessageReceived(const MessageParts& message_parts) {
+void MessageLoop::OnMessageReceived(const MessageParts& message_parts) {
   int no_of_parts = message_parts.size();
   if (no_of_parts % 3 != 0) {
     LOG (WARNING) << "Received message has a invalid number of parts."
@@ -110,12 +116,23 @@ void NodeMessageLoop::OnMessageReceived(const MessageParts& message_parts) {
   }
 }
 
-bool NodeMessageLoop::RegisterRoute() {
+bool MessageLoop::RegisterRoute() {
+  // Set the facts that identifies the ruby service node.
+  ServiceFactSet facts;
+  facts.push_back(std::make_pair(kServiceNameFact, kNodeServiceName));
+
+  // Ensure that the ruby service is registered against the services database.
+  if (!services_db_->Exists(facts)) {
+    scoped_refptr<ServiceMetadata> node_metadata(new ServiceMetadata());
+    node_metadata->set_service_name(node::kNodeServiceName);
+    services_db_->Add(facts, node_metadata.get());
+  }
+
   // We need to send a message to the message receiver to discover our
   // routing address.
   rp::RubyMessagePacket packet;
   rp::RubyMessage* msg = packet.mutable_message();
-  msg->set_id(0);
+  msg->set_id(std::string());
 
   int zmq_message_size = packet.ByteSize();
   scoped_refptr<ZeroCopyMessage> zero_copy_message(
@@ -146,14 +163,11 @@ bool NodeMessageLoop::RegisterRoute() {
 
   // Route all message sent to the service named [kNodeServiceName] to the
   // node message loop.
-  ServiceFactSet facts;
-  facts.push_back(std::make_pair(kServiceNameFact, kNodeServiceName));
-
   return
     message_router_->AddRoute(packet.message().sender(), facts);
 }
 
-void NodeMessageLoop::ProcessMessage(const rp::RubyMessage& ruby_message) {
+void MessageLoop::ProcessMessage(const rp::RubyMessage& ruby_message) {
   if (!ruby_message.has_message()) {
     ReportError(RUBY_CONTROL_INVALID_MESSAGE);
     return;
@@ -165,7 +179,7 @@ void NodeMessageLoop::ProcessMessage(const rp::RubyMessage& ruby_message) {
       break;
 
     case rpc::kNodeAnnounce:
-      Announce(message);
+      Announce(ruby_message.sender(), message);
       break;
 
     case rpc::kNodeQuery:
@@ -174,29 +188,34 @@ void NodeMessageLoop::ProcessMessage(const rp::RubyMessage& ruby_message) {
   }
 }
 
-void NodeMessageLoop::Announce(const std::string& message) {
+void MessageLoop::Announce(const std::string& sender,
+  const std::string& message) {
   rpc::AnnounceMessage announce_message;
   if (!announce_message.ParseFromString(message)) {
     ReportError(RUBY_CONTROL_INVALID_MESSAGE);
     return;
   }
 
-  ServiceFactSet facts;
-  announce_message.facts();
-  for (gpb::
+  ServiceFactSet facts_set;
+  gpb::RepeatedPtrField<ruby::KeyValuePair> facts = announce_message.facts();
+  for (gpb::RepeatedPtrField<ruby::KeyValuePair>::iterator fact = facts.begin();
+    fact != facts.end(); ++fact) {
+    facts_set.push_back(std::make_pair(fact->key(), fact->value()));
+  }
+  message_router_->AddRoute(sender, facts_set);
 }
 
-void NodeMessageLoop::QueryService(const std::string& message) {
+void MessageLoop::QueryService(const std::string& message) {
 }
 
-void NodeMessageLoop::ReportError(ProcessingError error_code) {
+void MessageLoop::ReportError(ProcessingError error_code) {
   ruby::ExceptionMessage exception;
   exception.set_code(error_code);
   exception.set_message(ErrorCodeToString(error_code));
   exception.set_source(kNodeServiceName);
 }
 
-std::string NodeMessageLoop::ErrorCodeToString(ProcessingError error_code) {
+std::string MessageLoop::ErrorCodeToString(ProcessingError error_code) {
   switch(error_code) {
     case RUBY_CONTROL_NO_ERROR:
       return std::string();
@@ -204,6 +223,7 @@ std::string NodeMessageLoop::ErrorCodeToString(ProcessingError error_code) {
     case RUBY_CONTROL_INVALID_MESSAGE:
       return kInvalidMessage;
   }
+  return kInvalidErrorCode;
 }
 
 }  // namespace node

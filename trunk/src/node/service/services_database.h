@@ -49,6 +49,21 @@ class ServicesDatabase {
   bool GetServicesMetadata(const ServiceFactSet& facts,
     ServicesMetadataSet* medatada);
 
+  // Checks for the existence of a service one that has the given service.
+  // Returns true is at least one service associated with the given facts
+  // is found.
+  bool Exists(const ServiceFactSet& facts);
+
+  // CRUD operations --------------------------------------------------------
+
+  // Register a service against the database. Returns true if the process
+  // success; otherwise, false. If a service
+  bool Add(const ServiceFactSet& facts,
+    const ServiceMetadata* metadata);
+
+  // Delete all the services that matches the given facts.
+  bool Delete(const ServiceFactSet& facts);
+
  private:
   // Creates the services table, returning true if the table already exists
   // or was successfully created.

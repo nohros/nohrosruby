@@ -33,9 +33,12 @@ class FilePath;
 
 namespace node {
 class MessageRouter;
+class ServicesDatabase;
 
-// A NodeMessageLoop is used to process messages sent to the service node.
-class NodeMessageLoop {
+// A NodeMessageLoop is used to process messages sent to the service node. It
+// waits a message to be sent over the message channel, process it and delivers
+// it to the appropriate service if needed.
+class MessageLoop {
  public:
   typedef std::vector<scoped_refptr<zmq::Message>> MessageParts;
 
@@ -47,9 +50,11 @@ class NodeMessageLoop {
 
   // String version of message processing error codes.
   static const char* kInvalidMessage;
+  static const char* kInvalidErrorCode;
 
-  NodeMessageLoop(zmq::Context* context, MessageRouter* message_router);
-  ~NodeMessageLoop();
+  MessageLoop(zmq::Context* context, MessageRouter* message_router,
+    ServicesDatabase* services_db);
+  ~MessageLoop();
 
   // Run the NodeMessageLoop. This blocks until Quit is called.
   void Run();
@@ -62,21 +67,27 @@ class NodeMessageLoop {
   // effect.
   void Quit();
 
-  // Sets the ports numbers that is used by sockets to receives commands
-  // from clients and services. If not called the default port will be used.
+  // Set the port number that is used to receives commands from clients and
+  // service. If this method not called the default port will be used.
   void set_message_channel_port (int port) { message_channel_port_ = port; }
 
  private:
-  // Register out self into the routing database. We need to be registered
+  // Register ourself into the routing database. We need to be registered
   // into the routing database in order to start receiving messages.
-  bool NodeMessageLoop::RegisterRoute();
+  bool RegisterRoute();
 
   // Method that is called when a message is received.
   void OnMessageReceived(const MessageParts& message_parts);
 
-  // Message processing methods.
+  // The message processing entry point.
   void ProcessMessage(const ruby::protocol::RubyMessage& message);
-  void Announce(const std::string& message);
+
+  // Process the Announce message, which informs to the external world that
+  // a service is beign hosted bythe service node.
+  void Announce(const std::string& sender, const std::string& message);
+
+  // Process query messages, which is used to check if the service node is
+  // hosting a particular service.
   void QueryService(const std::string& message);
   
   // Converts a error code to a human readable message.
@@ -88,6 +99,7 @@ class NodeMessageLoop {
 
   zmq::Context* context_;
   MessageRouter* message_router_;
+  ServicesDatabase* services_db_;
 
   // The zeromq socket that is used as a message router.
   scoped_ptr<zmq::Socket> dealer_;

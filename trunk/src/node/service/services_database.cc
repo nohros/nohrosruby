@@ -11,6 +11,7 @@
 #include <sql/connection.h>
 #include <sql/transaction.h>
 #include <sql/statement.h>
+#include <sql/diagnostic_error_delegate.h>
 
 #include "node/service/hash.h"
 #include "node/service/service_metadata.h"
@@ -66,6 +67,11 @@ bool ServicesDatabase::Open(const FilePath& db_name) {
     return false;
   }
 
+  if (!InitServicesFactsTable()) {
+    LOG(ERROR) << db_->GetErrorMessage();
+    return false;
+  }
+
   // Initialization is complete.
   if (!transaction.Commit()) {
     return false;
@@ -92,11 +98,16 @@ bool ServicesDatabase::InitServicesTable() {
 bool ServicesDatabase::InitServicesFactsTable() {
   return db_->DoesTableExist("facts") ||
     (db_->Execute("CREATE TABLE facts ("
-                  "id INTEGER PRIMARY,"
+                  "id INTEGER PRIMARY KEY,"
                   "hash_code INTEGER NOT NULL,"
                   "service_id INTEGER NOT NULL)") &&
-    db_->Execute("CREATE INDEX IF NOT EXISTS facts_hash_code"
+    db_->Execute("CREATE INDEX IF NOT EXISTS facts_hash_code "
                  "ON facts(hash_code)"));
+}
+
+bool ServicesDatabase::Exists(const ServiceFactSet& facts) {
+  ServicesMetadataSet services;
+  return GetServicesMetadata(facts, &services);
 }
 
 bool ServicesDatabase::GetServicesMetadata(const ServiceFactSet& facts,
@@ -121,7 +132,7 @@ bool ServicesDatabase::GetServicesMetadata(const ServiceFactSet& facts,
     } while (s.Step());
 
     // Check if each of the found services contains the others facts.
-    std::string cmd("SELECT id, name, language_runtime_type, working_dir, arguments "
+    std::string cmd("SELECT DISTINCT s.id, name, language_runtime_type, working_dir, arguments "
                     "FROM services s "
                     "INNER JOIN facts f on f.service_id = s.id "
                     "WHERE service_id = ? and hash_code in (");
@@ -137,6 +148,7 @@ bool ServicesDatabase::GetServicesMetadata(const ServiceFactSet& facts,
           k != services_found.end(); ++k) {
       statement.BindInt(0, *k);
       if (!statement.Step()) {
+        LOG(ERROR) << db_->GetErrorMessage();
         return false;
       }
 
@@ -153,6 +165,44 @@ bool ServicesDatabase::GetServicesMetadata(const ServiceFactSet& facts,
     }
   }
   return services->size() > 0;
+}
+
+bool ServicesDatabase::Add(const ServiceFactSet& facts,
+  const ServiceMetadata* metadata) {
+  DCHECK(facts.size());
+
+  // Scope the service creation in a transaction, so a service can't be
+  // partially registered.
+  sql::Transaction transaction(db_.get());
+  transaction.Begin();
+
+  sql::Statement cmd(db_->GetCachedStatement(SQL_FROM_HERE, 
+    "INSERT INTO services(name, working_dir, language_runtime_type, arguments) "
+    "VALUES (?, ?, ?, ?)"));
+  cmd.BindString(0, metadata->service_name());
+  cmd.BindString(1, metadata->service_working_dir());
+  cmd.BindInt(2, metadata->language_runtime_type());
+  cmd.BindString(3, metadata->arguments());
+  
+  if (!cmd.Run()) {
+    return false;
+  }
+
+  std::string insert("INSERT INTO facts (hash_code, service_id) VALUES (?,");
+  insert += base::IntToString(db_->GetLastInsertRowId());
+  insert += ")";
+
+  sql::Statement s(db_->GetUniqueStatement(insert.c_str()));
+  for (ServiceFactSet::const_iterator fact = facts.begin();
+    fact != facts.end(); ++fact) {
+    s.BindInt(0, GetServiceFactHash(facts[0]));
+    if (!s.Run()) {
+      return false;
+    }
+    s.Reset();
+  }
+
+  return transaction.Commit();
 }
 
 uint32 ServicesDatabase::GetServiceFactHash(const std::pair<std::string,
@@ -178,6 +228,7 @@ sql::Connection* ServicesDatabase::CreateDB(const FilePath& db_name) {
     LOG(ERROR) << db->GetErrorMessage();
     return NULL;
   }
+  db->set_error_delegate(new sql::DiagnosticErrorDelegate());
   return db.release();
 }
 
