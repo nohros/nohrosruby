@@ -61,5 +61,11 @@ namespace Nohros.Ruby
     /// </summary>
     /// <value><c>true</c> if the sel-host mode is enabled.</value>
     bool SelfHost { get; }
+
+    /// <summary>
+    /// Gets the address of the service tracker address. This is used only when
+    /// <see cref="SelfHost"/> is <c>true</c>.
+    /// </summary>
+    string TrackerAddress { get; }
   }
 }

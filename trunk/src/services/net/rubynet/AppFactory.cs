@@ -61,8 +61,10 @@ namespace Nohros.Ruby
 
     IRubyMessageChannel GetIPCChannel() {
       if (settings_.SelfHost) {
-        return new SelfMessageChannel(
-          new Context(Context.DefaultIOThreads), settings_.SelfHostAddress);
+        return
+          new SelfMessageChannel(
+            new Context(Context.DefaultIOThreads),
+            settings_.SelfHostAddress, settings_.TrackerAddress);
       }
       if (settings_.IPCChannelAddress != string.Empty) {
         return new RubyMessageChannel(

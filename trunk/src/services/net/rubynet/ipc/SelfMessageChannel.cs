@@ -13,11 +13,13 @@ namespace Nohros.Ruby
                                       IRubyMessageChannel, IDisposable
   {
     const string kClassName = "Nohros.Ruby.SelfMessageChannel";
+    readonly Socket channel_socket_;
 
     readonly Context context_;
     readonly IRubyLogger logger_;
     readonly string message_channel_endpoint_;
-    readonly Socket socket_;
+    readonly string tracker_channel_endpoint_;
+    readonly Socket tracker_socket_;
 
     #region .ctor
     /// <summary>
@@ -32,34 +34,51 @@ namespace Nohros.Ruby
     /// The address of the channel that is used to receive messages from the
     /// external world.
     /// </param>
-    public SelfMessageChannel(Context context, string message_channel_endpoint) {
+    /// <param name="tracker_channel_endpoint">
+    /// A <see cref="SelfChannelMessageHandler"/> object that can be used to
+    /// process control messages.
+    /// </param>
+    public SelfMessageChannel(Context context, string message_channel_endpoint,
+      string tracker_channel_endpoint) {
 #if DEBUG
-      if (context == null || message_channel_endpoint == null) {
-        throw new ArgumentNullException(context == null
-          ? "socket"
-          : "string message_channel_endpoint");
+      if (context == null) {
+        throw new ArgumentNullException("context");
       }
+
+      if (message_channel_endpoint == null) {
+        throw new ArgumentNullException("message_channel_endpoint")
+      }
+
+      if (tracker_channel_endpoint == null) {
+        throw new ArgumentNullException("tracker_channel_endpoint");
+      }
+      
 #endif
       context_ = context;
-      socket_ = context.Socket(SocketType.ROUTER);
-      message_channel_endpoint_ = message_channel_endpoint;
       logger_ = RubyLogger.ForCurrentProcess;
+      channel_socket_ = context.Socket(SocketType.ROUTER);
+      tracker_socket_ = context.Socket(SocketType.DEALER);
+      message_channel_endpoint_ = message_channel_endpoint;
+      tracker_channel_endpoint_ = tracker_channel_endpoint;
+      ReplyTimeout = 30000;
     }
     #endregion
 
     /// <inheritdoc/>
     public void Dispose() {
-      socket_.Dispose();
+      channel_socket_.Dispose();
     }
 
     /// <inheritdoc/>
     public override void Open() {
       // Open the socket before open the channel to ensure that the socket
       // is valid when GetMessagePacket is called.
-      socket_.Bind(Transport.TCP, message_channel_endpoint_);
+      channel_socket_.Bind(Transport.TCP, message_channel_endpoint_);
+
       base.Open();
       if (logger_.IsDebugEnabled) {
-        logger_.Debug("self-message-channel is opened.");
+        logger_.Debug("self message channel is opened at address: "
+          + message_channel_endpoint_);
       }
     }
 
@@ -72,9 +91,21 @@ namespace Nohros.Ruby
       //  [DATA]
       try {
         RubyMessage message = packet.Message;
-        if (socket_.SendMore(message.Sender.ToByteArray()) == SendStatus.Sent) {
-          if (socket_.SendMore() == SendStatus.Sent) {
-            if (socket_.Send(packet.ToByteArray()) == SendStatus.Sent) {
+
+        // Filter control messages.
+        switch (message.Type) {
+          case (int) NodeMessageType.kNodeAnnounce:
+          case (int) NodeMessageType.kNodeError:
+          case (int) NodeMessageType.kNodeQuery:
+            return SendControlMessage(packet);
+        }
+
+        // If the message could not be processed by the message handler, send
+        // it over the communication channel.
+        if (channel_socket_.SendMore(message.Sender.ToByteArray()) ==
+          SendStatus.Sent) {
+          if (channel_socket_.SendMore() == SendStatus.Sent) {
+            if (channel_socket_.Send(packet.ToByteArray()) == SendStatus.Sent) {
               return true;
             }
           }
@@ -84,6 +115,14 @@ namespace Nohros.Ruby
           S.Log_MethodThrowsException, "Send", kClassName), e);
       }
       return false;
+    }
+
+    bool SendControlMessage(RubyMessagePacket packet) {
+      Socket socket = context_.Socket(SocketType.REQ);
+      socket.Connect(tracker_channel_endpoint_);
+
+      // Send the request and wait for the response.
+      return (socket.Send(packet.ToByteArray()) == SendStatus.Sent);
     }
 
     void SendAck(RubyMessage message) {
@@ -108,7 +147,7 @@ namespace Nohros.Ruby
         //  [DESTINATION ADDRESS]
         //  [EMPTY FRAME]
         //  [DATA]
-        Queue<byte[]> packets = socket_.RecvAll();
+        Queue<byte[]> packets = channel_socket_.RecvAll();
         if (packets.Count%3 == 0) {
           byte[] sender = packets.Dequeue();
           packets.Dequeue(); // discard the empty frame
@@ -139,5 +178,7 @@ namespace Nohros.Ruby
       }
       return new RubyMessagePacket.Builder().SetSize(0).Build();
     }
+
+    public int ReplyTimeout { get; set; }
   }
 }
