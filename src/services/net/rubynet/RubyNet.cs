@@ -74,8 +74,11 @@ namespace Nohros.Ruby
         .GetSwitchValue(Strings.kServicesFolderSwitch);
       string ipc_channel_address =
         switches.GetSwitchValue(Strings.kIPCChannelAddressSwitch);
+      string tracker_address =
+        switches.GetSwitchValue(Strings.kDefaultTrackerAddress);
 
-      var builder = new RubySettings.Builder();
+      var builder = new RubySettings.Builder()
+        .SetTrackerAddress(tracker_address);
       var loader = new RubySettings.Loader(builder);
 
       // override the values set by class loader.

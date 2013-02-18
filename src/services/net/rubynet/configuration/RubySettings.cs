@@ -27,6 +27,7 @@ namespace Nohros.Ruby
     readonly bool self_host_;
     readonly string self_host_address_;
     readonly string services_folder_;
+    readonly string tracker_address_;
 
     #region .ctor
     /// <summary>
@@ -41,6 +42,7 @@ namespace Nohros.Ruby
       ipc_channel_address_ = builder.IPCChannelAddress;
       self_host_address_ = builder.SelfHostAddress;
       self_host_ = builder.SelfHost;
+      tracker_address_ = builder.TrackerAddress;
 
       // By default the language specific service host is stored at path:
       // "node_services_directory\hosts\language_name\"
@@ -48,6 +50,10 @@ namespace Nohros.Ruby
         Path.GetFullPath(AppDomain.CurrentDomain.BaseDirectory + "..\\..\\");
     }
     #endregion
+
+    public string TrackerAddress {
+      get { return tracker_address_; }
+    }
 
     public string SelfHostAddress {
       get { return self_host_address_; }

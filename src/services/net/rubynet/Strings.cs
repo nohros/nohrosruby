@@ -20,6 +20,7 @@ namespace Nohros.Ruby
     public const string kDefaultServiceIPCChannelAddress = "127.0.0.1:8520";
     public const string kSelfHostSwitch = "self-host";
     public const string kInteractiveRunningMode = "interactive";
+    public const string kDefaultTrackerAddress = "127.0.0.1:8520";
 
     /// <summary>
     /// The name of the node that contains the configuration data for the

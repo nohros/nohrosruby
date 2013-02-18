@@ -14,9 +14,10 @@ namespace Nohros.Ruby
       LogLevel logger_level_;
       string prompt_;
       RunningMode running_mode_;
+      bool self_host_;
       string self_host_address_;
       string service_folder_;
-      bool self_host_;
+      string tracker_address_;
 
       #region .ctor
       public Builder() {
@@ -28,6 +29,7 @@ namespace Nohros.Ruby
         self_host_address_ = Strings.kDefaultSelfHostIPCChannelAddress;
         service_folder_ = Strings.kDefaultServiceFolder;
         self_host_ = false;
+        tracker_address_ = Strings.kDefaultTrackerAddress;
       }
       #endregion
 
@@ -35,10 +37,6 @@ namespace Nohros.Ruby
         self_host_address_ = self_host_address;
         self_host_ = true;
         return this;
-      }
-
-      public bool SelfHost {
-        get { return self_host_; }
       }
 
       public Builder SetIPCChannelAddress(string ipc_channel_address) {
@@ -53,6 +51,11 @@ namespace Nohros.Ruby
 
       public Builder SetPrompt(string prompt) {
         prompt_ = prompt;
+        return this;
+      }
+
+      public Builder SetTrackerAddress(string tracker_address) {
+        tracker_address_ = tracker_address;
         return this;
       }
 
@@ -73,6 +76,15 @@ namespace Nohros.Ruby
 
       public override RubySettings Build() {
         return new RubySettings(this);
+      }
+
+      public bool SelfHost {
+        get { return self_host_; }
+      }
+
+      public string TrackerAddress {
+        get { return tracker_address_; }
+        set { SetTrackerAddress(value); }
       }
 
       public string SelfHostAddress {
