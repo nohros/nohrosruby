@@ -109,21 +109,32 @@ message QueryMessage {
 //  RubyMessage.Type = [NodeMessageType.kNodeResponse]
 //  RubyMessage.Token = [node-response]
 message ResponseMessage {
-  // The request message associated with this response.
-  optional RubyMessage request = 1;
+  // The request message associated with this response. The original
+  // request is sent with the response only when it is explicitly
+  // requested by the caller. To explicitly request the resquest, the caller
+  // should add the string "attachResponse" to the extra_info field of
+  // the request message.
+  //optional RubyMessage request = 1;
   
   // A list of key value pairs containing named return values.
   repeated ruby.KeyValuePair reponses = 2;
 }
 
 // Announce that the sender node is hosting a service that has the specified
-// facts.
+// facts at the given host and port.
 //
 // Protocol
 //  RubyMessage.Type = [NodeMessageType.kNodeAnnounce]
 //  RubyMessage.Token = [node-announce]
 message AnnounceMessage {
   repeated ruby.KeyValuePair facts = 1;
+  
+  // The address that can be used to contact the service. The
+  // endpoint is a string consisting of two parts as follows:
+  // address:port. The address part is the IP address or host
+  // name of the machine that is hosting the service and the
+  // port part is the port number of the endpoint.
+  optional string endpoint = 2;
 }
 
 // A message that should be sent when a query cannot be fulfilled. The
