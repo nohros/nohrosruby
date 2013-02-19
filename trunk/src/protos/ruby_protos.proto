@@ -137,6 +137,10 @@ message RubyMessage {
   // A flag that indicates the type of ACK that the sender wants to receive
   // when a message is received by the ruby service node. Default to kRubyNoAck.
   optional AckType ack_type = 7 [default = kRubyNoAck];
+
+  // Contains aditional information about the message. This is used to provide
+  // detailed information about the message only if explicity requested.
+  repeated string extra_info = 8;
 }
 
 // Wraps a protobuf message into a envelope, which defines what is in the
