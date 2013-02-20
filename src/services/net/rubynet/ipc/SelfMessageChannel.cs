@@ -60,7 +60,6 @@ namespace Nohros.Ruby
       tracker_socket_ = context.Socket(SocketType.DEALER);
       message_channel_endpoint_ = message_channel_endpoint;
       tracker_channel_endpoint_ = tracker_channel_endpoint;
-      ReplyTimeout = 30000;
     }
     #endregion
 
@@ -179,6 +178,12 @@ namespace Nohros.Ruby
       return new RubyMessagePacket.Builder().SetSize(0).Build();
     }
 
-    public int ReplyTimeout { get; set; }
+    public override string Endpoint {
+      get {
+        int index = message_channel_endpoint_.IndexOf("://",
+          StringComparison.Ordinal);
+        return message_channel_endpoint_.Substring(index);
+      }
+    }
   }
 }

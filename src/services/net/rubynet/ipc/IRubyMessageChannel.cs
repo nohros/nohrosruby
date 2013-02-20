@@ -43,9 +43,24 @@ namespace Nohros.Ruby
     /// Opens the communication channel.
     /// </summary>
     /// <remarks>
-    /// A <see cref="RubyMessageChannel"/> should be opened before it can receive/send
-    /// any messages.
+    /// A <see cref="RubyMessageChannel"/> should be opened before it can
+    /// receive/send any messages.
     /// </remarks>
     void Open();
+
+    /// <summary>
+    /// Gets the channel's endpoint.
+    /// </summary>
+    /// <remarks>
+    /// The channel endpoint is a string consisting of two parts as follows:
+    /// <para>
+    /// address:port
+    /// </para>
+    /// <para>
+    /// The address part is the IP address or host name of the channel and
+    /// the port is the port number of the channel.
+    /// </para>
+    /// </remarks>
+    string Endpoint { get; }
   }
 }

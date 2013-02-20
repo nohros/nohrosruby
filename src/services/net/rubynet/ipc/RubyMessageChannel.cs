@@ -71,6 +71,14 @@ namespace Nohros.Ruby
       return false;
     }
 
+    public override string Endpoint {
+      get {
+        int index = message_channel_endpoint_.IndexOf("://",
+          StringComparison.Ordinal);
+        return message_channel_endpoint_.Substring(index);
+      }
+    }
+
     protected override RubyMessagePacket GetMessagePacket() {
       try {
         byte[] message = socket_.Recv();

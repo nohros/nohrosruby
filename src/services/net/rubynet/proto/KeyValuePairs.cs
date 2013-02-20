@@ -30,6 +30,37 @@ namespace Nohros.Ruby
     }
 
     /// <summary>
+    /// Searches for an first <see cref="KeyValuePair"/> in the
+    /// <paramref name="pairs"/> list that matches the specified
+    /// <paramref name="key"/>.
+    /// </summary>
+    /// <param name="key">
+    /// The <paramref name="key"/> to search for.
+    /// </param>
+    /// <param name="pairs">
+    /// A <see cref="IList{T}"/> to search for <paramref name="key"/>.
+    /// </param>
+    /// <param name="pair">
+    /// When this method returns contains the first <see cref="KeyValuePair"/>
+    /// that matches the key <paramref name="key"/>.
+    /// </param>
+    /// <returns>
+    /// <c>true</c> if a <see cref="KeyValuePair"/> that matches
+    /// <paramref name="key"/> is found; otherwise, false.
+    /// </returns>
+    public static bool Find(string key, IList<KeyValuePair> pairs,
+      out KeyValuePair pair) {
+      foreach (KeyValuePair p in pairs) {
+        if (p.Key == key) {
+          pair = p;
+          return true;
+        }
+      }
+      pair = null;
+      return false;
+    }
+
+    /// <summary>
     /// Creates an <see cref="KeyValuePair"/> object using the specified
     /// <see cref="KeyValuePair{TKey,TValue}"/>.
     /// </summary>

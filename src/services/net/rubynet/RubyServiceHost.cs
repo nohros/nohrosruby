@@ -177,10 +177,10 @@ namespace Nohros.Ruby
       // Tell the service node that we are hosting a new service.
       AnnounceMessage.Builder builder = new AnnounceMessage.Builder();
       foreach (KeyValuePair<string, string> fact in service_.Facts) {
-        builder.AddFacts(
-          new KeyValuePair.Builder()
-            .SetKey(fact.Key)
-            .SetValue(fact.Value));
+        builder
+          .AddFacts(KeyValuePairs.FromKeyValuePair(fact))
+          .AddFacts(KeyValuePairs.FromKeyValuePair(Strings.kHostServiceFact,
+            ruby_message_channel_.Endpoint));
       }
 
       RubyMessage message = new RubyMessage.Builder()
