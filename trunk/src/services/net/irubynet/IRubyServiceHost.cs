@@ -35,8 +35,8 @@ namespace Nohros.Ruby
     /// <c>true</c> is the message was succesfully sent; otherwise,
     /// <c>false</c>.
     /// </returns>
-    bool SendError(byte[] message_id, int exception_code, string error,
-      byte[] destianation);
+    byte[] FormatErrorMessage(byte[] message_id, int exception_code,
+      string error, byte[] destination);
 
     /// <summary>
     /// Sends a ruby message to the ruby service node informing the receiver
@@ -62,8 +62,8 @@ namespace Nohros.Ruby
     /// <c>true</c> is the message was succesfully sent; otherwise,
     /// <c>false</c>.
     /// </returns>
-    bool SendError(byte[] message_id, int exception_code, string error,
-      byte[] destination, Exception exception);
+    byte[] FormatErrorMessage(byte[] message_id, int exception_code,
+      string error, byte[] destination, Exception exception);
 
     /// <summary>
     /// Sends a ruby message to the ruby service node informing the receiver
@@ -86,8 +86,8 @@ namespace Nohros.Ruby
     /// <c>true</c> is the message was succesfully sent; otherwise,
     /// <c>false</c>.
     /// </returns>
-    bool SendError(byte[] message_id, int exception_code, byte[] destination,
-      Exception exception);
+    byte[] FormatErrorMessage(byte[] message_id, int exception_code,
+      byte[] destination, Exception exception);
 
     /// <summary>
     /// Gets a <see cref="IRubyLogger"/> object that can be used by services
