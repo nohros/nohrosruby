@@ -66,6 +66,7 @@ namespace Nohros.Ruby
     }
 
     public abstract bool Send(RubyMessagePacket packet);
+    public abstract string Endpoint { get; }
 
     /// <inheritdoc/>
     public virtual void Open() {

@@ -49,5 +49,9 @@ namespace Nohros.Ruby
     /// <inheritdoc/>
     public void Open() {
     }
+
+    public string Endpoint {
+      get { return "0.0.0.0:0"; }
+    }
   }
 }

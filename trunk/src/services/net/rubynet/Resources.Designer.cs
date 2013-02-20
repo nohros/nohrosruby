@@ -176,5 +176,14 @@ namespace Nohros.Ruby {
                 return ResourceManager.GetString("log_zmq_socket_is_not_of_type", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find a handler to handle the message associated with the ID {0}..
+        /// </summary>
+        internal static string RubyProcess_ResponseMessageHandle_NotFound {
+            get {
+                return ResourceManager.GetString("RubyProcess_ResponseMessageHandle_NotFound", resourceCulture);
+            }
+        }
     }
 }

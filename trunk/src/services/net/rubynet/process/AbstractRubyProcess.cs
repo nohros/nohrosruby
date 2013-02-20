@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 using Google.ProtocolBuffers;
 using Nohros.Concurrent;
 using Nohros.Data.Json;
 using Nohros.Extensions;
 using Nohros.Logging;
+using Nohros.Ruby.Extensions;
 using R = Nohros.Resources.StringResources;
 using Nohros.Ruby.Protocol;
 using Nohros.Ruby.Protocol.Control;
@@ -86,7 +88,7 @@ namespace Nohros.Ruby
           break;
 
         case (int) NodeMessageType.kNodeResponse:
-          OnResponseMessage(packet.Message.Message);
+          OnResponseMessage(packet.Message);
           break;
       }
     }
@@ -120,28 +122,23 @@ namespace Nohros.Ruby
       }
     }
 
-    void OnResponseMessage(ByteString message) {
+    void OnResponseMessage(RubyMessage message) {
       try {
-        ResponseMessage response = ResponseMessage.ParseFrom(message);
-        RubyMessage request = response.Request;
-
-        // Every request issued by this class should contains a token that
-        // maps to a message handler (defined at InitMessageHandler method).
+        ResponseMessage response = ResponseMessage.ParseFrom(message.Message);
         ResponseMessageHandler handler;
-        if (messages_tokens_.TryGetValue(request.Token, out handler)) {
+
+        // The ID of each request issued by this class should maps to a message
+        // handler (defined at InitMessageHandler method).
+        string request_message_token = message.Id.ToByteArray().AsString();
+        if (messages_tokens_.TryGetValue(request_message_token, out handler)) {
           handler(response);
         } else {
           // A handler was not found. Either, the request was not issued by
           // this class or the request was modified. There is nothing we can do
           // with that message.
-          logger_.Warn("Could not found a reseponse handler for the received"
-            + "message."
-            + new JsonStringBuilder()
-              .WriteBeginObject()
-              .WriteMemberName("message")
-              .WriteMember("id", request.Id.ToBase64())
-              .WriteMember("token", request.Token)
-              .WriteMember("type", request.Type));
+          logger_.Warn(string.Format(
+            Resources.RubyProcess_ResponseMessageHandle_NotFound,
+            request_message_token));
         }
       } catch (Exception exception) {
         logger_.Error(
@@ -165,6 +162,7 @@ namespace Nohros.Ruby
         .SetToken(kLogAggregatorQuery)
         .SetType((int) NodeMessageType.kNodeQuery)
         .SetMessage(query.ToByteString())
+        .SetId(ByteString.CopyFrom(kLogAggregatorQuery.AsBytes(Encoding.ASCII)))
         .Build();
 
       RubyMessageHeader header = new RubyMessageHeader.Builder()
