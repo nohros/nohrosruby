@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace Nohros.Ruby.Extensions
 {
@@ -77,71 +78,70 @@ namespace Nohros.Ruby.Extensions
     }
 
     /// <summary>
-    /// Returns the specified string, which encodes binary data as base-64
-    /// digits, to an equivalent 8-bit unsigned integer array.
+    /// Encodes the specified string using the <see cref="Encoding.Unicode"/>
+    /// encoding.
     /// </summary>
-    /// <param name="base64_string">
+    /// <param name="str">
     /// The string to convert.
     /// </param>
     /// <returns>
-    /// An array of 8-bit unsigned integers that is equivalent to
-    /// <paramref name="base64_string"/>
+    /// A byte array containing the results of encoding the specified set of
+    /// characters using the <see cref="Encoding.Unicode"/>.
     /// </returns>
-    /// <remarks>
-    /// The order of bytes in the array returned by <see cref="AsBytes(long)"/>
-    /// method depends whether the computer architecture is little-endian
-    /// or big-endian.
-    /// <para>
-    /// This method is just a shortcut for:
-    /// <code>
-    /// Convert.FromBase64String();
-    /// </code>
-    /// </para>
-    /// </remarks>
-    /// <exception cref="ArgumentNullException">
-    /// <paramref name="base64_string"/> is <c>null</c>.
-    /// </exception>
-    /// <exception cref="FormatException">
-    /// The length of <paramref name="base64_string"/>, ignoring white-space
-    /// characters, is not zero or a multiple of 4
-    /// <para>-or-</para>
-    /// <para>
-    /// The format of <paramref name="base64_string"/> is invalid.
-    /// <paramref name="base64_string"/> contains a non base-64 character, more
-    /// than two padding characters, or a non-white-space-character among the
-    /// padding characters.
-    /// </para>
-    /// </exception>
     /// <seealso cref="Convert.FromBase64String"/>
-    public static byte[] AsBytes(this string base64_string) {
-      return Convert.FromBase64String(base64_string);
+    public static byte[] AsBytes(this string str) {
+      return Encoding.Unicode.GetBytes(str);
     }
 
     /// <summary>
-    /// Converts an array of 8-bit unsigned integers to its equivalent string
-    /// representation that is encoded with base-64 digits.
+    /// Returns the specified string, encoded as a sequence of bytes.
     /// </summary>
-    /// <param name="value">
-    /// An array of 8-bit unsigned integers.
+    /// <param name="str">
+    /// The string containing the characters to encode.
+    /// </param>
+    /// <param name="encoding">
+    /// A <see cref="Encoding"/> object that can be used to encode a set of
+    /// characters.
     /// </param>
     /// <returns>
-    /// The string representation, in base 64, of the contents of
-    /// <paramref name="value"/>.
+    /// A byte array containing the results of encoding the specified set of
+    /// characters.
     /// </returns>
-    /// <remarks>
-    /// The order of bytes in the array returned by <see cref="AsBytes(long)"/>
-    /// method depends whether the computer architecture is little-endian
-    /// or big-endian.
-    /// <para>
-    /// This method is just a shor-cut for:
-    /// <code>
-    /// BitConverter.ToBase64String();
-    /// </code>
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="Convert.ToBase64String(byte[])"/>
-    public static string AsBase64String(this byte[] value) {
-      return Convert.ToBase64String(value);
+    public static byte[] AsBytes(this string str, Encoding encoding) {
+      return encoding.GetBytes(str);
+    }
+
+    /// <summary>
+    /// Decodes all the bytes in the specified byte array into a string.
+    /// </summary>
+    /// <param name="value">
+    /// The byte array containing the sequence of bytes to decode.
+    /// </param>
+    /// <param name="encoding">
+    /// A <see cref="Encoding"/> object that can be used to decode
+    /// <paramref name="value"/>.
+    /// </param>
+    /// <returns>
+    /// A string containing the results of decoding the specified sequence of
+    /// bytes.
+    /// </returns>
+    public static string AsString(this byte[] value, Encoding encoding) {
+      return encoding.GetString(value);
+    }
+
+    /// <summary>
+    /// Decodes all the bytes in the specified byte array into a string
+    /// using the <see cref="Encoding.Unicode"/> encoding.
+    /// </summary>
+    /// <param name="value">
+    /// The byte array containing the sequence of bytes to decode.
+    /// </param>
+    /// <returns>
+    /// A string containing the results of decoding the specified sequence of
+    /// bytes.
+    /// </returns>
+    public static string AsString(this byte[] value) {
+      return Encoding.Unicode.GetString(value);
     }
 
     /// <summary>
