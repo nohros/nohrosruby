@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Nohros.Data.Json;
 using Nohros.Ruby.Protocol;
 
 namespace Nohros.Ruby
@@ -23,29 +24,50 @@ namespace Nohros.Ruby
 
     /// <inheritdoc/>
     public bool Send(IRubyMessage message) {
-      logger_.Info("Send => id:" + message.Id + ",type:" + message.Type
-        + ",token:" + message.Token);
+      logger_.Info(
+        new JsonStringBuilder()
+          .WriteMember("type", message.Type)
+          .WriteMember("token", message.Token)
+          .ToString());
+      return true;
+    }
+
+    /// <inheritdoc/>
+    public bool Send(IRubyMessage message,
+      IEnumerable<KeyValuePair<string, string>> facts) {
+      logger_.Info(
+        new JsonStringBuilder()
+          .WriteMember("type", message.Type)
+          .WriteMember("token", message.Token)
+          .ForEach(facts, (fact, builder) => builder
+            .WriteMember(fact.Key, fact.Value))
+          .ToString());
       return true;
     }
 
     /// <inheritdoc/>
     public bool Send(byte[] id, int type, byte[] message, byte[] destination) {
-      logger_.Info("Send => id:" + id + ",type:" + type);
+      logger_.Info(
+        new JsonStringBuilder()
+          .WriteMember("type", type)
+          .ToString());
+      return true;
+    }
+
+    /// <inheritdoc/>
+    public bool Send(byte[] id, int type, byte[] message, byte[] destination,
+      IEnumerable<KeyValuePair<string, string>> facts) {
+      logger_.Info(
+        new JsonStringBuilder()
+          .WriteMember("type", type)
+          .ForEach(facts, (fact, builder) => builder
+            .WriteMember(fact.Key, fact.Value))
+          .ToString());
       return true;
     }
 
     public IRubyLogger Logger {
       get { return logger_; }
-    }
-
-    /// <inheritdoc/>
-    public bool SendError(byte[] message_id, int exception_code,
-      byte[] destination, Exception exception) {
-      logger_.Error(exception_code.ToString(), exception,
-        new Dictionary<string, string> {
-          {"messageId", message_id.ToString()},
-        });
-      return true;
     }
 
     /// <inheritdoc/>
@@ -57,23 +79,48 @@ namespace Nohros.Ruby
     }
 
     /// <inheritdoc/>
-    public bool SendError(byte[] message_id, int exception_code, string error,
+    public bool Send(byte[] id, int type, byte[] message, byte[] destination,
+      string token, IEnumerable<KeyValuePair<string, string>> facts) {
+      logger_.Info(
+        new JsonStringBuilder()
+          .WriteMember("type", type)
+          .WriteMember("token", token)
+          .ForEach(facts, (fact, builder) => builder
+            .WriteMember(fact.Key, fact.Value))
+          .ToString());
+      return true;
+    }
+
+    /// <inheritdoc/>
+    public byte[] FormatErrorMessage(byte[] message_id, int exception_code,
+      byte[] destination, Exception exception) {
+      logger_.Error(exception_code.ToString(), exception,
+        new Dictionary<string, string> {
+          {"messageId", message_id.ToString()},
+        });
+      return new byte[0];
+    }
+
+    /// <inheritdoc/>
+    public byte[] FormatErrorMessage(byte[] message_id, int exception_code,
+      string error,
       byte[] destination) {
       logger_.Error(exception_code + " " + error,
         new Dictionary<string, string> {
           {"messageId", message_id.ToString()},
         });
-      return true;
+      return new byte[0];
     }
 
     /// <inheritdoc/>
-    public bool SendError(byte[] message_id, int exception_code, string error,
+    public byte[] FormatErrorMessage(byte[] message_id, int exception_code,
+      string error,
       byte[] destination, Exception exception) {
       logger_.Error(exception_code + " " + error, exception,
         new Dictionary<string, string> {
           {"messageId", message_id.ToString()},
         });
-      return true;
+      return new byte[0];
     }
   }
 }

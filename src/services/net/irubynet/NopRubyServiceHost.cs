@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Nohros.Ruby.Protocol;
 
 namespace Nohros.Ruby
@@ -32,24 +33,40 @@ namespace Nohros.Ruby
       get { return logger_; }
     }
 
-    public bool SendError(byte[] message_id, int exception_code, string error,
-      byte[] destination) {
-      return false;
+    public bool Send(IRubyMessage message,
+      IEnumerable<KeyValuePair<string, string>> facts) {
+      return true;
     }
 
-    public bool SendError(byte[] message_id, int exception_code, string error,
-      byte[] destination, Exception exception) {
-      return false;
+    public bool Send(byte[] message_id, int type, byte[] message,
+      byte[] destination, IEnumerable<KeyValuePair<string, string>> facts) {
+      return true;
     }
 
-    public bool SendError(byte[] message_id, int exception_code,
+    public bool Send(byte[] message_id, int type, byte[] message,
+      byte[] destination, string token,
+      IEnumerable<KeyValuePair<string, string>> facts) {
+      return true;
+    }
+
+    public byte[] FormatErrorMessage(byte[] message_id, int exception_code,
+      string error, byte[] destination) {
+      return new byte[0];
+    }
+
+    public byte[] FormatErrorMessage(byte[] message_id, int exception_code,
+      string error, byte[] destination, Exception exception) {
+      return new byte[0];
+    }
+
+    public byte[] FormatErrorMessage(byte[] message_id, int exception_code,
       byte[] destination, Exception exception) {
-      return false;
+      return new byte[0];
     }
 
     public bool Send(byte[] message_id, int type, byte[] message,
       byte[] destination, string token) {
-      return false;
+      return true;
     }
   }
 }
