@@ -84,10 +84,12 @@
     <Compile Include="ipc\IRubyMessageSenderFactory.cs" />
     <Compile Include="ipc\NullMessageSender.cs" />
     <Compile Include="ipc\RubyMessageListeners.cs" />
+    <Compile Include="ipc\SelfHostMessageChannel.cs" />
     <Compile Include="IRubyMessageChannelFactory.cs" />
     <Compile Include="process\AbstractRubyProcess.cs" />
     <Compile Include="AppFactory.cs" />
     <Compile Include="configuration\RubyLogger.cs" />
+    <Compile Include="process\AbstractSelfHostProcess.cs" />
     <Compile Include="service\AggregatorLogger.cs" />
     <Compile Include="configuration\ConsoleSettings.cs" />
     <Compile Include="service\ForwardingAggregatorService.cs" />

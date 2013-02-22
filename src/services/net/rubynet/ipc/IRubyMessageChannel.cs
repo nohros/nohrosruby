@@ -61,6 +61,6 @@ namespace Nohros.Ruby
     /// the port is the port number of the channel.
     /// </para>
     /// </remarks>
-    string Endpoint { get; }
+    //string Endpoint { get; }
   }
 }
