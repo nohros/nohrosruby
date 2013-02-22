@@ -62,7 +62,7 @@ namespace Nohros.Ruby
     }
 
     const string kClassName = "Nohros.Ruby.RubyMessageChannel";
-    const string kSenderChannelEndpoint = "inproc://multiplex";
+    const string kSenderChannelEndpoint = "inproc://ruby-multiplex-channel";
 
     static readonly byte[] true_byte_array_ = new byte[] {1};
     static readonly byte[] false_byte_array_ = new byte[] {0};
@@ -151,7 +151,7 @@ namespace Nohros.Ruby
 
         byte[] reply = internal_sender_socket_.Recv();
         return reply.Length > 0 && reply[0] == 1;
-      } catch (System.Exception e) {
+      } catch (ZMQ.Exception e) {
         logger_.Error(
           string.Format(R.StringResources.Log_MethodThrowsException, "Send",
             kClassName), e);
