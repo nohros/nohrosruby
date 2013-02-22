@@ -13,10 +13,6 @@ namespace Nohros.Ruby
     /// Initializes a new instance of the <see cref="ServiceRubyProcess"/>
     /// class.
     /// </summary>
-    /// <param name="ruby_message_channel">
-    /// A <see cref="RubyMessageChannel"/> object that is used to handle the
-    /// communication with the external world.
-    /// </param>
     public ServiceRubyProcess(IRubySettings settings,
       IRubyMessageChannel ruby_message_channel)
       : base(settings, ruby_message_channel) {

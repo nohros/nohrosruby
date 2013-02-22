@@ -39,9 +39,8 @@ namespace Nohros.Ruby
     /// </returns>
     public ShellRubyProcess CreateShellRubyProcess() {
       MyToolsPackConsole console = GetToolsPackConsole();
-      IRubyMessageChannel ruby_message_channel = GetIPCChannel();
-      var process = new ShellRubyProcess(console, settings_,
-        ruby_message_channel);
+      IRubyMessageChannel channel = GetMessageChannel();
+      var process = new ShellRubyProcess(console, settings_, channel);
 
       // Tell the tools pack console to send our implementation of
       // the IMyToolsPackConsole interface when run commands.
@@ -50,27 +49,21 @@ namespace Nohros.Ruby
       return process;
     }
 
+    IRubyMessageChannel GetMessageChannel() {
+      if (settings_.IPCEndpoint != string.Empty) {
+        var context = new Context();
+        return new RubyMessageChannel(context, settings_.IPCEndpoint);
+      }
+      return new NullMessageChannel();
+    }
+
     /// <summary>
     /// Creates an instance of the <see cref="ServiceRubyProcess"/> class.
     /// </summary>
     /// <returns></returns>
     public ServiceRubyProcess CreateServiceRubyProcess() {
-      IRubyMessageChannel channel = GetIPCChannel();
+      var channel = GetMessageChannel();
       return new ServiceRubyProcess(settings_, channel);
-    }
-
-    IRubyMessageChannel GetIPCChannel() {
-      if (settings_.SelfHost) {
-        return
-          new SelfMessageChannel(
-            new Context(Context.DefaultIOThreads),
-            settings_.SelfHostAddress, settings_.TrackerAddress);
-      }
-      if (settings_.IPCChannelAddress != string.Empty) {
-        return new RubyMessageChannel(
-          new Context(Context.DefaultIOThreads), settings_.IPCChannelAddress);
-      }
-      return new NullMessageChannel();
     }
 
     MyToolsPackConsole GetToolsPackConsole() {

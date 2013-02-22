@@ -72,8 +72,6 @@ namespace Nohros.Ruby
         .GetSwitchValue(Strings.kRunningModeSwitch);
       string services_folder = switches
         .GetSwitchValue(Strings.kServicesFolderSwitch);
-      string ipc_channel_address =
-        switches.GetSwitchValue(Strings.kIPCChannelAddressSwitch);
       string tracker_address =
         switches.GetSwitchValue(Strings.kDefaultTrackerAddress);
 
@@ -84,21 +82,31 @@ namespace Nohros.Ruby
       // override the values set by class loader.
       loader.ParseComplete += sender => {
         bool self_host = switches.HasSwitch(Strings.kSelfHostSwitch);
+        string ipc_receiver_endpoint =
+          switches.GetSwitchValue(Strings.kReceiverEndpoint, string.Empty);
+        string ipc_sender_endpoint =
+          switches.GetSwitchValue(Strings.kSenderEndpoint, string.Empty);
+
+        if (ipc_receiver_endpoint != string.Empty) {
+          builder.SetReceiverEndpoint(ipc_receiver_endpoint);
+        }
+
+        if (ipc_sender_endpoint != string.Empty) {
+          builder.SetSenderEndpoint(ipc_sender_endpoint);
+        }
+
         if (self_host) {
-          int self_host_port =
-            switches.GetSwitchValueAsInt(Strings.kSelfHostSwitch,
-              RubySettings.kDefaultSelfHostPort);
-          builder.SetSelfHostAddress("*:" + self_host_port.ToString());
+          // The self host mode only works when the receiver and sender
+          // endpoints are set.
+          if (builder.ReceiverEndpoint == string.Empty ||
+            builder.SenderEndpoint == string.Empty) {
+            builder.SetSelfHost(false);
+          }
 
           // The default running mode for self hosting is interactive.
           if (running_mode == string.Empty) {
             loader.RunningMode = Strings.kInteractiveRunningMode;
           }
-        }
-
-        if (ipc_channel_address != string.Empty) {
-          builder.SetIPCChannelAddress(
-            Strings.kDefaultSelfHostIPCChannelAddress);
         }
 
         if (services_folder != string.Empty) {

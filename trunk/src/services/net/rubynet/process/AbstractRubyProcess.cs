@@ -4,7 +4,6 @@ using System.Text;
 using System.Threading;
 using Google.ProtocolBuffers;
 using Nohros.Concurrent;
-using Nohros.Data.Json;
 using Nohros.Extensions;
 using Nohros.Logging;
 using Nohros.Ruby.Extensions;
@@ -40,12 +39,8 @@ namespace Nohros.Ruby
     #region .ctor
     /// <summary>
     /// Initializes a new instance of the <see cref="AbstractRubyProcess"/>
-    /// class by using the specified <see cref="RubyMessageChannel"/> object.
+    /// class by using the specified <see cref="ProcessMessageChannel"/> object.
     /// </summary>
-    /// <param name="ruby_message_channel">
-    /// A <see cref="RubyMessageChannel"/> object that is used to handle the
-    /// communication with the ruby service node.
-    /// </param>
     protected AbstractRubyProcess(IRubySettings settings,
       IRubyMessageChannel ruby_message_channel) {
       ruby_message_channel_ = ruby_message_channel;
@@ -67,7 +62,6 @@ namespace Nohros.Ruby
 
     /// <inheritdoc/>
     public virtual void Run(string command_line_string) {
-      ruby_message_channel_.Open();
       ruby_message_channel_.AddListener(this, Executors.SameThreadExecutor());
 
       // Query the service node for the log aggregator service.
@@ -94,10 +88,9 @@ namespace Nohros.Ruby
     }
 
     /// <inheritdoc/>
-    public virtual IRubyMessageChannel RubyMessageChannel {
-      get { return ruby_message_channel_; }
-    }
-
+    //public virtual IRubyMessageChannel ProcessMessageChannel {
+    //get { return ruby_message_channel_; }
+    //}
     void InitMessageTokens() {
       messages_tokens_.Add(kLogAggregatorQuery, OnLogAggregatorQueryReseponse);
     }
@@ -164,23 +157,10 @@ namespace Nohros.Ruby
         .SetMessage(query.ToByteString())
         .SetId(ByteString.CopyFrom(kLogAggregatorQuery.AsBytes(Encoding.ASCII)))
         .Build();
-
-      RubyMessageHeader header = new RubyMessageHeader.Builder()
-        .SetId(message.Id)
-        .AddFacts(
-          KeyValuePairs.FromKeyValuePair(StringResources.kServiceNameFact,
-            Strings.kNodeServiceName))
-        .SetSize(message.SerializedSize)
-        .Build();
-
-      RubyMessagePacket packet = new RubyMessagePacket.Builder()
-        .SetHeader(header)
-        .SetHeaderSize(header.SerializedSize)
-        .SetMessage(message)
-        .SetSize(header.SerializedSize + message.SerializedSize + 4)
-        .Build();
-
-      ruby_message_channel_.Send(packet);
+      ruby_message_channel_.Send(message, new[] {
+        new KeyValuePair<string, string>(StringResources.kServiceNameFact,
+          Strings.kNodeServiceName)
+      });
     }
 
     /*void SimulateQueryResponse() {
