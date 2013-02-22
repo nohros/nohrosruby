@@ -83,6 +83,7 @@
     <Compile Include="ipc\AbstractRubyMessageSender.cs" />
     <Compile Include="ipc\IRubyMessageSenderFactory.cs" />
     <Compile Include="ipc\NullMessageSender.cs" />
+    <Compile Include="ipc\RubyMessageListeners.cs" />
     <Compile Include="IRubyMessageChannelFactory.cs" />
     <Compile Include="process\AbstractRubyProcess.cs" />
     <Compile Include="AppFactory.cs" />
