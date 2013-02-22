@@ -62,33 +62,31 @@
     <Reference Include="mytoolspack.console, Version=0.3.8.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\nohros.mytoolspack.0.3.9\lib\mytoolspack.console.dll</HintPath>
     </Reference>
-    <Reference Include="nohros, Version=1.6.7.30, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\must.common.1.6.7.30\lib\net40\nohros.dll</HintPath>
+    <Reference Include="nohros">
+      <HintPath>..\..\..\packages\must.common.1.6.8.11\lib\net40\nohros.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="nohros.extensions, Version=0.0.2.11, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\must.extensions.0.0.2.11\lib\net40\nohros.extensions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Data.SQLite">
-      <HintPath>..\..\..\packages\System.Data.SQLite.1.0.84.0\lib\net40\System.Data.SQLite.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Data.SQLite.Linq">
-      <HintPath>..\..\..\packages\System.Data.SQLite.1.0.84.0\lib\net40\System.Data.SQLite.Linq.dll</HintPath>
-    </Reference>
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="configuration\NOPLogger.cs" />
     <Compile Include="configuration\RubySettingsBuilder.cs" />
     <Compile Include="configuration\RubySettingsLoader.cs" />
-    <Compile Include="ipc\AbstractRubyMessageChannel.cs" />
+    <Compile Include="ipc\AbstractRubyMessageSender.cs" />
+    <Compile Include="ipc\IRubyMessageSenderFactory.cs" />
+    <Compile Include="ipc\NullMessageSender.cs" />
+    <Compile Include="IRubyMessageChannelFactory.cs" />
     <Compile Include="process\AbstractRubyProcess.cs" />
     <Compile Include="AppFactory.cs" />
     <Compile Include="configuration\RubyLogger.cs" />
-    <Compile Include="ipc\SelfMessageChannel.cs" />
     <Compile Include="service\AggregatorLogger.cs" />
     <Compile Include="configuration\ConsoleSettings.cs" />
     <Compile Include="service\ForwardingAggregatorService.cs" />
@@ -103,7 +101,6 @@
     <Compile Include="ipc\IRubyMessageChannel.cs" />
     <Compile Include="ipc\IRubyMessageListener.cs" />
     <Compile Include="ipc\IRubyMessageReceiver.cs" />
-    <Compile Include="ipc\ListenerExecutorPair.cs" />
     <Compile Include="ipc\RubyMessageHandlerDelegate.cs" />
     <Compile Include="ipc\RubyMessageReceiver.cs" />
     <Compile Include="process\IRubyProcess.cs" />

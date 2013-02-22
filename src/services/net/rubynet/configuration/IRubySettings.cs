@@ -46,15 +46,15 @@ namespace Nohros.Ruby
     CultureInfo Culture { get; }
 
     /// <summary>
-    /// Gets the address of the channel used to comunnicate with the
-    /// ruby service node.
+    /// Gets the address of the endpoint that can be used to communicate with
+    /// the service node.
     /// </summary>
-    string IPCChannelAddress { get; }
+    string IPCEndpoint { get; }
 
     /// <summary>
     /// Gets a address to use while we are selh hosting.
     /// </summary>
-    string SelfHostAddress { get; }
+    string SelfHostEndpoint { get; }
 
     /// <summary>
     /// Gets a value indicating if the self host mode is enabled.

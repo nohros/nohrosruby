@@ -21,6 +21,8 @@ namespace Nohros.Ruby
     public const string kSelfHostSwitch = "self-host";
     public const string kInteractiveRunningMode = "interactive";
     public const string kDefaultTrackerAddress = "127.0.0.1:8520";
+    public const string kReceiverEndpoint = "ipc_receiver_endpoint";
+    public const string kSenderEndpoint = "ipc_sender_endpoint";
 
     /// <summary>
     /// The name of the node that contains the configuration data for the

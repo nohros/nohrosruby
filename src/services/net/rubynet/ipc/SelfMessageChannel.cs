@@ -10,7 +10,7 @@ using ZMQ;
 namespace Nohros.Ruby
 {
   internal class SelfMessageChannel : AbstractRubyMessageChannel,
-                                      IRubyMessageChannel, IDisposable
+                                      IRubyMessageChannel, IDisposable, IRubyMessageSenderFactory
   {
     const string kClassName = "Nohros.Ruby.SelfMessageChannel";
     readonly Socket channel_socket_;
@@ -20,6 +20,9 @@ namespace Nohros.Ruby
     readonly string message_channel_endpoint_;
     readonly string tracker_channel_endpoint_;
     readonly Socket tracker_socket_;
+
+    public void CreatedRubyMessageSender() {
+    }
 
     #region .ctor
     /// <summary>

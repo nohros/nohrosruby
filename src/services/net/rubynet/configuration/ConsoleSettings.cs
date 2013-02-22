@@ -5,8 +5,7 @@ namespace Nohros.Ruby
 {
   internal partial class RubySettings
   {
-    string IConsoleSettings.Prompt {
-      get { return prompt_; }
-    }
+    public string Prompt { get; private set; }
+    string IConsoleSettings.Prompt { get { return Prompt; } }
   }
 }

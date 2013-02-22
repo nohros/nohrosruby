@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using Google.ProtocolBuffers;
 using Nohros.Extensions;
-using Nohros.Concurrent;
 using Nohros.Ruby.Protocol;
 using Nohros.Ruby.Protocol.Control;
 
@@ -18,7 +17,7 @@ namespace Nohros.Ruby
     const string kClassName = "Nohros.Ruby.RubyServiceHost";
     readonly RubyLogger logger_ = RubyLogger.ForCurrentProcess;
 
-    readonly IRubyMessageChannel ruby_message_channel_;
+    readonly IRubyMessageSender ruby_message_sender_;
     readonly IRubyService service_;
     readonly IRubyLogger service_logger_;
     readonly IRubySettings settings_;
@@ -31,7 +30,7 @@ namespace Nohros.Ruby
     /// <param name="service">
     /// The service to host.
     /// </param>
-    /// <param name="channel">
+    /// <param name="sender">
     /// A <see cref="IRubyMessageSender"/> that can be used to send messages to
     /// the ruby service node.
     /// </param>
@@ -39,7 +38,7 @@ namespace Nohros.Ruby
     /// A <see cref="IRubyLogger"/> object that can be used by the hosted
     /// service to log things.
     /// </param>
-    public RubyServiceHost(IRubyService service, IRubyMessageChannel channel,
+    public RubyServiceHost(IRubyService service, IRubyMessageSender sender,
       IRubyLogger service_logger, IRubySettings settings) {
 #if DEBUG
       if (service == null || channel == null) {
@@ -48,7 +47,7 @@ namespace Nohros.Ruby
 #endif
       settings_ = settings;
       service_ = service;
-      ruby_message_channel_ = channel;
+      ruby_message_sender_ = sender;
       service_logger_ = service_logger;
     }
     #endregion
@@ -62,12 +61,30 @@ namespace Nohros.Ruby
       service_.OnMessage(packet.Message);
     }
 
+    public bool Send(IRubyMessage message,
+      IEnumerable<KeyValuePair<string, string>> facts) {
+      return ruby_message_sender_.Send(message, facts);
+    }
+
+    public bool Send(byte[] message_id, int type, byte[] message,
+      byte[] destination, IEnumerable<KeyValuePair<string, string>> facts) {
+      return ruby_message_sender_.Send(message_id, type, message, destination,
+        facts);
+    }
+
+    public bool Send(byte[] message_id, int type, byte[] message,
+      byte[] destination, string token,
+      IEnumerable<KeyValuePair<string, string>> facts) {
+      return ruby_message_sender_.Send(message_id, type, message, destination,
+        token, facts);
+    }
+
     /// <inheritdoc/>
     public bool Send(IRubyMessage message) {
       if (logger_.IsDebugEnabled) {
         logger_.Debug("Sending a message with token " + message.Token);
       }
-      return ruby_message_channel_.Send(message);
+      return ruby_message_sender_.Send(message);
     }
 
     /// <inherithdoc/>
@@ -80,7 +97,8 @@ namespace Nohros.Ruby
       return Send(message_id, type, message, destination, string.Empty);
     }
 
-    public bool SendError(byte[] message_id, int exception_code, string error,
+    public byte[] FormatErrorMessage(byte[] message_id, int exception_code,
+      string error,
       byte[] destination) {
       ExceptionMessage exception = new ExceptionMessage.Builder()
         .SetCode(exception_code)
@@ -88,10 +106,11 @@ namespace Nohros.Ruby
         .SetSource(service_.Facts.GetString(Strings.kServiceNameFact,
           Strings.kNodeServiceName))
         .Build();
-      return SendError(message_id, destination, new[] {exception});
+      return FormatErrorMessage(message_id, destination, new[] {exception});
     }
 
-    public bool SendError(byte[] message_id, int exception_code, string error,
+    public byte[] FormatErrorMessage(byte[] message_id, int exception_code,
+      string error,
       byte[] destination, Exception exception) {
       ExceptionMessage exception_message = new ExceptionMessage.Builder()
         .SetCode(exception_code)
@@ -102,7 +121,8 @@ namespace Nohros.Ruby
         .AddData(KeyValuePairs.FromKeyValuePair("backtrace",
           exception.StackTrace))
         .Build();
-      return SendError(message_id, destination, new[] {exception_message});
+      return FormatErrorMessage(message_id, destination,
+        new[] {exception_message});
     }
 
     /// <inheritdoc/>
@@ -117,7 +137,7 @@ namespace Nohros.Ruby
       return Send(request);
     }
 
-    public bool SendError(byte[] message_id, int exception_code,
+    public byte[] FormatErrorMessage(byte[] message_id, int exception_code,
       byte[] destination, Exception exception) {
       ExceptionMessage exception_message = new ExceptionMessage.Builder()
         .SetCode(exception_code)
@@ -128,10 +148,11 @@ namespace Nohros.Ruby
         .AddData(KeyValuePairs.FromKeyValuePair("backtrace",
           exception.StackTrace))
         .Build();
-      return SendError(message_id, destination, new[] {exception_message});
+      return FormatErrorMessage(message_id, destination,
+        new[] {exception_message});
     }
 
-    bool SendError(byte[] message_id, byte[] destination,
+    byte[] FormatErrorMessage(byte[] message_id, byte[] destination,
       IEnumerable<ExceptionMessage> exceptions) {
       ErrorMessage error_message = new ErrorMessage.Builder()
         .AddRangeErrors(exceptions)
@@ -142,7 +163,7 @@ namespace Nohros.Ruby
         .SetMessage(error_message.ToByteString())
         .SetSender(ByteString.CopyFrom(destination))
         .Build();
-      return Send(message);
+      return message.ToByteArray();
     }
 
     /// <summary>
@@ -164,7 +185,6 @@ namespace Nohros.Ruby
     /// </para>
     /// </remarks>
     public void Start() {
-      ruby_message_channel_.AddListener(this, Executors.ThreadPoolExecutor());
       Announce();
 
       Thread.CurrentThread.CurrentUICulture = settings_.Culture;
@@ -178,9 +198,9 @@ namespace Nohros.Ruby
       AnnounceMessage.Builder builder = new AnnounceMessage.Builder();
       foreach (KeyValuePair<string, string> fact in service_.Facts) {
         builder
-          .AddFacts(KeyValuePairs.FromKeyValuePair(fact))
-          .AddFacts(KeyValuePairs.FromKeyValuePair(Strings.kHostServiceFact,
-            ruby_message_channel_.Endpoint));
+          .AddFacts(KeyValuePairs.FromKeyValuePair(fact));
+        //.AddFacts(KeyValuePairs.FromKeyValuePair(Strings.kHostServiceFact,
+        //ruby_message_sender_.Endpoint));
       }
 
       RubyMessage message = new RubyMessage.Builder()

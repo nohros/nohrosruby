@@ -15,7 +15,8 @@ namespace Nohros.Ruby.Shell
     /// <see cref="RubySettings"/> objects.
     /// </summary>
     public ShellRubyProcess(IMyToolsPackConsole console,
-      IRubySettings settings, IRubyMessageChannel ruby_message_channel)
+      IRubySettings settings,
+      IRubyMessageChannel ruby_message_channel)
       : base(settings, ruby_message_channel) {
       console_ = console;
     }

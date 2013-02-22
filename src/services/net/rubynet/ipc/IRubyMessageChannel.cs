@@ -7,7 +7,7 @@ namespace Nohros.Ruby
   /// <summary>
   /// Provides a communication channel that exchanges ruby messages.
   /// </summary>
-  public interface IRubyMessageChannel : IRubyMessageSender
+  internal interface IRubyMessageChannel : IRubyMessageSender
   {
     /// <summary>
     /// Adds a listener to receive notifications for incoming messages.

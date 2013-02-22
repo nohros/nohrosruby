@@ -28,9 +28,9 @@ namespace Nohros.Ruby
     void Run(string command_line_string);
 
     /// <summary>
-    /// Gets a <see cref="RubyMessageChannel"/> that can be used to receive/send
+    /// Gets a <see cref="ProcessMessageChannel"/> that can be used to receive/send
     /// messages from/to the ruby service node.
     /// </summary>
-    IRubyMessageChannel RubyMessageChannel { get; }
+    //IRubyMessageChannel ProcessMessageChannel { get; }
   }
 }
