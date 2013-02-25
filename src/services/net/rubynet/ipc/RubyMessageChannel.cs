@@ -73,7 +73,7 @@ namespace Nohros.Ruby
     readonly Socket ipc_socket_;
     readonly List<ListenerExecutorPair> listeners_;
     readonly IRubyLogger logger_;
-    bool channel_is_opened_;
+    volatile bool channel_is_opened_;
     Thread io_multiplexer_thread_;
 
     #region .ctor
@@ -99,16 +99,32 @@ namespace Nohros.Ruby
     }
     #endregion
 
+    /// <inheritdoc/>
+    public void Close() {
+      Close(0);
+    }
+
+    /// <inheritdoc/>
+    public void Close(int timeout) {
+      // Closes the channel only if it is open.
+      if (channel_is_opened_) {
+        channel_is_opened_ = false;
+
+        // Wake up the Multiplex thread.
+        internal_sender_socket_.Send();
+
+        // Wait the multiplex channel to finish.
+        io_multiplexer_thread_.Join(timeout);
+      }
+    }
+
+    /// <inheritdoc/>
     public void Dispose() {
+      Close(0);
       internal_sender_socket_.Linger = 0;
       ipc_socket_.Linger = 0;
       internal_sender_socket_.Dispose();
       ipc_socket_.Dispose();
-    }
-
-    /// <inheritdoc/>
-    public string Endpoint {
-      get { return endpoint_; }
     }
 
     /// <inheritdoc/>
@@ -129,6 +145,7 @@ namespace Nohros.Ruby
       }
     }
 
+    /// <inheritdoc/>
     public override bool Send(RubyMessagePacket packet) {
       try {
         // Lets try to send the message using the NOBLOCK operation to avoid
@@ -172,13 +189,6 @@ namespace Nohros.Ruby
     }
 
     /// <summary>
-    /// Closes the communication channel.
-    /// </summary>
-    public void Close() {
-      channel_is_opened_ = false;
-    }
-
-    /// <summary>
     /// The method that receives messages from the message receiver and
     /// dispatch them to the listener.
     /// </summary>
@@ -213,6 +223,9 @@ namespace Nohros.Ruby
         // Get the message that should be sent over the DEALER socket from
         // the REP socket and reply with the status of the SEND operation.
         byte[] message = socket.Recv();
+        if (message.Length == 0 && !channel_is_opened_) {
+          return;
+        }
         SendStatus status = ipc_socket_.Send(message, SendRecvOpt.NOBLOCK);
         socket.Send((status == SendStatus.Sent)
           ? true_byte_array_
@@ -232,17 +245,18 @@ namespace Nohros.Ruby
       try {
         // Receive the message and dispatch it to the registered listeners.
         byte[] message = ipc_socket_.Recv(SendRecvOpt.NOBLOCK);
-        RubyMessagePacket packet = RubyMessagePacket.ParseFrom(message);
-        for (int i = 0, j = listeners_.Count; i < j; i++) {
-          ListenerExecutorPair pair = listeners_[i];
-          pair.Executor.Execute(
-            () => pair.Listener.OnMessagePacketReceived(packet));
+        if (message.Length > 0) {
+          RubyMessagePacket packet = RubyMessagePacket.ParseFrom(message);
+          for (int i = 0, j = listeners_.Count; i < j; i++) {
+            ListenerExecutorPair pair = listeners_[i];
+            pair.Executor.Execute(
+              () => pair.Listener.OnMessagePacketReceived(packet));
+          }
         }
       } catch (System.Exception e) {
         logger_.Error(
           string.Format(R.StringResources.Log_MethodThrowsException,
-            "GetMessage",
-            kClassName), e);
+            "GetMessage", kClassName), e);
       }
     }
   }

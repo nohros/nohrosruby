@@ -20,6 +20,12 @@ namespace Nohros.Ruby
     public void Open() {
     }
 
+    public void Close() {
+    }
+
+    public void Close(int timeout) {
+    }
+
     public bool Send(IRubyMessage message) {
       return true;
     }

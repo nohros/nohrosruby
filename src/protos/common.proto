@@ -50,3 +50,13 @@ message ExceptionMessage {
   // information about the exception.
   repeated KeyValuePair data = 4;
 }
+
+// Represents the beacon that is sent by trackers at regular interval.
+message BeaconProto {
+  // The node identifier.
+  optional bytes peer_id = 1;
+  
+  // The mailbox port number of the peers. This is the port that is used by the
+  // peer to receive messages from other peers.
+  optional sint32 peer_mailbox_port = 2;
+}
