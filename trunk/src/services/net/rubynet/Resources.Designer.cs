@@ -70,6 +70,15 @@ namespace Nohros.Ruby {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The specified byte array does not represents a valid beacon..
+        /// </summary>
+        internal static string Format_Beacon_FromBytes {
+            get {
+                return ResourceManager.GetString("Format_Beacon_FromBytes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot perform this operation on a closed channel..
         /// </summary>
         internal static string InvalidOperation_ClosedChannel {

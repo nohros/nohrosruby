@@ -81,6 +81,7 @@
     <Compile Include="configuration\RubySettingsBuilder.cs" />
     <Compile Include="configuration\RubySettingsLoader.cs" />
     <Compile Include="ipc\AbstractRubyMessageSender.cs" />
+    <Compile Include="ipc\Beacon.cs" />
     <Compile Include="ipc\IRubyMessageSenderFactory.cs" />
     <Compile Include="ipc\NullMessageSender.cs" />
     <Compile Include="ipc\RubyMessageListeners.cs" />

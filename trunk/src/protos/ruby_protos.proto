@@ -56,7 +56,7 @@ message RubyMessageHeader {
   // unsigned type because some languages, such as java and php does not support
   // unsigned values.
   optional int32 size = 2;
-
+  
   // Facts is a discrete bits of information about a service. Ruby allows the
   // smae service to run more than once in a single machine. When more than one
   // instance of a service is running on the same machine with distinct
@@ -115,29 +115,29 @@ message RubyMessage {
   enum AckType {
     // Does not send an ACK.
     kRubyNoAck = 1;
-	
-	// The most simple form of ACK, which does not include the received
-	// message in the message body.
-	kRubySimpleAck = 2;
-	
-	// An ACK that includes the requested message in the message body.
-	kRubyRequestAck = 3;
-	
-	// An kRubySimpleAck ACK that should be sent by the destination
-	// service. The service node does not respond to this type of ACK
-	// request, it is the responsability of the destination service.
-	kServiceSimpleAck = 4;
-	
-	// An kRubyRequestAck ACK that should be sent by the destination
-	// service. The service node does not respond to this type of ACK
-	// request, it is the responsability of the destination service.
-	kServiceRequestAck = 5;
+
+    // The most simple form of ACK, which does not include the received
+    // message in the message body.
+    kRubySimpleAck = 2;
+
+    // An ACK that includes the requested message in the message body.
+    kRubyRequestAck = 3;
+
+    // An kRubySimpleAck ACK that should be sent by the destination
+    // service. The service node does not respond to this type of ACK
+    // request, it is the responsability of the destination service.
+    kServiceSimpleAck = 4;
+
+    // An kRubyRequestAck ACK that should be sent by the destination
+    // service. The service node does not respond to this type of ACK
+    // request, it is the responsability of the destination service.
+    kServiceRequestAck = 5;
   };
   
   // A flag that indicates the type of ACK that the sender wants to receive
   // when a message is received by the ruby service node. Default to kRubyNoAck.
   optional AckType ack_type = 7 [default = kRubyNoAck];
-
+  
   // Contains aditional information about the message. This is used to provide
   // detailed information about the message only if explicity requested.
   repeated string extra_info = 8;

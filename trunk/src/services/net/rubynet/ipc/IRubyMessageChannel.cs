@@ -49,6 +49,26 @@ namespace Nohros.Ruby
     void Open();
 
     /// <summary>
+    /// Closes the communication channel and releases any associated resources.
+    /// </summary>
+    /// <remarks>
+    /// The <see cref="Close()"/> method closes the communication channel and
+    /// releases all managed and unmanaged resouses associated with the
+    /// <see cref="IRubyMessageChannel"/>.
+    /// </remarks>
+    void Close();
+
+    /// <summary>
+    /// Closes the communication channel and releases all associated resources
+    /// with the specified timeout to allow queued data to be processed.
+    /// </summary>
+    /// <param name="timeout">
+    /// Wait up to <paramref name="timeout"/> seconds to process any remaining
+    /// data, then closes the communication channel.
+    /// </param>
+    void Close(int timeout);
+
+    /// <summary>
     /// Gets the channel's endpoint.
     /// </summary>
     /// <remarks>

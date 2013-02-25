@@ -159,4 +159,7 @@
   <data name="RubyProcess_ResponseMessageHandle_NotFound" xml:space="preserve">
     <value>Could not find a handler to handle the message associated with the ID {0}.</value>
   </data>
+  <data name="Format_Beacon_FromBytes" xml:space="preserve">
+    <value>The specified byte array does not represents a valid beacon.</value>
+  </data>
 </root>
