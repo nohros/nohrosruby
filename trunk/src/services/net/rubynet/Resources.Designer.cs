@@ -178,6 +178,15 @@ namespace Nohros.Ruby {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A tracker is not defined..
+        /// </summary>
+        internal static string Log_Warn_MissingTracker {
+            get {
+                return ResourceManager.GetString("Log_Warn_MissingTracker", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The type of socket {0} should be {1}..
         /// </summary>
         internal static string log_zmq_socket_is_not_of_type {

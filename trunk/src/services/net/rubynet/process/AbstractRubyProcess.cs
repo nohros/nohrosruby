@@ -64,9 +64,6 @@ namespace Nohros.Ruby
     public virtual void Run(string command_line_string) {
       ruby_message_channel_.AddListener(this, Executors.SameThreadExecutor());
 
-      // Query the service node for the log aggregator service.
-      QueryLogAggregatorService();
-
       // TODO(neylor.silva) Remove the code above as soon as the c++
       // implementation is done.
       //
@@ -75,7 +72,7 @@ namespace Nohros.Ruby
     }
 
     /// <inheritdoc/>
-    public void OnMessagePacketReceived(RubyMessagePacket packet) {
+    public virtual void OnMessagePacketReceived(RubyMessagePacket packet) {
       switch (packet.Message.Type) {
         case (int) NodeMessageType.kServiceControl:
           OnServiceControlMessage(packet.Message.Message);
@@ -115,7 +112,7 @@ namespace Nohros.Ruby
       }
     }
 
-    void OnResponseMessage(RubyMessage message) {
+    protected void OnResponseMessage(RubyMessage message) {
       try {
         ResponseMessage response = ResponseMessage.ParseFrom(message.Message);
         ResponseMessageHandler handler;
@@ -143,7 +140,7 @@ namespace Nohros.Ruby
     // Query reseponses message handlers ------------------------------------
     //
 
-    void QueryLogAggregatorService() {
+    protected void QueryLogAggregatorService() {
       QueryMessage query = new QueryMessage.Builder()
         .SetType(QueryMessageType.kQueryFind)
         .AddFacts(
@@ -217,7 +214,6 @@ namespace Nohros.Ruby
 
       OnMessagePacketReceived(response_packet);
     }*/
-
 
     void OnLogAggregatorQueryReseponse(ResponseMessage response) {
       IList<KeyValuePair> responses = response.ReponsesList;
@@ -333,6 +329,10 @@ namespace Nohros.Ruby
           kClassName, "ServiceThreadMain"), exception);
       }
       --running_services_count_;
+    }
+
+    public void Exit() {
+      ruby_message_channel_.Close();
     }
 
     int Find(string pattern, IList<KeyValuePair> key_value_pairs) {

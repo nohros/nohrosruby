@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net.Sockets;
 using System.Reflection;
 using Nohros.Configuration;
 using Nohros.Extensions;
@@ -7,7 +8,7 @@ using Nohros.Logging;
 using Nohros.MyToolsPack.Console;
 using Nohros.Providers;
 using Nohros.Ruby.Shell;
-using ZMQ;
+using ZmqContext = ZMQ.Context;
 
 namespace Nohros.Ruby
 {
@@ -31,27 +32,62 @@ namespace Nohros.Ruby
     }
     #endregion
 
-    /// <summary>
-    /// Creates an instacne of the <see cref="ShellRubyProcess"/> class.
-    /// </summary>
-    /// <returns>
-    /// A <see cref="ShellRubyProcess"/> object.
-    /// </returns>
-    public ShellRubyProcess CreateShellRubyProcess() {
-      MyToolsPackConsole console = GetToolsPackConsole();
-      IRubyMessageChannel channel = GetMessageChannel();
-      var process = new ShellRubyProcess(console, settings_, channel);
+    ShellSelfHostProcess CreateShellSelfHostProcess(ZmqContext context,
+      IRubyMessageChannel ruby_message_channel) {
+      var udp_client = new UdpClient(settings_.DiscovererPort);
+      var self_host_message_channel =
+        new SelfHostMessageChannel(context, udp_client);
+      var shell_ruby_process = CreateShellProcess(self_host_message_channel);
+      var self_host_process =
+        CreateSelfHostMessageProcess(self_host_message_channel, context);
+      return new ShellSelfHostProcess(shell_ruby_process,
+        self_host_process);
+    }
+
+    ShellRubyProcess CreateShellProcess(IRubyMessageChannel ruby_message_channel) {
+      MyToolsPackConsole console = CreateToolsPackConsole();
+      var shell_ruby_process = new ShellRubyProcess(console, settings_,
+        ruby_message_channel);
 
       // Tell the tools pack console to send our implementation of
       // the IMyToolsPackConsole interface when run commands.
-      console.ToolsPackConsole = process;
+      console.ToolsPackConsole = shell_ruby_process;
 
-      return process;
+      return shell_ruby_process;
     }
 
-    IRubyMessageChannel GetMessageChannel() {
+    public IRubyProcess CreateProcess() {
+      var context = new ZmqContext();
+      IRubyMessageChannel ruby_message_channel = CreateMessageChannel(context);
+      switch (settings_.RunningMode) {
+        case RunningMode.Service:
+          if (settings_.SelfHost) {
+            return CreateServiceSelfHostProcess();
+          }
+          return CreateServiceProcess(context, ruby_message_channel);
+
+        case RunningMode.Interactive:
+          if (settings_.SelfHost) {
+            return CreateShellSelfHostProcess(context, ruby_message_channel);
+          }
+          return CreateShellProcess(ruby_message_channel);
+      }
+      throw new ArgumentException();
+    }
+
+    IRubyProcess CreateServiceSelfHostProcess() {
+      throw new NotImplementedException();
+    }
+
+    SelfHostProcess CreateSelfHostMessageProcess(
+      SelfHostMessageChannel self_host_message_channel, ZmqContext context) {
+      var tracker_factory = new TrackerFactory(context);
+      var trackers = new Trackers(tracker_factory);
+      return new SelfHostProcess(settings_, self_host_message_channel, trackers);
+    }
+
+    IRubyMessageChannel CreateMessageChannel(ZmqContext context) {
       if (settings_.IPCEndpoint != string.Empty) {
-        var context = new Context();
         return new RubyMessageChannel(context, settings_.IPCEndpoint);
       }
       return new NullMessageChannel();
@@ -61,12 +97,12 @@ namespace Nohros.Ruby
     /// Creates an instance of the <see cref="ServiceRubyProcess"/> class.
     /// </summary>
     /// <returns></returns>
-    public ServiceRubyProcess CreateServiceRubyProcess() {
-      var channel = GetMessageChannel();
-      return new ServiceRubyProcess(settings_, channel);
+    ServiceRubyProcess CreateServiceProcess(ZmqContext context,
+      IRubyMessageChannel ruby_message_channel) {
+      return new ServiceRubyProcess(settings_, ruby_message_channel);
     }
 
-    MyToolsPackConsole GetToolsPackConsole() {
+    MyToolsPackConsole CreateToolsPackConsole() {
       // Create an instance of the class that handle the console commands.
       var tools_pack_console =
         new MyToolsPackConsole(settings_, new SystemConsole());

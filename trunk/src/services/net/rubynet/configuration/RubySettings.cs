@@ -25,15 +25,15 @@ namespace Nohros.Ruby
       // "node_services_directory\hosts\language_name\"
       Culture = builder.Culture;
       LoggerLevel = builder.LogLevel;
-      IPCEndpoint = builder.ReceiverEndpoint;
       RunningMode = builder.RunningMode;
       SelfHost = builder.SelfHost;
-      SenderEndpoint = builder.SenderEndpoint;
       ServicesFolder = builder.ServiceFolder;
-      TrackerAddress = builder.TrackerAddress;
       Prompt = builder.Prompt;
+      SelfHostEndpoint = builder.SelfHostEndpoint;
       NodeDirectory =
         Path.GetFullPath(AppDomain.CurrentDomain.BaseDirectory + "..\\..\\");
+      DiscovererPort = builder.DiscovererPort;
+      IPCEndpoint = builder.IPCEndpoint;
     }
     #endregion
 
@@ -43,9 +43,9 @@ namespace Nohros.Ruby
     public string NodeDirectory { get; private set; }
     public CultureInfo Culture { get; private set; }
     public string IPCEndpoint { get; private set; }
-    public string SenderEndpoint { get; private set; }
     public string SelfHostEndpoint { get; private set; }
     public bool SelfHost { get; private set; }
-    public string TrackerAddress { get; private set; }
+    public int DiscovererPort { get; private set; }
+    public string SenderEndpoint { get; private set; }
   }
 }

@@ -1,7 +1,7 @@
 using System;
 using Nohros.MyToolsPack.Console;
 
-namespace Nohros.Ruby.Shell
+namespace Nohros.Ruby
 {
   internal class ShellRubyProcess : AbstractRubyProcess, IMyToolsPackConsole,
                                     IRubyProcess
@@ -59,7 +59,9 @@ namespace Nohros.Ruby.Shell
       // by a service.
       try {
         base.Run(command_line_string);
+        QueryLogAggregatorService();
         console_.Run(command_line_string);
+        Exit();
       } catch (Exception ex) {
         string message = "";
         Exception exception = ex;

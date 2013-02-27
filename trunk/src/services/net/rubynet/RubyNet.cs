@@ -36,18 +36,8 @@ namespace Nohros.Ruby
       var factory = new AppFactory(settings);
       factory.ConfigureLogger();
 
-      switch (settings.RunningMode) {
-        case RunningMode.Service:
-          factory.CreateServiceRubyProcess().Run(legacy_command_line_string);
-          break;
-
-        case RunningMode.Interactive:
-          factory.CreateShellRubyProcess().Run(legacy_command_line_string);
-          break;
-
-        default:
-          throw new NotReachedException();
-      }
+      IRubyProcess process = factory.CreateProcess();
+      process.Run(legacy_command_line_string);
     }
 
     /// <summary>
@@ -72,45 +62,37 @@ namespace Nohros.Ruby
         .GetSwitchValue(Strings.kRunningModeSwitch);
       string services_folder = switches
         .GetSwitchValue(Strings.kServicesFolderSwitch);
-      string tracker_address =
-        switches.GetSwitchValue(Strings.kDefaultTrackerAddress);
+      int discoverer_port = switches.GetSwitchValueAsInt(
+        Strings.kDiscovererPortSwitch, 0);
 
-      var builder = new RubySettings.Builder()
-        .SetTrackerAddress(tracker_address);
+      var builder = new RubySettings.Builder();
       var loader = new RubySettings.Loader(builder);
 
       // override the values set by class loader.
       loader.ParseComplete += sender => {
         bool self_host = switches.HasSwitch(Strings.kSelfHostSwitch);
-        string ipc_receiver_endpoint =
-          switches.GetSwitchValue(Strings.kReceiverEndpoint, string.Empty);
-        string ipc_sender_endpoint =
-          switches.GetSwitchValue(Strings.kSenderEndpoint, string.Empty);
-
-        if (ipc_receiver_endpoint != string.Empty) {
-          builder.SetReceiverEndpoint(ipc_receiver_endpoint);
-        }
-
-        if (ipc_sender_endpoint != string.Empty) {
-          builder.SetSenderEndpoint(ipc_sender_endpoint);
-        }
 
         if (self_host) {
-          // The self host mode only works when the receiver and sender
-          // endpoints are set.
-          if (builder.ReceiverEndpoint == string.Empty ||
-            builder.SenderEndpoint == string.Empty) {
-            builder.SetSelfHost(false);
+          string self_host_endpoint = switches
+            .GetSwitchValue(Strings.kSelfHostSwitch);
+          if (self_host_endpoint != string.Empty) {
+            builder.SetSelfHostEndpoint("tcp://*:" + self_host_endpoint);
           }
 
           // The default running mode for self hosting is interactive.
           if (running_mode == string.Empty) {
-            loader.RunningMode = Strings.kInteractiveRunningMode;
+            builder.SetRunningMode(RunningMode.Interactive);
           }
+
+          builder.SetIPCEndpoint(Strings.kSelfHostIPCEndpoint);
         }
 
         if (services_folder != string.Empty) {
           builder.SetServiceFolder(services_folder);
+        }
+
+        if (discoverer_port != 0) {
+          builder.SetDiscovererPort(discoverer_port);
         }
       };
 

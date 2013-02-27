@@ -45,32 +45,10 @@ namespace Nohros.Ruby
     /// <inheritdoc/>
     public virtual bool Send(IRubyMessage message,
       IEnumerable<KeyValuePair<string, string>> facts) {
-#if DEBUG
-      if (!channel_is_opened_) {
-        logger_.Warn("Send() called on a closed channel.");
-        return false;
-      }
-#endif
       // Send the message to the service for processing.
       RubyMessage response = message as RubyMessage ??
         RubyMessage.ParseFrom(message.ToByteArray());
-
-      // Create the reply packed using the service processing result.
-      int message_size = message.ToByteArray().Length;
-      RubyMessageHeader header = new RubyMessageHeader.Builder()
-        .SetId(ByteString.CopyFrom(message.Id))
-        .SetSize(message_size)
-        .AddRangeFacts(KeyValuePairs.FromKeyValuePairs(facts))
-        .Build();
-
-      int header_size = header.SerializedSize;
-      RubyMessagePacket packet = new RubyMessagePacket.Builder()
-        .SetHeader(header)
-        .SetHeaderSize(header.SerializedSize)
-        .SetMessage(response)
-        .SetSize(header_size + 2 + message_size)
-        .Build();
-      return Send(packet);
+      return Send(RubyMessages.CreateMessagePacket(response));
     }
 
     public abstract bool Send(RubyMessagePacket packet);
