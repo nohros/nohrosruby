@@ -90,5 +90,19 @@ namespace Nohros.Ruby
       }
       return pairs;
     }
+
+    /// <summary>
+    /// Creates an list of <see cref="KeyValuePair{TKey,TValue}"/> using the
+    /// specified collection of <see cref="KeyValuePair"/>.
+    /// </summary>
+    /// <returns></returns>
+    public static IList<KeyValuePair<string, string>> ToKeyValuePairs(
+      IEnumerable<KeyValuePair> key_value_pairs) {
+      IList<KeyValuePair<string, string>> pairs =
+        new List<KeyValuePair<string, string>>();
+      foreach (var pair in key_value_pairs) {
+        pairs.Add(new KeyValuePair<string, string>(pair.Key, pair.Value));
+      }
+    }
   }
 }

@@ -63,9 +63,8 @@ namespace Nohros.Ruby
     bool SelfHost { get; }
 
     /// <summary>
-    /// Gets the address of the service tracker address. This is used only when
-    /// <see cref="SelfHost"/> is <c>true</c>.
+    /// Gets the port number that is used to receive discovery beacons.
     /// </summary>
-    string TrackerAddress { get; }
+    int DiscovererPort { get; }
   }
 }

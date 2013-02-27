@@ -162,4 +162,7 @@
   <data name="Format_Beacon_FromBytes" xml:space="preserve">
     <value>The specified byte array does not represents a valid beacon.</value>
   </data>
+  <data name="Log_Warn_MissingTracker" xml:space="preserve">
+    <value>A tracker is not defined.</value>
+  </data>
 </root>

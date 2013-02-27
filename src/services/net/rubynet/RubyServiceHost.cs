@@ -41,7 +41,8 @@ namespace Nohros.Ruby
     public RubyServiceHost(IRubyService service, IRubyMessageSender sender,
       IRubyLogger service_logger, IRubySettings settings) {
 #if DEBUG
-      if (service == null || channel == null) {
+      if (service == null || sender == null || settings == null ||
+        service_logger_ == null) {
         throw new ArgumentNullException(service == null ? "service" : "sender");
       }
 #endif

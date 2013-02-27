@@ -16,13 +16,14 @@ namespace Nohros.Ruby
     public const string kConfigFileName = "ruby.net.config";
     public const string kConfigFileRootName = "ruby";
     public const string kServicesFolderSwitch = "services-folder";
-    public const string kDefaultSelfHostIPCChannelAddress = "*:8520";
-    public const string kDefaultServiceIPCChannelAddress = "127.0.0.1:8520";
+    public const string kDefaultSelfHostEndpoint = "tcp://*:0";
     public const string kSelfHostSwitch = "self-host";
     public const string kInteractiveRunningMode = "interactive";
-    public const string kDefaultTrackerAddress = "127.0.0.1:8520";
     public const string kReceiverEndpoint = "ipc_receiver_endpoint";
     public const string kSenderEndpoint = "ipc_sender_endpoint";
+    public const string kDiscovererPortSwitch = "discoverer-port";
+    public const string kSelfHostIPCEndpoint = "inproc://self.host.ipc.channel";
+    public const string kServiceEndpointFact = "endpoint";
 
     /// <summary>
     /// The name of the node that contains the configuration data for the

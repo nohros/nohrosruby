@@ -43,7 +43,7 @@ namespace Nohros.Ruby
         }
       } catch (System.Exception exception) {
         logger_.Error(string.Format(R.StringResources.Log_MethodThrowsException,
-          kClassName, "GetMessagePacket"), exception);
+          kClassName, "CreateMessagePacket"), exception);
       }
       return new RubyMessagePacket.Builder().SetSize(0).Build();
     }

@@ -17,9 +17,8 @@ namespace Nohros.Ruby
         RunningMode = RunningMode.Service;
         ServiceFolder = Strings.kDefaultServiceFolder;
         SelfHost = false;
-        TrackerAddress = string.Empty;
-        ReceiverEndpoint = string.Empty;
-        SenderEndpoint = string.Empty;
+        SelfHostEndpoint = Strings.kDefaultSelfHostEndpoint;
+        IPCEndpoint = string.Empty;
       }
       #endregion
 
@@ -57,13 +56,8 @@ namespace Nohros.Ruby
         return new RubySettings(this);
       }
 
-      public Builder SetReceiverEndpoint(string receiver_endpoint) {
-        ReceiverEndpoint = receiver_endpoint;
-        return this;
-      }
-
-      public Builder SetSenderEndpoint(string sender_endpoint) {
-        SenderEndpoint = sender_endpoint;
+      public Builder SetSelfHostEndpoint(string endpoint) {
+        SelfHostEndpoint = endpoint;
         return this;
       }
 
@@ -72,15 +66,26 @@ namespace Nohros.Ruby
         return this;
       }
 
+      public Builder SetDiscovererPort(int port) {
+        DiscovererPort = port;
+        return this;
+      }
+
+      public Builder SetIPCEndpoint(string endpoint) {
+        IPCEndpoint = endpoint;
+        return this;
+      }
+
+      public string SelfHostEndpoint { get; private set; }
       public bool SelfHost { get; private set; }
-      public string ReceiverEndpoint { get; private set; }
-      public string SenderEndpoint { get; private set; }
       public string TrackerAddress { get; private set; }
       public string ServiceFolder { get; private set; }
       public string Prompt { get; private set; }
       public CultureInfo Culture { get; private set; }
       public LogLevel LoggerLevel { get; private set; }
       public RunningMode RunningMode { get; private set; }
+      public int DiscovererPort { get; private set; }
+      public string IPCEndpoint { get; private set; }
     }
   }
 }
