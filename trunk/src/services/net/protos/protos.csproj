@@ -47,7 +47,8 @@
     <Compile Include="..\..\..\protos\parsers\csharp\Control.cs" />
     <Compile Include="..\..\..\protos\parsers\csharp\Common.cs" />
     <Compile Include="..\..\..\protos\parsers\csharp\Logging.cs" />
-    <Compile Include="KeyValuePairs.cs" />
+    <Compile Include="..\rubynet\proto\KeyValuePairs.cs" />
+    <Compile Include="..\rubynet\proto\RubyMessages.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
