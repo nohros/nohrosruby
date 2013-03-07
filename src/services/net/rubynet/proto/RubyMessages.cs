@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Google.ProtocolBuffers;
 using Nohros.Ruby.Protocol;
@@ -13,63 +12,109 @@ namespace Nohros.Ruby
   /// </summary>
   public sealed class RubyMessages
   {
-    public static RubyMessagePacket CreateMessagePacket(byte[] message_id, int type,
-      byte[] message) {
-      return CreateMessagePacket(message_id, type, message, string.Empty);
+    public static RubyMessagePacket CreateMessagePacket(byte[] message_id,
+      int type, byte[] message) {
+      return CreateMessagePacket(message_id, type, message,
+        new KeyValuePair<string, string>[0]);
     }
 
-    public static RubyMessagePacket CreateMessagePacket(byte[] message_id, int type,
-      byte[] message, byte[] destination) {
-      return CreateMessagePacket(message_id, type, message, destination,
-        string.Empty);
-    }
-
-    public static RubyMessagePacket CreateMessagePacket(byte[] message_id, int type,
-      byte[] message, IEnumerable<KeyValuePair<string, string>> facts) {
-      return CreateMessagePacket(message_id, type, message, string.Empty, facts);
-    }
-
-    public static RubyMessagePacket CreateMessagePacket(byte[] message_id, int type,
-      byte[] message, byte[] destination,
-      IEnumerable<KeyValuePair<string, string>> facts) {
-      return CreateMessagePacket(message_id, type, message, destination,
-        string.Empty, facts);
-    }
-
-
-    public static RubyMessagePacket CreateMessagePacket(byte[] message_id, int type,
-      byte[] message, string token) {
+    public static RubyMessagePacket CreateMessagePacket(byte[] message_id,
+      int type, byte[] message, string token) {
       return CreateMessagePacket(message_id, type, message, token,
         new KeyValuePair<string, string>[0]);
     }
 
-    public static RubyMessagePacket CreateMessagePacket(byte[] message_id, int type,
-      byte[] message, byte[] destination, string token) {
-      return CreateMessagePacket(message_id, type, message, destination, token,
+    public static RubyMessagePacket CreateMessagePacket(byte[] message_id,
+      int type, byte[] message, byte[] destination) {
+      return CreateMessagePacket(message_id, type, message, destination,
         new KeyValuePair<string, string>[0]);
     }
 
-    public static RubyMessagePacket CreateMessagePacket(byte[] message_id, int type,
-      byte[] message, string token,
-      IEnumerable<KeyValuePair<string, string>> facts) {
-      RubyMessage request = new RubyMessage.Builder()
-        .SetId(ByteString.CopyFrom(message_id))
-        .SetMessage(ByteString.CopyFrom(message))
-        .SetType(type)
-        .Build();
-      return CreateMessagePacket(request, facts);
+    public static RubyMessagePacket CreateMessagePacket(byte[] message_id,
+      int type, byte[] message, string token, byte[] destination) {
+      return CreateMessagePacket(message_id, type, message, token,
+        destination, new KeyValuePair<string, string>[0]);
     }
 
-    public static RubyMessagePacket CreateMessagePacket(byte[] message_id, int type,
-      byte[] message, byte[] destination, string token,
+    public static RubyMessagePacket CreateMessagePacket(byte[] message_id,
+      int type, byte[] message, IEnumerable<KeyValuePair<string, string>> facts) {
+      return CreateMessagePacket(ByteString.CopyFrom(message_id), type,
+        ByteString.CopyFrom(message), facts);
+    }
+
+    public static RubyMessagePacket CreateMessagePacket(byte[] message_id,
+      int type, byte[] message, string token,
       IEnumerable<KeyValuePair<string, string>> facts) {
-      RubyMessage request = new RubyMessage.Builder()
-        .SetId(ByteString.CopyFrom(message_id))
-        .SetMessage(ByteString.CopyFrom(message))
-        .SetType(type)
-        .SetSender(ByteString.CopyFrom(destination))
-        .Build();
-      return CreateMessagePacket(request, facts);
+      return CreateMessagePacket(ByteString.CopyFrom(message_id), type,
+        ByteString.CopyFrom(message), token, facts);
+    }
+
+    public static RubyMessagePacket CreateMessagePacket(byte[] message_id,
+      int type, byte[] message, byte[] destination,
+      IEnumerable<KeyValuePair<string, string>> facts) {
+      return CreateMessagePacket(ByteString.CopyFrom(message_id), type,
+        ByteString.CopyFrom(message), ByteString.CopyFrom(destination), facts);
+    }
+
+    public static RubyMessagePacket CreateMessagePacket(byte[] message_id,
+      int type, byte[] message, string token, byte[] destination,
+      IEnumerable<KeyValuePair<string, string>> facts) {
+      return CreateMessagePacket(ByteString.CopyFrom(message_id), type,
+        ByteString.CopyFrom(message), token, ByteString.CopyFrom(destination),
+        facts);
+    }
+
+    public static RubyMessagePacket CreateMessagePacket(ByteString message_id,
+      int type, ByteString message) {
+      return CreateMessagePacket(message_id, type, message,
+        new KeyValuePair<string, string>[0]);
+    }
+
+    public static RubyMessagePacket CreateMessagePacket(ByteString message_id,
+      int type, ByteString message, string token) {
+      return CreateMessagePacket(message_id, type, message, token,
+        new KeyValuePair<string, string>[0]);
+    }
+
+    public static RubyMessagePacket CreateMessagePacket(ByteString message_id,
+      int type, ByteString message, ByteString destination) {
+      return CreateMessagePacket(message_id, type, message, destination,
+        new KeyValuePair<string, string>[0]);
+    }
+
+    public static RubyMessagePacket CreateMessagePacket(ByteString message_id,
+      int type, ByteString message, string token, ByteString destination) {
+      return CreateMessagePacket(message_id, type, message, token,
+        destination, new KeyValuePair<string, string>[0]);
+    }
+
+    public static RubyMessagePacket CreateMessagePacket(ByteString message_id,
+      int type, ByteString message,
+      IEnumerable<KeyValuePair<string, string>> facts) {
+      RubyMessage msg = CreateMessage(message_id, type, message);
+      return CreateMessagePacket(msg, facts);
+    }
+
+    public static RubyMessagePacket CreateMessagePacket(ByteString message_id,
+      int type, ByteString message, string token,
+      IEnumerable<KeyValuePair<string, string>> facts) {
+      RubyMessage msg = CreateMessage(message_id, type, message, token);
+      return CreateMessagePacket(msg, facts);
+    }
+
+    public static RubyMessagePacket CreateMessagePacket(ByteString message_id,
+      int type, ByteString message, ByteString destination,
+      IEnumerable<KeyValuePair<string, string>> facts) {
+      RubyMessage msg = CreateMessage(message_id, type, message, destination);
+      return CreateMessagePacket(msg, facts);
+    }
+
+    public static RubyMessagePacket CreateMessagePacket(ByteString message_id,
+      int type, ByteString message, string token, ByteString destination,
+      IEnumerable<KeyValuePair<string, string>> facts) {
+      RubyMessage msg = CreateMessage(message_id, type, message, token,
+        destination);
+      return CreateMessagePacket(msg, facts);
     }
 
     public static RubyMessagePacket CreateMessagePacket(RubyMessage message) {
@@ -93,6 +138,66 @@ namespace Nohros.Ruby
         .SetSize(header_size + 2 + message_size)
         .Build();
       return packet;
+    }
+
+    public static RubyMessage CreateMessage(byte[] message_id,
+      int type, byte[] message) {
+      return CreateMessage(ByteString.CopyFrom(message_id), type,
+        ByteString.CopyFrom(message));
+    }
+
+    public static RubyMessage CreateMessage(byte[] message_id,
+      int type, byte[] message, string token) {
+      return CreateMessage(ByteString.CopyFrom(message_id), type,
+        ByteString.CopyFrom(message), token);
+    }
+
+    public static RubyMessage CreateMessage(byte[] message_id,
+      int type, byte[] message, byte[] destination) {
+      return CreateMessage(ByteString.CopyFrom(message_id), type,
+        ByteString.CopyFrom(message), ByteString.CopyFrom(destination));
+    }
+
+    public static RubyMessage CreateMessage(byte[] message_id,
+      int type, byte[] message, string token, byte[] destination) {
+      return CreateMessage(ByteString.CopyFrom(message_id), type,
+        ByteString.CopyFrom(message), ByteString.CopyFrom(destination));
+    }
+
+    public static RubyMessage CreateMessage(ByteString message_id,
+      int type, ByteString message) {
+      return CreateMessageBuilder(message_id, type, message).Build();
+    }
+
+    public static RubyMessage CreateMessage(ByteString message_id,
+      int type, ByteString message, string token) {
+      return CreateMessageBuilder(message_id, type, message)
+        .SetToken(token)
+        .Build();
+    }
+
+    public static RubyMessage CreateMessage(ByteString message_id,
+      int type, ByteString message, ByteString destination) {
+      return CreateMessageBuilder(message_id, type, message)
+        .SetSender(destination)
+        .Build();
+    }
+
+    public static RubyMessage CreateMessage(ByteString message_id,
+      int type, ByteString message, string token, ByteString destination) {
+      return CreateMessageBuilder(message_id, type, message)
+        .SetToken(token)
+        .SetSender(destination)
+        .Build();
+    }
+
+    static RubyMessage.Builder CreateMessageBuilder(ByteString message_id,
+      int type,
+      ByteString message) {
+      return new RubyMessage.Builder()
+        .SetId(message_id)
+        .SetType(type)
+        .SetMessage(message);
     }
   }
 }

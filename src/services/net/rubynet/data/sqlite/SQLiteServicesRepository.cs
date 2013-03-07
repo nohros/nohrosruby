@@ -28,5 +28,9 @@ namespace Nohros.Ruby.Data.SQLite
     public void Remove(ServiceFacts criteria) {
       new RemoveServiceCommand(sqlite_connection_).Execute(criteria);
     }
+
+    public void Initialize() {
+      sqlite_connection_.Open();
+    }
   }
 }

@@ -11,29 +11,60 @@ namespace Nohros.Ruby
   /// </summary>
   public class NullMessageSender : IRubyMessageSender, IRubyMessageSenderFactory
   {
+    /// <inheritdoc/>
     public bool Send(IRubyMessage message) {
       return true;
     }
 
-    public bool Send(IRubyMessage message, IEnumerable<KeyValuePair<string, string>> facts) {
-      return false;
+    /// <inheritdoc/>
+    public bool Send(IRubyMessage message,
+      IEnumerable<KeyValuePair<string, string>> facts) {
+      return true;
     }
 
-    public bool Send(byte[] message_id, int type, byte[] message, byte[] destination, IEnumerable<KeyValuePair<string, string>> facts) {
-      return false;
+    /// <inheritdoc/>
+    public bool Send(byte[] message_id, int type, byte[] message) {
+      return true;
     }
 
-    public bool Send(byte[] message_id, int type, byte[] message, byte[] destination, string token, IEnumerable<KeyValuePair<string, string>> facts) {
-      return false;
-    }
-
+    /// <inheritdoc/>
     public bool Send(byte[] message_id, int type, byte[] message,
       byte[] destination) {
       return true;
     }
 
+    /// <inheritdoc/>
     public bool Send(byte[] message_id, int type, byte[] message,
-      byte[] destination, string token) {
+      IEnumerable<KeyValuePair<string, string>> facts) {
+      return true;
+    }
+
+    /// <inheritdoc/>
+    public bool Send(byte[] message_id, int type, byte[] message,
+      byte[] destination, IEnumerable<KeyValuePair<string, string>> facts) {
+      return true;
+    }
+
+    /// <inheritdoc/>
+    public bool Send(byte[] message_id, int type, byte[] message, string token) {
+      return true;
+    }
+
+    /// <inheritdoc/>
+    public bool Send(byte[] message_id, int type, byte[] message, string token,
+      byte[] destination) {
+      return true;
+    }
+
+    /// <inheritdoc/>
+    public bool Send(byte[] message_id, int type, byte[] message, string token,
+      IEnumerable<KeyValuePair<string, string>> facts) {
+      return true;
+    }
+
+    /// <inheritdoc/>
+    public bool Send(byte[] message_id, int type, byte[] message, string token,
+      byte[] destination, IEnumerable<KeyValuePair<string, string>> facts) {
       return true;
     }
 
