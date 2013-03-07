@@ -62,22 +62,58 @@ namespace Nohros.Ruby
       service_.OnMessage(packet.Message);
     }
 
+    /// <inheritdoc/>
     public bool Send(IRubyMessage message,
       IEnumerable<KeyValuePair<string, string>> facts) {
       return ruby_message_sender_.Send(message, facts);
     }
 
+    /// <inheritdoc/>
     public bool Send(byte[] message_id, int type, byte[] message,
       byte[] destination, IEnumerable<KeyValuePair<string, string>> facts) {
       return ruby_message_sender_.Send(message_id, type, message, destination,
         facts);
     }
 
-    public bool Send(byte[] message_id, int type, byte[] message,
-      byte[] destination, string token,
+    /// <inheritdoc/>
+    public bool Send(byte[] message_id, int type, byte[] message, string token) {
+      return ruby_message_sender_.Send(message_id, type, message, token);
+    }
+
+    /// <inheritdoc/>
+    public bool Send(byte[] message_id, int type, byte[] message, string token,
+      byte[] destination) {
+      return ruby_message_sender_.Send(message_id, type, message, token,
+        destination);
+    }
+
+    /// <inheritdoc/>
+    public bool Send(byte[] message_id, int type, byte[] message, string token,
+      byte[] destination, IEnumerable<KeyValuePair<string, string>> facts) {
+      return ruby_message_sender_.Send(message_id, type, message, token,
+        destination, facts);
+    }
+
+    /// <inheritdoc/>
+    public bool Send(byte[] message_id, int type, byte[] message, string token,
       IEnumerable<KeyValuePair<string, string>> facts) {
-      return ruby_message_sender_.Send(message_id, type, message, destination,
-        token, facts);
+      return ruby_message_sender_.Send(message_id, type, message, token, facts);
+    }
+
+    /// <inheritdoc/>
+    public bool Send(byte[] message_id, int type, byte[] message) {
+      return ruby_message_sender_.Send(message_id, type, message);
+    }
+
+    /// <inheritdoc/>
+    public bool Send(byte[] message_id, int type, byte[] message,
+      IEnumerable<KeyValuePair<string, string>> facts) {
+      return ruby_message_sender_.Send(message_id, type, message, facts);
+    }
+
+    public bool Send(byte[] message_id, int type, byte[] message,
+      byte[] destination) {
+      return ruby_message_sender_.Send(message_id, type, message, destination);
     }
 
     /// <inheritdoc/>
@@ -91,11 +127,6 @@ namespace Nohros.Ruby
     /// <inherithdoc/>
     public IRubyLogger Logger {
       get { return service_logger_; }
-    }
-
-    public bool Send(byte[] message_id, int type, byte[] message,
-      byte[] destination) {
-      return Send(message_id, type, message, destination, string.Empty);
     }
 
     public byte[] FormatErrorMessage(byte[] message_id, int exception_code,
@@ -140,7 +171,18 @@ namespace Nohros.Ruby
 
     public byte[] FormatErrorMessage(byte[] message_id, int exception_code,
       byte[] destination, Exception exception) {
-      ExceptionMessage exception_message = new ExceptionMessage.Builder()
+      return FormatErrorMessage(message_id, destination,
+        new[] {GetErrorMessage(exception_code, exception)});
+    }
+
+    public byte[] FormatErrorMessage(byte[] message_id, int exception_code,
+      Exception exception) {
+      return FormatErrorMessage(message_id,
+        new[] {GetErrorMessage(exception_code, exception)});
+    }
+
+    ExceptionMessage GetErrorMessage(int exception_code, Exception exception) {
+      return new ExceptionMessage.Builder()
         .SetCode(exception_code)
         .SetMessage(exception.Message)
         .SetSource(service_.Facts.GetString(Strings.kServiceNameFact,
@@ -149,22 +191,32 @@ namespace Nohros.Ruby
         .AddData(KeyValuePairs.FromKeyValuePair("backtrace",
           exception.StackTrace))
         .Build();
-      return FormatErrorMessage(message_id, destination,
-        new[] {exception_message});
     }
 
     byte[] FormatErrorMessage(byte[] message_id, byte[] destination,
       IEnumerable<ExceptionMessage> exceptions) {
+      return GetErrorMessageBuilder(message_id, exceptions)
+        .SetSender(ByteString.CopyFrom(destination))
+        .Build()
+        .ToByteArray();
+    }
+
+    byte[] FormatErrorMessage(byte[] message_id,
+      IEnumerable<ExceptionMessage> exceptions) {
+      return GetErrorMessageBuilder(message_id, exceptions)
+        .Build()
+        .ToByteArray();
+    }
+
+    RubyMessage.Builder GetErrorMessageBuilder(byte[] message_id,
+      IEnumerable<ExceptionMessage> exceptions) {
       ErrorMessage error_message = new ErrorMessage.Builder()
         .AddRangeErrors(exceptions)
         .Build();
-      RubyMessage message = new RubyMessage.Builder()
+      return new RubyMessage.Builder()
         .SetId(ByteString.CopyFrom(message_id))
         .SetType((int) NodeMessageType.kNodeError)
-        .SetMessage(error_message.ToByteString())
-        .SetSender(ByteString.CopyFrom(destination))
-        .Build();
-      return message.ToByteArray();
+        .SetMessage(error_message.ToByteString());
     }
 
     /// <summary>

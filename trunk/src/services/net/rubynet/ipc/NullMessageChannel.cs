@@ -35,13 +35,45 @@ namespace Nohros.Ruby
       return true;
     }
 
+    public bool Send(byte[] message_id, int type, byte[] message) {
+      return true;
+    }
+
     public bool Send(byte[] message_id, int type, byte[] message,
       byte[] destination) {
       return true;
     }
 
     public bool Send(byte[] message_id, int type, byte[] message,
+      IEnumerable<KeyValuePair<string, string>> facts) {
+      return true;
+    }
+
+    public bool Send(byte[] message_id, int type, byte[] message,
       byte[] destination, IEnumerable<KeyValuePair<string, string>> facts) {
+      return true;
+    }
+
+    public bool Send(byte[] message_id, int type, byte[] message, string token) {
+      return true;
+    }
+
+    public bool Send(byte[] message_id, int type, byte[] message, string token,
+      byte[] destination) {
+      return true;
+    }
+
+    public bool Send(byte[] message_id, int type, byte[] message, string token,
+      IEnumerable<KeyValuePair<string, string>> facts) {
+      return true;
+    }
+
+    public bool Send(byte[] message_id, int type, byte[] message, string token,
+      byte[] destination, IEnumerable<KeyValuePair<string, string>> facts) {
+      return true;
+    }
+
+    public bool Send(RubyMessagePacket packet) {
       return true;
     }
 
@@ -56,16 +88,12 @@ namespace Nohros.Ruby
       return true;
     }
 
-    public bool Send(RubyMessagePacket packet) {
-      return true;
+    public IRubyMessageChannel CreateRubyMessageChannel() {
+      return new NullMessageChannel();
     }
 
     public string Endpoint {
       get { return "inproc://null"; }
-    }
-
-    public IRubyMessageChannel CreateRubyMessageChannel() {
-      return new NullMessageChannel();
     }
   }
 }

@@ -8,36 +8,6 @@ namespace Nohros.Ruby
   public abstract class AbstractRubyMessageSender : IRubyMessageSender
   {
     /// <inheritdoc/>
-    public bool Send(byte[] message_id, int type, byte[] message,
-      byte[] destination) {
-      return Send(message_id, type, message, destination, string.Empty);
-    }
-
-    public bool Send(byte[] message_id, int type, byte[] message,
-      byte[] destination, IEnumerable<KeyValuePair<string, string>> facts) {
-      return Send(message_id, type, message, destination, string.Empty, facts);
-    }
-
-    /// <inheritdoc/>
-    public bool Send(byte[] message_id, int type, byte[] message,
-      byte[] destination, string token) {
-      return Send(message_id, type, message, destination, token,
-        new KeyValuePair<string, string>[0]);
-    }
-
-    public bool Send(byte[] message_id, int type, byte[] message,
-      byte[] destination, string token,
-      IEnumerable<KeyValuePair<string, string>> facts) {
-      RubyMessage request = new RubyMessage.Builder()
-        .SetId(ByteString.CopyFrom(message_id))
-        .SetMessage(ByteString.CopyFrom(message))
-        .SetType(type)
-        .SetSender(ByteString.CopyFrom(destination))
-        .Build();
-      return Send(request, facts);
-    }
-
-    /// <inheritdoc/>
     public virtual bool Send(IRubyMessage message) {
       return Send(message, new KeyValuePair<string, string>[0]);
     }
@@ -49,6 +19,59 @@ namespace Nohros.Ruby
       RubyMessage response = message as RubyMessage ??
         RubyMessage.ParseFrom(message.ToByteArray());
       return Send(RubyMessages.CreateMessagePacket(response));
+    }
+
+    /// <inheritdoc/>
+    public bool Send(byte[] message_id, int type, byte[] message) {
+      return Send(message_id, type, message, new KeyValuePair<string, string>[0]);
+    }
+
+    /// <inheritdoc/>
+    public bool Send(byte[] message_id, int type, byte[] message, string token) {
+      return Send(message_id, type, message, token,
+        new KeyValuePair<string, string>[0]);
+    }
+
+    /// <inheritdoc/>
+    public bool Send(byte[] message_id, int type, byte[] message,
+      byte[] destination) {
+      return Send(message_id, type, message, destination,
+        new KeyValuePair<string, string>[0]);
+    }
+
+    /// <inheritdoc/>
+    public bool Send(byte[] message_id, int type, byte[] message,
+      string token, byte[] destination) {
+      return Send(message_id, type, message, token, destination,
+        new KeyValuePair<string, string>[0]);
+    }
+
+    public bool Send(byte[] message_id, int type, byte[] message,
+      IEnumerable<KeyValuePair<string, string>> facts) {
+      RubyMessage request = RubyMessages.CreateMessage(message_id, type,
+        message);
+      return Send(request, facts);
+    }
+
+    public bool Send(byte[] message_id, int type, byte[] message, string token,
+      IEnumerable<KeyValuePair<string, string>> facts) {
+      RubyMessage request = RubyMessages.CreateMessage(message_id, type,
+        message, token);
+        return Send(request, facts);
+    }
+
+    public bool Send(byte[] message_id, int type, byte[] message,
+      byte[] destination, IEnumerable<KeyValuePair<string, string>> facts) {
+      RubyMessage request = RubyMessages.CreateMessage(message_id, type,
+        message, destination);
+        return Send(request, facts);
+    }
+
+    public bool Send(byte[] message_id, int type, byte[] message, string token,
+      byte[] destination, IEnumerable<KeyValuePair<string, string>> facts) {
+      RubyMessage request = RubyMessages.CreateMessage(message_id, type,
+        message, token, destination);
+      return Send(request, facts);
     }
 
     public abstract bool Send(RubyMessagePacket packet);
