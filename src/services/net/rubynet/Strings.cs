@@ -25,6 +25,8 @@ namespace Nohros.Ruby
     public const string kSelfHostIPCEndpoint = "inproc://self.host.ipc.channel";
     public const string kServiceEndpointFact = "endpoint";
 
+    public const string kServicesRepositoryNodeName = "ServicesRepository";
+
     /// <summary>
     /// The name of the node that contains the configuration data for the
     /// MyToolsPack library.

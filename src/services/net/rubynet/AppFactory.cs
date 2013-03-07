@@ -7,6 +7,7 @@ using Nohros.Extensions;
 using Nohros.Logging;
 using Nohros.MyToolsPack.Console;
 using Nohros.Providers;
+using Nohros.Ruby.Data;
 using Nohros.Ruby.Shell;
 using ZmqContext = ZMQ.Context;
 
@@ -81,9 +82,19 @@ namespace Nohros.Ruby
 
     SelfHostProcess CreateSelfHostMessageProcess(
       SelfHostMessageChannel self_host_message_channel, ZmqContext context) {
+      var services_repository = CreateServicesRepository();
       var tracker_factory = new TrackerFactory(context);
-      var trackers = new Trackers(tracker_factory);
+      var trackers = new Trackers(tracker_factory, services_repository);
       return new SelfHostProcess(settings_, self_host_message_channel, trackers);
+    }
+
+    IServicesRepository CreateServicesRepository() {
+      IProviderNode provider = settings_.Providers
+        .GetProviderNode(Strings.kServicesRepositoryNodeName);
+      return
+        RuntimeTypeFactory<IServicesRepositoryFactory>
+          .CreateInstanceFallback(provider, settings_)
+          .CreateServicesRepository(provider.Options.ToDictionary());
     }
 
     IRubyMessageChannel CreateMessageChannel(ZmqContext context) {

@@ -103,6 +103,7 @@ namespace Nohros.Ruby
       foreach (var pair in key_value_pairs) {
         pairs.Add(new KeyValuePair<string, string>(pair.Key, pair.Value));
       }
+      return pairs;
     }
   }
 }

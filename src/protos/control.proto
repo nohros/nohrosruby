@@ -45,6 +45,9 @@ enum NodeMessageType {
   // A message that is sent upon a non ACK message is successfully received
   // by a node.
   kNodeAck = 6;
+  
+  // TODO: Add documentation for that message.
+  kNodeHello = 7;
 }
 
 enum ServiceControlMessageType {
@@ -121,7 +124,7 @@ message ResponseMessage {
 }
 
 // Announce that the sender node is hosting a service that has the specified
-// facts at the given host and port.
+// facts.
 //
 // Protocol
 //  RubyMessage.Type = [NodeMessageType.kNodeAnnounce]
@@ -134,7 +137,24 @@ message AnnounceMessage {
   // address:port. The address part is the IP address or host
   // name of the machine that is hosting the service and the
   // port part is the port number of the endpoint.
-  optional string endpoint = 2;
+  //optional string endpoint = 2;
+}
+
+// The first message that a node should send on a connection to a tracker.
+// 
+// Each node should start a dialog by sending a HelloMessage as the first
+// message on a connection to a tracker. When a tracker receives messages from
+// a new node it shall silently ignore any messages that preceed a HelloMessage\
+// message.
+// 
+// If the recipient tracker has not already connected to this node it shall
+// connect to the endpoint using the specified addressing information. 
+message HelloMessage {
+  // The address that the sender will accept connections on.
+  optional string address = 1;
+  
+  // The number of the port that can be used to contact the sender.
+  optional sint32 port = 2;
 }
 
 // A message that should be sent when a query cannot be fulfilled. The

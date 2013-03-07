@@ -97,6 +97,7 @@ namespace Nohros.Ruby
           mailbox_thread_.Join(TimeSpan.FromSeconds(remaining_timeout));
         }
       }
+      logger_.Info("self host channel has been closed.");
     }
 
     /// <inheritdoc/>
@@ -114,6 +115,9 @@ namespace Nohros.Ruby
         .CreateThread(MailboxThread);
       discoverer_thread_.Start();
       mailbox_thread_.Start();
+
+      logger_.Info("self host channel has been opend uing the endpoint: \""
+        + receiver_endpoint_.Endpoint + "\"");
     }
 
     /// <inheritdoc/>

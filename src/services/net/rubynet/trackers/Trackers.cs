@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using Nohros.Ruby.Data;
+using Nohros.Ruby.Data.SQLite;
+using Nohros.Ruby.Extensions;
 using Nohros.Ruby.Protocol.Control;
 using ZMQ;
 using ZmqSocket = ZMQ.Socket;
@@ -13,6 +16,7 @@ namespace Nohros.Ruby
     readonly IServicesRepository services_repository_;
     readonly ITrackerFactory tracker_factory_;
     readonly Dictionary<Guid, Tracker> trackers_;
+    readonly RubyLogger logger_;
 
     #region .ctor
     /// <summary>
@@ -28,6 +32,7 @@ namespace Nohros.Ruby
       tracker_factory_ = tracker_factory;
       trackers_ = new Dictionary<Guid, Tracker>();
       services_repository_ = services_repository;
+      logger_ = RubyLogger.ForCurrentProcess;
     }
     #endregion
 
@@ -45,9 +50,7 @@ namespace Nohros.Ruby
     public void FindServices(IEnumerable<KeyValuePair<string, string>> facts,
       Action<ZMQEndPoint> callback) {
       IEnumerable<ZMQEndPoint> services = services_repository_
-        .Query(new ServicesByFactsCriteria {
-          Facts = new ServiceFacts(facts)
-        });
+        .Query(new ServiceFacts(facts));
       var enumerator = services.GetEnumerator();
 
       // If a service is not found, put the query in queue.
@@ -60,9 +63,21 @@ namespace Nohros.Ruby
       } while (enumerator.MoveNext());
     }
 
-    public void OnServiceAnnounce(AnnounceMessage message) {
-      // TODO: add the service to the repository and publish the announcement
-      // to the other trackers.
+    public void OnServiceAnnounce(AnnounceMessage message, ZMQEndPoint endpoint) {
+      services_repository_.Add(new ServiceEndpoint {
+        Endpoint = endpoint,
+        Facts = new ServiceFacts(KeyValuePairs.ToKeyValuePairs(
+          message.FactsList))
+      });
+      BroadcastAnnounce(message);
+    }
+
+    void BroadcastAnnounce(AnnounceMessage message) {
+      foreach (var tracker in trackers_) {
+        var packet = RubyMessages.CreateMessagePacket(0.AsBytes(),
+          (int) NodeMessageType.kNodeAnnounce, message.ToByteArray());
+        tracker.Value.MessageChannel.Send(packet);
+      }
     }
 
     public void OnBeaconReceived(Beacon beacon) {
@@ -75,6 +90,12 @@ namespace Nohros.Ruby
         trackers_[beacon.PeerID] = tracker;
       }
       tracker.LastSeen = DateTime.Now;
+
+      if (logger_.IsDebugEnabled) {
+        logger_.Debug("Beacon received from the tracker associated with the "
+          + "ID:  \"" + beacon.PeerID + "\" and located at endpoint: \""
+          + beacon.PeerEndpoint.Address + ":" + beacon.PeerEndpoint.Port + "\"");
+      }
     }
   }
 }
