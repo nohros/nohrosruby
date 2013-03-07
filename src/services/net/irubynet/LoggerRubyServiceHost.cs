@@ -22,105 +22,92 @@ namespace Nohros.Ruby
     }
     #endregion
 
-    /// <inheritdoc/>
-    public bool Send(IRubyMessage message) {
-      logger_.Info(
-        new JsonStringBuilder()
-          .WriteMember("type", message.Type)
-          .WriteMember("token", message.Token)
-          .ToString());
-      return true;
-    }
-
-    /// <inheritdoc/>
-    public bool Send(IRubyMessage message,
-      IEnumerable<KeyValuePair<string, string>> facts) {
-      logger_.Info(
-        new JsonStringBuilder()
-          .WriteMember("type", message.Type)
-          .WriteMember("token", message.Token)
-          .ForEach(facts, (fact, builder) => builder
-            .WriteMember(fact.Key, fact.Value))
-          .ToString());
-      return true;
-    }
-
-    /// <inheritdoc/>
-    public bool Send(byte[] id, int type, byte[] message, byte[] destination) {
-      logger_.Info(
-        new JsonStringBuilder()
-          .WriteMember("type", type)
-          .ToString());
-      return true;
-    }
-
-    /// <inheritdoc/>
-    public bool Send(byte[] id, int type, byte[] message, byte[] destination,
-      IEnumerable<KeyValuePair<string, string>> facts) {
-      logger_.Info(
-        new JsonStringBuilder()
-          .WriteMember("type", type)
-          .ForEach(facts, (fact, builder) => builder
-            .WriteMember(fact.Key, fact.Value))
-          .ToString());
-      return true;
-    }
-
     public IRubyLogger Logger {
       get { return logger_; }
     }
 
-    /// <inheritdoc/>
-    public bool Send(byte[] id, int type, byte[] message, byte[] destination,
-      string token) {
-      logger_.Info("Send => id:" + id + ",type:" + type
-        + ",token:" + token);
-      return true;
+    public bool Send(IRubyMessage message) {
+      return Send(message, new KeyValuePair<string, string>[0]);
+    }
+
+    public bool Send(IRubyMessage message,
+      IEnumerable<KeyValuePair<string, string>> facts) {
+      return Send(message.Id, message.Type, message.Message, message.Token,
+        message.Sender, facts);
+    }
+
+    public bool Send(byte[] message_id, int type, byte[] message) {
+      return Send(message_id, type, message,
+        new KeyValuePair<string, string>[0]);
+    }
+
+    public bool Send(byte[] message_id, int type, byte[] message, string token) {
+      return Send(message_id, type, message, token,
+        new KeyValuePair<string, string>[0]);
     }
 
     /// <inheritdoc/>
-    public bool Send(byte[] id, int type, byte[] message, byte[] destination,
-      string token, IEnumerable<KeyValuePair<string, string>> facts) {
-      logger_.Info(
-        new JsonStringBuilder()
-          .WriteMember("type", type)
-          .WriteMember("token", token)
-          .ForEach(facts, (fact, builder) => builder
-            .WriteMember(fact.Key, fact.Value))
-          .ToString());
-      return true;
+    public bool Send(byte[] id, int type, byte[] message, byte[] destination) {
+      return Send(id, type, message, destination,
+        new KeyValuePair<string, string>[0]);
     }
 
-    /// <inheritdoc/>
-    public byte[] FormatErrorMessage(byte[] message_id, int exception_code,
-      byte[] destination, Exception exception) {
-      logger_.Error(exception_code.ToString(), exception,
-        new Dictionary<string, string> {
-          {"messageId", message_id.ToString()},
-        });
-      return new byte[0];
-    }
-
-    /// <inheritdoc/>
-    public byte[] FormatErrorMessage(byte[] message_id, int exception_code,
-      string error,
+    public bool Send(byte[] message_id, int type, byte[] message, string token,
       byte[] destination) {
-      logger_.Error(exception_code + " " + error,
-        new Dictionary<string, string> {
-          {"messageId", message_id.ToString()},
-        });
-      return new byte[0];
+      return Send(message_id, type, message, token, destination,
+        new KeyValuePair<string, string>[0]);
+    }
+
+    public bool Send(byte[] message_id, int type, byte[] message,
+      IEnumerable<KeyValuePair<string, string>> facts) {
+      var msg = GetJsonStringBuilder(message_id, type, message)
+        .ForEach(facts, (fact, builder) => builder
+          .WriteMember(fact.Key, fact.Value))
+        .ToString();
+      logger_.Info(msg);
+      return true;
+    }
+
+    public bool Send(byte[] message_id, int type, byte[] message, string token,
+      IEnumerable<KeyValuePair<string, string>> facts) {
+      var msg = GetJsonStringBuilder(message_id, type, message)
+        .WriteMember("token", token)
+        .ForEach(facts, (fact, builder) => builder
+          .WriteMember(fact.Key, fact.Value))
+        .ToString();
+      logger_.Info(msg);
+      return true;
     }
 
     /// <inheritdoc/>
-    public byte[] FormatErrorMessage(byte[] message_id, int exception_code,
-      string error,
-      byte[] destination, Exception exception) {
-      logger_.Error(exception_code + " " + error, exception,
-        new Dictionary<string, string> {
-          {"messageId", message_id.ToString()},
-        });
-      return new byte[0];
+    public bool Send(byte[] id, int type, byte[] message, byte[] destination,
+      IEnumerable<KeyValuePair<string, string>> facts) {
+      var msg = GetJsonStringBuilder(id, type, message)
+        .WriteMember("destination", Convert.ToBase64String(destination))
+        .ForEach(facts, (fact, builder) => builder
+          .WriteMember(fact.Key, fact.Value))
+        .ToString();
+      logger_.Info(msg);
+      return true;
+    }
+
+    public bool Send(byte[] message_id, int type, byte[] message, string token,
+      byte[] destination, IEnumerable<KeyValuePair<string, string>> facts) {
+      var msg = GetJsonStringBuilder(message_id, type, message)
+        .WriteMember("token", token)
+        .WriteMember("destination", Convert.ToBase64String(destination))
+        .ForEach(facts, (fact, builder) => builder
+          .WriteMember(fact.Key, fact.Value))
+        .ToString();
+      logger_.Info(msg);
+      return true;
+    }
+
+    JsonStringBuilder GetJsonStringBuilder(byte[] id, int type, byte[] message) {
+      return new JsonStringBuilder()
+        .WriteMember("id", Convert.ToBase64String(id))
+        .WriteMember("type", type)
+        .WriteMember("message", Convert.ToBase64String(message));
     }
   }
 }
