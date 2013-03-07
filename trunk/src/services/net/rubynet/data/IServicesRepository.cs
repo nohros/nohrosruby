@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Nohros.Ruby
+namespace Nohros.Ruby.Data
 {
+  /// <summary>
+  /// Manages and provides information about the list of current running
+  /// services.
+  /// </summary>
   public interface IServicesRepository
   {
     /// <summary>
@@ -13,6 +17,20 @@ namespace Nohros.Ruby
     /// search for.
     /// </param>
     /// <returns></returns>
-    IEnumerable<ZMQEndPoint> Query(ServicesByFactsCriteria criteria);
+    IEnumerable<ZMQEndPoint> Query(ServiceFacts criteria);
+
+    /// <summary>
+    /// Adds services to the repository.
+    /// </summary>
+    void Add(ServiceEndpoint criteria);
+
+    /// <summary>
+    /// Removes the service from the repository.
+    /// </summary>
+    /// <param name="criteria">
+    /// The <see cref="ServiceFacts"/> associated with the services to be
+    /// removed.
+    /// </param>
+    void Remove(ServiceFacts criteria);
   }
 }

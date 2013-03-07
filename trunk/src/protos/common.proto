@@ -51,8 +51,10 @@ message ExceptionMessage {
   repeated KeyValuePair data = 4;
 }
 
-// Represents the beacon that is sent by trackers at regular interval.
-message BeaconProto {
+// Represents the beacon that is sent by trackers at regular interval. This
+// message should be sent over an UDP channel and it is not enclosed by a ruby
+// message packet.
+message BeaconMessage {
   // The node identifier.
   optional bytes peer_id = 1;
   

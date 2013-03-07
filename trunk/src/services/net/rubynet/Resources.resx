@@ -165,4 +165,7 @@
   <data name="Log_Warn_MissingTracker" xml:space="preserve">
     <value>A tracker is not defined.</value>
   </data>
+  <data name="Arg_OutOfRange_ConnectionShouldBeOpen" xml:space="preserve">
+    <value>The connection state should be equals to "Open".</value>
+  </data>
 </root>

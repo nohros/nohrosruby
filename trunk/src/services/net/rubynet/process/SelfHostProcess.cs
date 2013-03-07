@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Nohros.Concurrent;
+using Nohros.Ruby.Data;
 using Nohros.Ruby.Protocol;
 using Nohros.Ruby.Protocol.Control;
 using ZMQ;
@@ -43,7 +44,6 @@ namespace Nohros.Ruby
 
     readonly Dictionary<int, QueryMessage> queries_;
     readonly SelfHostMessageChannel self_host_message_channel_;
-    readonly IServicesRepository services_repository_;
     readonly Trackers trackers_;
 
     #region .ctor
@@ -60,18 +60,18 @@ namespace Nohros.Ruby
     /// internal and external processes.
     /// </param>
     public SelfHostProcess(IRubySettings settings,
-      SelfHostMessageChannel self_host_message_channel, Trackers trackers,
-      IServicesRepository services_repository)
+      SelfHostMessageChannel self_host_message_channel, Trackers trackers)
       : base(settings, self_host_message_channel) {
       self_host_message_channel_ = self_host_message_channel;
       trackers_ = trackers;
-      services_repository_ = services_repository;
       logger_ = RubyLogger.ForCurrentProcess;
     }
     #endregion
 
     /// <inheritdoc/>
     public override void Run(string command_line_string) {
+      logger_.Info("self host process has been started");
+
       // Open the channels before calling the base Run method.
       self_host_message_channel_.BeaconReceived += trackers_.OnBeaconReceived;
       self_host_message_channel_.MessagePacketReceived +=
@@ -86,6 +86,9 @@ namespace Nohros.Ruby
         case (int) NodeMessageType.kNodeQuery:
           QueryService(packet);
           break;
+        case (int) NodeMessageType.kNodeAnnounce:
+          Announce(packet);
+          break;
       }
     }
 
@@ -97,6 +100,9 @@ namespace Nohros.Ruby
             endpoint);
           OnMessagePacketReceived(response);
         });
+    }
+
+    void Announce(RubyMessagePacket packet) {
     }
 
     RubyMessagePacket CreateMessagePacket(byte[] request_id,

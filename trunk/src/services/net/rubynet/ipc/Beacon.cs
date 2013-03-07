@@ -43,7 +43,7 @@ namespace Nohros.Ruby
       if (bytes.Length > 3 && bytes[0] == 'R' && bytes[1] == 'B' &&
         bytes[2] == 'Y') {
         try {
-          BeaconProto beacon = BeaconProto
+          BeaconMessage beacon = BeaconMessage
             .ParseFrom(ByteString.CopyFrom(bytes, 3, bytes.Length - 3));
           var id = new Guid(beacon.PeerId.ToByteArray());
           var endpoint = new IPEndPoint(peer_address,

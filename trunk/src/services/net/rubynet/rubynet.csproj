@@ -62,9 +62,9 @@
     <Reference Include="mytoolspack.console, Version=0.3.8.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\nohros.mytoolspack.0.3.9\lib\mytoolspack.console.dll</HintPath>
     </Reference>
-    <Reference Include="nohros">
-      <HintPath>..\..\..\packages\must.common.1.6.8.11\lib\net40\nohros.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="nohros, Version=1.6.8.12, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\must.common.1.6.8.12\lib\net40\nohros.dll</HintPath>
     </Reference>
     <Reference Include="nohros.data.sqlite">
       <HintPath>..\..\..\packages\must.data.sqlite.0.0.3\lib\net40\nohros.data.sqlite.dll</HintPath>
@@ -89,10 +89,20 @@
     <Compile Include="configuration\NOPLogger.cs" />
     <Compile Include="configuration\RubySettingsBuilder.cs" />
     <Compile Include="configuration\RubySettingsLoader.cs" />
+    <Compile Include="data\criteria\NewServiceFactTableCriteria.cs" />
+    <Compile Include="data\criteria\NewServiceTableCriteria.cs" />
     <Compile Include="data\criteria\ServiceByFactsCriteria.cs" />
+    <Compile Include="data\criteria\ServiceEndpoint.cs" />
     <Compile Include="data\IServicesRepository.cs" />
-    <Compile Include="data\sqlite\query\ServicesByFactsQuery.cs" />
-    <Compile Include="data\sqlite\SqLiteServicesRepository.cs" />
+    <Compile Include="data\IServicesRepositoryFactory.cs" />
+    <Compile Include="data\sqlite\commands\AddServiceCommand.cs" />
+    <Compile Include="data\sqlite\commands\CreateServiceFactTableCommand.cs" />
+    <Compile Include="data\sqlite\commands\CreateServiceTableCommand.cs" />
+    <Compile Include="data\sqlite\commands\RemoveServiceCommand.cs" />
+    <Compile Include="data\sqlite\queries\ServicesByFactsQuery.cs" />
+    <Compile Include="data\sqlite\queries\ServicesIDsByFacts.cs" />
+    <Compile Include="data\sqlite\SQLiteServicesRepository.cs" />
+    <Compile Include="data\sqlite\SQLiteServicesRepositoryFactory.cs" />
     <Compile Include="extensions\TransportExtensions.cs" />
     <Compile Include="ipc\AbstractRubyMessageSender.cs" />
     <Compile Include="ipc\Beacon.cs" />
@@ -207,9 +217,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="data\sqlite\command\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

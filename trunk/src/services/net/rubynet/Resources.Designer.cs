@@ -70,6 +70,15 @@ namespace Nohros.Ruby {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The connection state should be equals to &quot;Open&quot;..
+        /// </summary>
+        internal static string Arg_OutOfRange_ConnectionShouldBeOpen {
+            get {
+                return ResourceManager.GetString("Arg_OutOfRange_ConnectionShouldBeOpen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The specified byte array does not represents a valid beacon..
         /// </summary>
         internal static string Format_Beacon_FromBytes {
