@@ -331,7 +331,7 @@ namespace Nohros.Ruby
       --running_services_count_;
     }
 
-    public void Exit() {
+    public virtual void Exit() {
       ruby_message_channel_.Close();
     }
 

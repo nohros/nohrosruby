@@ -46,7 +46,7 @@ namespace Nohros.Ruby
         signaler.Set();
       };
       channel.Open();
-      BeaconProto proto = new BeaconProto.Builder()
+      BeaconMessage proto = new BeaconMessage.Builder()
         .SetPeerId(ByteString.CopyFrom(id_.ToByteArray()))
         .SetPeerMailboxPort(8520)
         .Build();
@@ -67,10 +67,9 @@ namespace Nohros.Ruby
     [Test]
     public void ShouldNotReceiveBeaconsWhenChannelIsClosed() {
       var signaler = new ManualResetEvent(false);
-      var channel = new SelfHostMessageChannel(forwarder_, context_,
-        "inproc://notreceivebeacons", udp_client_);
+      var channel = new SelfHostMessageChannel(context_, udp_client_);
       channel.BeaconReceived += beacon => signaler.Set();
-      BeaconProto proto = new BeaconProto.Builder()
+      BeaconMessage proto = new BeaconMessage.Builder()
         .SetPeerId(ByteString.CopyFrom(id_.ToByteArray()))
         .SetPeerMailboxPort(8520)
         .Build();

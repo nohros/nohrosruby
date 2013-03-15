@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
-using System.Text;
-using Nohros.Ruby.Data;
 
 namespace Nohros.Ruby.Data.SQLite
 {
@@ -28,8 +26,12 @@ namespace Nohros.Ruby.Data.SQLite
       new RemoveServiceCommand(sqlite_connection_).Execute(criteria);
     }
 
-    public void Initialize() {
+    public void Configure() {
       sqlite_connection_.Open();
+      new CreateServiceFactTableCommand(sqlite_connection_)
+        .Execute(new NewServiceFactTableCriteria());
+      new CreateServiceTableCommand(sqlite_connection_)
+        .Execute(new NewServiceTableCriteria());
     }
   }
 }

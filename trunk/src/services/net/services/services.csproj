@@ -78,6 +78,9 @@
     <Compile Include="ipc\IRubyMessageChannel.cs" />
     <Compile Include="ipc\IRubyMessageListener.cs" />
     <Compile Include="ipc\IRubyMessageReceiver.cs" />
+    <Compile Include="ipc\ListenerExecutorPair.cs" />
+    <Compile Include="ipc\MultiplexedMessageChannel.cs" />
+    <Compile Include="ipc\HostMessageChannel.cs" />
     <Compile Include="logging\NOPLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="logging\RubyLogger.cs" />
@@ -93,7 +96,7 @@
     <Compile Include="trackers\TrackerFactory.cs" />
     <Compile Include="trackers\TrackerMessageChannel.cs" />
     <Compile Include="trackers\TrackerMessageChannelFactory.cs" />
-    <Compile Include="trackers\Trackers.cs" />
+    <Compile Include="trackers\TrackerEngine.cs" />
     <Compile Include="ZMQEndpoint.cs" />
   </ItemGroup>
   <ItemGroup>

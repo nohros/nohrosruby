@@ -47,12 +47,19 @@
     <Compile Include="..\..\..\protos\parsers\csharp\Control.cs" />
     <Compile Include="..\..\..\protos\parsers\csharp\Common.cs" />
     <Compile Include="..\..\..\protos\parsers\csharp\Logging.cs" />
-    <Compile Include="..\rubynet\proto\KeyValuePairs.cs" />
-    <Compile Include="..\rubynet\proto\RubyMessages.cs" />
+    <Compile Include="KeyValuePairs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RubyMessage.cs" />
+    <Compile Include="RubyMessages.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\irubynet\irubyservice.csproj">
+      <Project>{970C40CD-03F5-4761-9AE3-7E358E108E56}</Project>
+      <Name>irubyservice</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

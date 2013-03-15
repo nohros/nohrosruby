@@ -21,7 +21,7 @@ namespace Nohros.Ruby
     [Test]
     public void ShouldNotSendMessagesWhenChannelIsClosed() {
       var channel = new TrackerMessageChannel(context_,
-        "inproc://shouldNotSendMessageWhenChannelIsClosed");
+        (ZMQEndpoint) "inproc://shouldNotSendMessageWhenChannelIsClosed");
       TestDelegate method =
         () => channel.Send(empty_byte_array_, 0, empty_byte_array_,
           empty_byte_array_);
