@@ -323,6 +323,7 @@ namespace Nohros.Ruby
           forwarding_aggregator_service_);
         var host = new RubyServiceHost(service, ruby_message_channel_,
           aggregator_logger, settings_);
+        ruby_message_channel_.AddListener(host, Executors.SameThreadExecutor());
         host.Start();
       } catch (Exception exception) {
         logger_.Error(string.Format(R.Log_MethodThrowsException,

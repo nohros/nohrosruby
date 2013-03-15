@@ -58,7 +58,9 @@ namespace Nohros.Ruby
         logger_.Debug("Received a message with token: "
           + packet.Message.HasToken);
       }
-      // send the message to the service for processing.
+      // TODO(neylor.silva): This method is called for any message that is
+      // received by channel. We need to filter the control messages and
+      // dispatch to the service only the messages directed to them.
       service_.OnMessage(packet.Message);
     }
 

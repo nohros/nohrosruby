@@ -19,6 +19,7 @@ namespace Nohros.Ruby
         SelfHost = false;
         SelfHostEndpoint = Strings.kDefaultSelfHostEndpoint;
         IPCEndpoint = string.Empty;
+        DiscovererPort = 8520;
       }
       #endregion
 

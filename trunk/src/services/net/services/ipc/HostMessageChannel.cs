@@ -141,11 +141,14 @@ namespace Nohros.Ruby
     /// </summary>
     public event MessagePacketReceivedEventHandler MessagePacketSent;
 
+
     /// <summary>
-    /// Raised when a beacon is received.
+    /// Raises the <see cref="MessagePacketReceived"/> event.
     /// </summary>
-    //public event BeaconReceivedEventHandler BeaconReceived;
-    void OnMessagePacketReceived(RubyMessagePacket packet) {
+    /// <param name="packet">
+    /// As <see cref="RubyMessagePacket"/> containing the received packet.
+    /// </param>
+    public void OnMessagePacketReceived(RubyMessagePacket packet) {
       Listeners
         .SafeInvoke<MessagePacketReceivedEventHandler>(MessagePacketReceived,
           handler => handler(packet));
