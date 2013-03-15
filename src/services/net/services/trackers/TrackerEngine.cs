@@ -24,7 +24,8 @@ namespace Nohros.Ruby
     readonly IServicesRepository services_repository_;
     readonly ITrackerFactory tracker_factory_;
     readonly Dictionary<Guid, Tracker> trackers_;
-    Thread discoverer_thread_;
+    ManualResetEvent broadcast_signaler_;
+    Thread broadcast_thread_;
     volatile bool running_;
 
     #region .ctor
@@ -53,9 +54,10 @@ namespace Nohros.Ruby
 
     public void Start() {
       running_ = true;
-      discoverer_thread_ = new BackgroundThreadFactory()
-        .CreateThread(DiscovererThread);
-      discoverer_thread_.Start();
+      broadcast_signaler_ = new ManualResetEvent(false);
+      broadcast_thread_ = new BackgroundThreadFactory()
+        .CreateThread(BroadcastThread);
+      broadcast_thread_.Start();
     }
 
     public void Shutdown() {
@@ -122,13 +124,14 @@ namespace Nohros.Ruby
       }
     }
 
-    void DiscovererThread() {
-      var peer_endpoint = new IPEndPoint(IPAddress.Any, 0);
+    void BroadcastThread() {
+      var endpoint = new IPEndPoint(IPAddress.Any, 0);
       while (running_) {
         try {
-          var beacon = discoverer_.Receive(ref peer_endpoint);
-          if (beacon.Length > 0) {
-            OnBeaconReceived(Beacon.FromByteArray(beacon, peer_endpoint.Address));
+          byte[] bytes = discoverer_.Receive(ref endpoint);
+          if (bytes.Length > 0) {
+            var beacon = Beacon.FromByteArray(bytes, endpoint.Address);
+            OnBeaconReceived(beacon);
           }
         } catch (SocketException e) {
           // If the socket has been shutdown finish the thread.
@@ -136,7 +139,10 @@ namespace Nohros.Ruby
             return;
           }
           logger_.Error(string.Format(
-            R.Log_MethodThrowsException, "DiscovererThread", kClassName), e);
+            R.Log_MethodThrowsException, "BroadcastThread", kClassName), e);
+        } catch (FormatException e) {
+          logger_.Error(string.Format(R.Log_MethodThrowsException,
+            "BroadcastThread", kClassName), e);
         }
       }
     }
@@ -149,11 +155,14 @@ namespace Nohros.Ruby
           Transport.TCP);
         tracker.MessageChannel.Open();
         trackers_[beacon.PeerID] = tracker;
+
+        logger_.Info("discovered to a new tracker at: "
+          + tracker.MessageChannel.Endpoint);
       }
       tracker.LastSeen = DateTime.Now;
 
       if (logger_.IsDebugEnabled) {
-        logger_.Debug("Beacon received from the tracker associated with the "
+        logger_.Debug("beacon received from the tracker associated with the "
           + "ID:  \"" + beacon.PeerID + "\" and located at endpoint: \""
           + beacon.PeerEndpoint.Address + ":" + beacon.PeerEndpoint.Port + "\"");
       }

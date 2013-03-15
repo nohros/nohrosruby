@@ -144,7 +144,7 @@ message AnnounceMessage {
 // 
 // Each node should start a dialog by sending a HelloMessage as the first
 // message on a connection to a tracker. When a tracker receives messages from
-// a new node it shall silently ignore any messages that preceed a HelloMessage\
+// a new node it shall silently ignore any messages that preceed a HelloMessage
 // message.
 // 
 // If the recipient tracker has not already connected to this node it shall

@@ -19,6 +19,7 @@ namespace Nohros.Ruby
     readonly ZmqContext context_;
     readonly ZMQEndPoint endpoint_;
     readonly ZmqSocket socket_;
+    readonly RubyLogger logger_;
     bool opened_;
 
     #region .ctor
@@ -38,6 +39,7 @@ namespace Nohros.Ruby
       socket_ = context.Socket(ZmqSocketType.DEALER);
       endpoint_ = endpoint;
       opened_ = false;
+      logger_ = RubyLogger.ForCurrentProcess;
     }
     #endregion
 
@@ -75,6 +77,7 @@ namespace Nohros.Ruby
     public void Open() {
       opened_ = true;
       socket_.Connect(endpoint_.Endpoint);
+      logger_.Info("connection established to a tracker at: " + endpoint_);
     }
 
     /// <inheritdoc/>

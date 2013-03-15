@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Nohros.Concurrent;
-using Nohros.Ruby.Data;
+using Nohros.Ruby.Extensions;
 using Nohros.Ruby.Protocol;
 using Nohros.Ruby.Protocol.Control;
-using ZMQ;
 using R = Nohros.Resources.StringResources;
 
 namespace Nohros.Ruby
@@ -62,6 +60,7 @@ namespace Nohros.Ruby
         case (int) NodeMessageType.kNodeQuery:
           QueryService(packet);
           break;
+
         case (int) NodeMessageType.kNodeAnnounce:
           Announce(packet);
           break;
@@ -83,8 +82,22 @@ namespace Nohros.Ruby
     }
 
     void Announce(RubyMessagePacket packet) {
+      // send the announcement to the trackers.
       AnnounceMessage message = AnnounceMessage.ParseFrom(packet.Message.Message);
       trackers_.Announce(message.FactsList, host_message_channel_.Endpoint);
+
+      // send a hello message to the announcement service, so they know
+      // at which endpoint the service node is accepting connections.
+      HelloMessage hello = new HelloMessage.Builder()
+        .SetAddress(host_message_channel_.Endpoint.Address)
+        .SetPort(host_message_channel_.Endpoint.Port)
+        .Build();
+
+      RubyMessagePacket hello_packet =
+        RubyMessages.CreateMessagePacket(0.AsBytes(),
+          (int) NodeMessageType.kNodeHello, message.ToByteArray());
+
+      host_message_channel_.OnMessagePacketReceived(hello_packet);
     }
 
     RubyMessagePacket CreateMessagePacket(byte[] request_id,

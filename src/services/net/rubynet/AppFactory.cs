@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using Nohros.Configuration;
@@ -82,7 +83,16 @@ namespace Nohros.Ruby
 
     SelfHostProcess CreateSelfHostMessageProcess(
       HostMessageChannel host_message_channel, ZmqContext context) {
-      var udp_client = new UdpClient(settings_.DiscovererPort);
+
+      // reuse the address to prevent 'address already in use' error, this
+      // tells the socket to receive any message that arrives at the bound
+      // port.
+      var udp_client = new UdpClient();
+      udp_client.Client.SetSocketOption(SocketOptionLevel.Socket,
+        SocketOptionName.ReuseAddress, true);
+      udp_client.Client.Bind(
+        new IPEndPoint(IPAddress.Any, settings_.DiscovererPort));
+
       var services_repository = CreateServicesRepository();
       var tracker_factory = new TrackerFactory(context);
       var trackers = new TrackerEngine(tracker_factory, services_repository,
