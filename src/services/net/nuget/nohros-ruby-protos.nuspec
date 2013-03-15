@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
     <metadata>
         <id>nohros.ruby.protos</id>
-        <version>0.0.3.0</version>
+        <version>0.0.3.1</version>
         <title>Nohros Ruby .NET precompiled classes</title>
         <authors>Nohros Inc</authors>
         <owners>Nohros Inc</owners>
