@@ -9,7 +9,7 @@ namespace Nohros.Ruby
   /// <summary>
   /// <see cref="IRubySettings"/> defines the application settings.
   /// </summary>
-  internal interface IRubySettings : IConfiguration, IConsoleSettings
+  public interface IRubySettings : IConfiguration, IConsoleSettings
   {
     /// <summary>
     /// Gets the mode on which the application is running.

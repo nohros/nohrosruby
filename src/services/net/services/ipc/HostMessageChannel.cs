@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Net;
-using System.Net.Sockets;
 using System.Threading;
 using Google.ProtocolBuffers;
 using Nohros.Concurrent;
@@ -17,51 +14,42 @@ using R = Nohros.Resources.StringResources;
 
 namespace Nohros.Ruby
 {
-  internal class SelfHostMessageChannel : AbstractRubyMessageSender,
-                                          IRubyMessageChannel, IDisposable
+  /// <summary>
+  /// A implementation of the <see cref="IRubyMessageChannel"/> class that
+  /// provides self hosting capabilities.
+  /// </summary>
+  /// <remarks>
+  /// This class is intendeed to be used in enviroments where a service host
+  /// node is not required (ex. communicate with a service from a web server).
+  /// </remarks>
+  internal class HostMessageChannel : MultiplexedMessageChannel,
+                                      IRubyMessageChannel, IDisposable
   {
-    public delegate void BeaconReceivedEventHandler(Beacon beacon);
-
     public delegate void MessagePacketReceivedEventHandler(
       RubyMessagePacket packet);
 
-    const string kClassName = "Nohros.Ruby.SelfHostMessageChannel";
-    const int kMaxBeaconPacketSize = 1024;
+    const string kClassName = "Nohros.Ruby.HostMessageChannel";
+    const string kSenderChannelEndpoint = "inproc://ruby-multiplex-self-channel";
 
     readonly ZmqContext context_;
-    readonly UdpClient discoverer_;
     readonly List<ListenerExecutorPair> listeners_;
     readonly RubyLogger logger_;
-    readonly ZmqSocket receiver_;
-    Thread discoverer_thread_;
     Thread mailbox_thread_;
     volatile bool opened_;
     ZMQEndPoint receiver_endpoint_;
 
     #region .ctor
-    public SelfHostMessageChannel(ZmqContext context, UdpClient discoverer)
-      : this(context, discoverer,
-        new ZMQEndPoint(Strings.kDefaultSelfHostEndpoint)) {
-    }
-
     /// <summary>
-    /// Initializes a new instance of the <see cref="SelfHostMessageChannel"/>
+    /// Initializes a new instance of the <see cref="HostMessageChannel"/>
     /// using the specified message channel and IPC sender and receive endpoint.
     /// </summary>
     /// <param name="receiver_endpoint">
     /// The address of the endpoint that is used to receive messages from
     /// peers.
     /// </param>
-    /// <param name="discoverer">
-    /// A <see cref="UdpClient"/> object that can be used to receive beacons
-    /// from peers.
-    /// </param>
-    public SelfHostMessageChannel(ZmqContext context, UdpClient discoverer,
-      ZMQEndPoint receiver_endpoint) {
+    public HostMessageChannel(ZmqContext context, ZMQEndPoint receiver_endpoint) {
       context_ = context;
-      receiver_ = context_.Socket(ZmqSocketType.ROUTER);
       receiver_endpoint_ = receiver_endpoint;
-      discoverer_ = discoverer;
       listeners_ = new List<ListenerExecutorPair>();
       logger_ = RubyLogger.ForCurrentProcess;
     }
@@ -70,7 +58,6 @@ namespace Nohros.Ruby
     /// <inheritdoc/>
     public void Dispose() {
       Close();
-      receiver_.Dispose();
     }
 
     /// <inheritdoc/>
@@ -84,18 +71,10 @@ namespace Nohros.Ruby
       if (opened_) {
         opened_ = false;
 
-        // TODO: Find a way to wake up the discoverer Thread.
+        // TODO (neylor.silva): Find a way to wake up the discoverer and mailbox
+        // Thread.
         //
-        var timer = new Stopwatch();
-        timer.Start();
-        timer.Stop();
-
-        // Compute the remaining time that we have to wait for the mailbox
-        // thread to finish.
-        int remaining_timeout = timeout - (int) timer.Elapsed.TotalSeconds;
-        if (remaining_timeout > 0) {
-          mailbox_thread_.Join(TimeSpan.FromSeconds(remaining_timeout));
-        }
+        mailbox_thread_.Join(TimeSpan.FromSeconds(timeout));
       }
       logger_.Info("self host channel has been closed.");
     }
@@ -108,16 +87,9 @@ namespace Nohros.Ruby
     /// <inheritdoc/>
     public void Open() {
       opened_ = true;
-      BindReceiverSocket();
-      discoverer_thread_ = new BackgroundThreadFactory()
-        .CreateThread(DiscovererThread);
       mailbox_thread_ = new BackgroundThreadFactory()
-        .CreateThread(MailboxThread);
-      discoverer_thread_.Start();
+        .CreateThread(Multiplex);
       mailbox_thread_.Start();
-
-      logger_.Info("self host channel has been opend uing the endpoint: \""
-        + receiver_endpoint_.Endpoint + "\"");
     }
 
     /// <inheritdoc/>
@@ -133,29 +105,29 @@ namespace Nohros.Ruby
       return true;
     }
 
-    void BindReceiverSocket() {
-      // If receiver endpoint port is specified as 0, binds to any free port
-      // from kMinEphemeralPort to kMinEphemeralPort
-      if (receiver_endpoint_.Port == 0) {
+    ZMQEndPoint Bind(ZmqSocket socket, ZMQEndPoint endpoint) {
+      // If endpoint port is specified as 0, binds to any free port
+      // from kMinEphemeralPort to kMaxEphemeralPort
+      if (endpoint.Port == 0) {
         int port = ZMQEndPoint.kMinEphemeralPort;
-        string endpoint_suffix = receiver_endpoint_.Transport.AsString()
-          + "://" + receiver_endpoint_.Address + ":";
+        string endpoint_suffix = endpoint.Transport.AsString()
+          + "://" + endpoint.Address + ":";
         while (port < ZMQEndPoint.kMaxEphemeralPort) {
           try {
-            string endpoint = endpoint_suffix + port.ToString();
-            receiver_.Bind(endpoint);
-            receiver_endpoint_ = new ZMQEndPoint(endpoint);
-            return;
+            string address = endpoint_suffix + port.ToString();
+            socket.Bind(address);
+            return new ZMQEndPoint(address);
           } catch {
           }
         }
       }
-      receiver_.Bind(receiver_endpoint_.ToString());
+      socket.Bind(receiver_endpoint_.ToString());
+      return endpoint;
     }
 
     /// <summary>
     /// Raised when a <see cref="RubyMessagePacket"/> is received in the
-    /// <see cref="SelfHostMessageChannel"/> mailbox.
+    /// <see cref="HostMessageChannel"/> mailbox.
     /// </summary>
     /// <remarks>
     /// This event is not raised when a message is received through the service
@@ -172,13 +144,7 @@ namespace Nohros.Ruby
     /// <summary>
     /// Raised when a beacon is received.
     /// </summary>
-    public event BeaconReceivedEventHandler BeaconReceived;
-
-    void OnBeaconReceived(Beacon beacon) {
-      Listeners.SafeInvoke<BeaconReceivedEventHandler>(BeaconReceived,
-        handler => handler(beacon));
-    }
-
+    //public event BeaconReceivedEventHandler BeaconReceived;
     void OnMessagePacketReceived(RubyMessagePacket packet) {
       Listeners
         .SafeInvoke<MessagePacketReceivedEventHandler>(MessagePacketReceived,
@@ -192,51 +158,64 @@ namespace Nohros.Ruby
     }
 
     bool Reply(RubyMessagePacket packet) {
-      receiver_.SendMore(packet.Message.Sender.ToByteArray());
-      SendStatus status = receiver_.Send(packet.ToByteArray(),
-        SendRecvOpt.NOBLOCK);
-      if (status == SendStatus.TryAgain) {
-        if (!opened_) {
-          throw new InvalidOperationException(
-            Resources.InvalidOperation_ClosedChannel);
+      using (ZmqSocket socket = context_.Socket(ZmqSocketType.REQ)) {
+        socket.Connect(kSenderChannelEndpoint);
+        socket.SendMore(packet.Message.Sender.ToByteArray());
+        SendStatus status = socket.Send(packet.ToByteArray(),
+          SendRecvOpt.NOBLOCK);
+        if (status == SendStatus.TryAgain) {
+          if (!opened_) {
+            throw new InvalidOperationException(
+              Resources.InvalidOperation_ClosedChannel);
+          }
+          status = socket.Send(packet.ToByteArray());
         }
-        status = receiver_.Send(packet.ToByteArray());
+        return status == SendStatus.Sent;
       }
-      return status == SendStatus.Sent;
     }
 
-    void DiscovererThread() {
-      var peer_endpoint = new IPEndPoint(IPAddress.Any, 0);
+    void OnMessageReceived(ZmqSocket socket) {
+      try {
+        Queue<byte[]> parts = socket.RecvAll();
+        if (parts.Count != 2) {
+          if (logger_.IsWarnEnabled) {
+            logger_.Warn("");
+          }
+        }
+        OnMessagePacketReceived(GetRubyMessagePacket(parts));
+      } catch (Exception e) {
+        logger_.Error(string.Format(R.Log_MethodThrowsException,
+          "MailboxThread", kClassName), e);
+      }
+    }
+
+    void Multiplex() {
+      var inproc_socket = context_.Socket(ZmqSocketType.REP);
+      inproc_socket.Bind(kSenderChannelEndpoint);
+
+      var mailbox_socket = context_.Socket(ZmqSocketType.ROUTER);
+      receiver_endpoint_ = Bind(mailbox_socket, receiver_endpoint_);
+
+      logger_.Info("self host mailbox bound to port: \""
+        + receiver_endpoint_.Port + "\"");
+
+      var items = new[] {
+        inproc_socket.CreatePollItem(IOMultiPlex.POLLIN),
+        mailbox_socket.CreatePollItem(IOMultiPlex.POLLIN)
+      };
+      items[0].PollInHandler +=
+        (socket, revents) => Proxy(socket, mailbox_socket);
+      items[1].PollInHandler += (socket, revents) => OnMessageReceived(socket);
+
       while (opened_) {
         try {
-          var beacon = discoverer_.Receive(ref peer_endpoint);
-          if (beacon.Length > 0) {
-            OnBeaconReceived(Beacon.FromByteArray(beacon, peer_endpoint.Address));
-          }
-        } catch (SocketException e) {
-          // If the socket has been shutdown finish the thread.
-          if (e.SocketErrorCode == SocketError.Shutdown) {
+          context_.Poll(items);
+        } catch (ZMQ.Exception e) {
+          // Prevent the normal context termination to raise an exception.
+          if (e.Errno == (int) ERRNOS.ETERM) {
             return;
           }
-          logger_.Error(string.Format(
-            R.Log_MethodThrowsException, "DiscovererThread", kClassName), e);
-        }
-      }
-    }
-
-    void MailboxThread() {
-      while (opened_) {
-        try {
-          Queue<byte[]> parts = receiver_.RecvAll();
-          if (parts.Count != 2) {
-            if (logger_.IsWarnEnabled) {
-              logger_.Warn("");
-            }
-          }
-          OnMessagePacketReceived(GetRubyMessagePacket(parts));
-        } catch (Exception e) {
-          logger_.Error(string.Format(R.Log_MethodThrowsException,
-            "MailboxThread", kClassName), e);
+          throw;
         }
       }
     }
@@ -250,6 +229,10 @@ namespace Nohros.Ruby
       return RubyMessagePacket.CreateBuilder(packet)
         .SetMessage(message)
         .Build();
+    }
+
+    public ZMQEndPoint Endpoint {
+      get { return receiver_endpoint_; }
     }
   }
 }

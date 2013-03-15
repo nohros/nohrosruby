@@ -1,38 +1,73 @@
 ﻿using System;
+using System.Threading;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
 using Nohros.Ruby.Data;
 using Nohros.Ruby.Extensions;
+using Nohros.Ruby.Protocol;
 using Nohros.Ruby.Protocol.Control;
+using Nohros.Concurrent;
+using R = Nohros.Resources.StringResources;
 using ZMQ;
 using ZmqSocket = ZMQ.Socket;
 using ZmqContext = ZMQ.Context;
 
 namespace Nohros.Ruby
 {
-  internal class Trackers
+  internal class TrackerEngine
   {
+    const string kClassName = "Nohros.Ruby.TrackerEngine";
+    readonly UdpClient discoverer_;
+    readonly RubyLogger logger_;
+
     readonly IServicesRepository services_repository_;
     readonly ITrackerFactory tracker_factory_;
     readonly Dictionary<Guid, Tracker> trackers_;
-    readonly RubyLogger logger_;
+    Thread discoverer_thread_;
+    volatile bool running_;
 
     #region .ctor
     /// <summary>
-    /// Initializes a new instance of the <see cref="Trackers"/> class using
+    /// Initializes a new instance of the <see cref="TrackerEngine"/> class using
     /// the specified <see cref="ZmqContext"/> object.
     /// </summary>
     /// <param name="tracker_factory">
     /// A <see cref="ITrackerFactory"/> object that can be used to create
     /// instances of the <see cref="Tracker"/> class.
     /// </param>
-    public Trackers(ITrackerFactory tracker_factory,
-      IServicesRepository services_repository) {
+    /// <param name="discoverer">
+    /// A <see cref="UdpClient"/> object that can be used to receive beacons
+    /// from peers.
+    /// </param>
+    public TrackerEngine(ITrackerFactory tracker_factory,
+      IServicesRepository services_repository, UdpClient discoverer) {
       tracker_factory_ = tracker_factory;
       trackers_ = new Dictionary<Guid, Tracker>();
       services_repository_ = services_repository;
       logger_ = RubyLogger.ForCurrentProcess;
+      discoverer_ = discoverer;
+      running_ = false;
     }
     #endregion
+
+    public void Start() {
+      running_ = true;
+      discoverer_thread_ = new BackgroundThreadFactory()
+        .CreateThread(DiscovererThread);
+      discoverer_thread_.Start();
+    }
+
+    public void Shutdown() {
+      Shutdown(Timeout.Infinite);
+    }
+
+    public void Shutdown(int timeout) {
+      // TODO: Find a way to stop the discoverer thread.
+      foreach (var tracker in trackers_) {
+        tracker.Value.MessageChannel.Close(timeout);
+      }
+    }
 
     /// <summary>
     /// Searches for services that matches the given facts.
@@ -61,20 +96,48 @@ namespace Nohros.Ruby
       } while (enumerator.MoveNext());
     }
 
-    public void OnServiceAnnounce(AnnounceMessage message, ZMQEndPoint endpoint) {
-      services_repository_.Add(new ServiceEndpoint {
-        Endpoint = endpoint,
-        Facts = new ServiceFacts(KeyValuePairs.ToKeyValuePairs(
-          message.FactsList))
-      });
-      BroadcastAnnounce(message);
+    public void OnMessagePacketReceived(RubyMessagePacket packet) {
     }
 
-    void BroadcastAnnounce(AnnounceMessage message) {
+    public void Announce(IList<KeyValuePair> facts, ZMQEndPoint endpoint) {
+      AddService(facts, endpoint);
+      BroadcastAnnounce(facts);
+    }
+
+    void AddService(IEnumerable<KeyValuePair> facts, ZMQEndPoint endpoint) {
+      services_repository_.Add(new ServiceEndpoint {
+        Endpoint = endpoint,
+        Facts = new ServiceFacts(KeyValuePairs.ToKeyValuePairs(facts))
+      });
+    }
+
+    void BroadcastAnnounce(IEnumerable<KeyValuePair> facts) {
+      AnnounceMessage announcement = new AnnounceMessage.Builder()
+        .AddRangeFacts(facts)
+        .Build();
+      var packet = RubyMessages.CreateMessagePacket(0.AsBytes(),
+        (int) NodeMessageType.kNodeAnnounce, announcement.ToByteArray());
       foreach (var tracker in trackers_) {
-        var packet = RubyMessages.CreateMessagePacket(0.AsBytes(),
-          (int) NodeMessageType.kNodeAnnounce, message.ToByteArray());
         tracker.Value.MessageChannel.Send(packet);
+      }
+    }
+
+    void DiscovererThread() {
+      var peer_endpoint = new IPEndPoint(IPAddress.Any, 0);
+      while (running_) {
+        try {
+          var beacon = discoverer_.Receive(ref peer_endpoint);
+          if (beacon.Length > 0) {
+            OnBeaconReceived(Beacon.FromByteArray(beacon, peer_endpoint.Address));
+          }
+        } catch (SocketException e) {
+          // If the socket has been shutdown finish the thread.
+          if (e.SocketErrorCode == SocketError.Shutdown) {
+            return;
+          }
+          logger_.Error(string.Format(
+            R.Log_MethodThrowsException, "DiscovererThread", kClassName), e);
+        }
       }
     }
 

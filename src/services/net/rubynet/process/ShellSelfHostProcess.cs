@@ -9,6 +9,10 @@ namespace Nohros.Ruby
     readonly SelfHostProcess self_host_process_;
     readonly ShellRubyProcess shell_ruby_process_;
 
+    public void OnMessagePacketReceived(RubyMessagePacket packet) {
+      shell_ruby_process_.OnMessagePacketReceived(packet);
+    }
+
     #region .ctor
     public ShellSelfHostProcess(ShellRubyProcess shell_ruby_process,
       SelfHostProcess self_host_process) {
@@ -16,10 +20,6 @@ namespace Nohros.Ruby
       self_host_process_ = self_host_process;
     }
     #endregion
-
-    public void OnMessagePacketReceived(RubyMessagePacket packet) {
-      shell_ruby_process_.OnMessagePacketReceived(packet);
-    }
 
     public void Run() {
       Run(string.Empty);

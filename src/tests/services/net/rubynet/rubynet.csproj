@@ -74,6 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="proto\RubyMessagesTests.cs" />
     <Compile Include="RubyMessageChannelTests.cs" />
     <Compile Include="SelfHostMessageChannelTests.cs" />
     <Compile Include="TrackerMessageChannelTests.cs" />

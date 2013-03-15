@@ -89,43 +89,14 @@
     <Compile Include="configuration\NOPLogger.cs" />
     <Compile Include="configuration\RubySettingsBuilder.cs" />
     <Compile Include="configuration\RubySettingsLoader.cs" />
-    <Compile Include="data\criteria\NewServiceFactTableCriteria.cs" />
-    <Compile Include="data\criteria\NewServiceTableCriteria.cs" />
-    <Compile Include="data\criteria\ServiceByFactsCriteria.cs" />
-    <Compile Include="data\criteria\ServiceEndpoint.cs" />
-    <Compile Include="data\IServicesRepository.cs" />
-    <Compile Include="data\IServicesRepositoryFactory.cs" />
-    <Compile Include="data\sqlite\commands\AddServiceCommand.cs" />
-    <Compile Include="data\sqlite\commands\CreateServiceFactTableCommand.cs" />
-    <Compile Include="data\sqlite\commands\CreateServiceTableCommand.cs" />
-    <Compile Include="data\sqlite\commands\RemoveServiceCommand.cs" />
-    <Compile Include="data\sqlite\queries\ServicesByFactsQuery.cs" />
-    <Compile Include="data\sqlite\queries\ServicesIDsByFacts.cs" />
-    <Compile Include="data\sqlite\SQLiteServicesRepository.cs" />
-    <Compile Include="data\sqlite\SQLiteServicesRepositoryFactory.cs" />
-    <Compile Include="extensions\TransportExtensions.cs" />
-    <Compile Include="ipc\AbstractRubyMessageSender.cs" />
-    <Compile Include="ipc\Beacon.cs" />
     <Compile Include="ipc\IRubyMessageSenderFactory.cs" />
-    <Compile Include="ipc\ITrackerFactory.cs" />
-    <Compile Include="ipc\ListenerExecutorPair.cs" />
     <Compile Include="ipc\NullMessageSender.cs" />
     <Compile Include="ipc\RubyMessageListeners.cs" />
-    <Compile Include="ipc\SelfHostMessageChannel.cs" />
-    <Compile Include="ServiceFacts.cs" />
-    <Compile Include="trackers\TrackerFactory.cs" />
-    <Compile Include="trackers\TrackerMessageChannel.cs" />
-    <Compile Include="trackers\TrackerMessageChannelFactory.cs" />
-    <Compile Include="ipc\ZMQEndPoint.cs" />
     <Compile Include="IRubyMessageChannelFactory.cs" />
     <Compile Include="process\AbstractRubyProcess.cs" />
     <Compile Include="AppFactory.cs" />
-    <Compile Include="configuration\RubyLogger.cs" />
     <Compile Include="process\SelfHostProcess.cs" />
     <Compile Include="process\ShellSelfHostProcess.cs" />
-    <Compile Include="trackers\Tracker.cs" />
-    <Compile Include="trackers\Trackers.cs" />
-    <Compile Include="proto\RubyMessages.cs" />
     <Compile Include="service\AggregatorLogger.cs" />
     <Compile Include="configuration\ConsoleSettings.cs" />
     <Compile Include="service\ForwardingAggregatorService.cs" />
@@ -137,20 +108,10 @@
     <Compile Include="ipc\BlockedMessageReceiver.cs" />
     <Compile Include="ipc\NullMessageChannel.cs" />
     <Compile Include="ipc\RubyMessageChannel.cs" />
-    <Compile Include="ipc\IRubyMessageChannel.cs" />
-    <Compile Include="ipc\IRubyMessageListener.cs" />
-    <Compile Include="ipc\IRubyMessageReceiver.cs" />
     <Compile Include="ipc\RubyMessageHandlerDelegate.cs" />
     <Compile Include="ipc\RubyMessageReceiver.cs" />
     <Compile Include="process\IRubyProcess.cs" />
     <Compile Include="process\IRubyProcessFactory.cs" />
-    <Compile Include="proto\KeyValuePairs.cs" />
-    <Compile Include="Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="ipc\RubyMessage.cs" />
     <Compile Include="ServicesFactory.cs" />
     <Compile Include="service\LoggerAggregatorService.cs" />
     <Compile Include="process\ServiceRubyProcess.cs" />
@@ -180,33 +141,25 @@
     <Compile Include="shell\commands\StartCommand.cs" />
     <Compile Include="shell\ShellStrings.cs" />
     <Compile Include="Strings.cs" />
-    <Compile Include="..\..\..\protos\parsers\csharp\RubyProtos.cs" />
-    <Compile Include="..\..\..\protos\parsers\csharp\Control.cs" />
-    <Compile Include="..\..\..\protos\parsers\csharp\Common.cs" />
-    <Compile Include="..\..\..\protos\parsers\csharp\Logging.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources.resx">
-      <SubType>Designer</SubType>
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="ruby.net.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\extensions\extensions.csproj">
-      <Project>{84727DA5-79D3-4F42-BA0C-19FD583A6834}</Project>
-      <Name>extensions</Name>
-    </ProjectReference>
     <ProjectReference Include="..\irubynet\irubyservice.csproj">
       <Project>{970C40CD-03F5-4761-9AE3-7E358E108E56}</Project>
       <Name>irubyservice</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\protos\protos.csproj">
+      <Project>{3C54BE0B-813D-4543-81C5-62ABC1188CE2}</Project>
+      <Name>protos</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\services\services.csproj">
+      <Project>{152B2BB5-2D84-4986-9667-2C418227BF6E}</Project>
+      <Name>services</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

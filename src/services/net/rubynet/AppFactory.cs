@@ -35,9 +35,9 @@ namespace Nohros.Ruby
 
     ShellSelfHostProcess CreateShellSelfHostProcess(ZmqContext context,
       IRubyMessageChannel ruby_message_channel) {
-      var udp_client = new UdpClient(settings_.DiscovererPort);
       var self_host_message_channel =
-        new SelfHostMessageChannel(context, udp_client);
+        new HostMessageChannel(context,
+          new ZMQEndPoint(Strings.kDefaultSelfHostEndpoint));
       var shell_ruby_process = CreateShellProcess(self_host_message_channel);
       var self_host_process =
         CreateSelfHostMessageProcess(self_host_message_channel, context);
@@ -81,11 +81,13 @@ namespace Nohros.Ruby
     }
 
     SelfHostProcess CreateSelfHostMessageProcess(
-      SelfHostMessageChannel self_host_message_channel, ZmqContext context) {
+      HostMessageChannel host_message_channel, ZmqContext context) {
+      var udp_client = new UdpClient(settings_.DiscovererPort);
       var services_repository = CreateServicesRepository();
       var tracker_factory = new TrackerFactory(context);
-      var trackers = new Trackers(tracker_factory, services_repository);
-      return new SelfHostProcess(settings_, self_host_message_channel, trackers);
+      var trackers = new TrackerEngine(tracker_factory, services_repository,
+        udp_client);
+      return new SelfHostProcess(settings_, host_message_channel, trackers);
     }
 
     IServicesRepository CreateServicesRepository() {

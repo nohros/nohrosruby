@@ -11,7 +11,7 @@ namespace Nohros.Ruby.Data.SQLite
       IDictionary<string, string> options) {
       var sqlite_connection = new SQLiteConnection("Data Source=:memory:;");
       var repository = new SQLiteServicesRepository(sqlite_connection);
-      repository.Initialize();
+      repository.Configure();
       return repository;
     }
   }

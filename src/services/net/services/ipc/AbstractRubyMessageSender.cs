@@ -1,7 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Google.ProtocolBuffers;
 using Nohros.Ruby.Protocol;
+using ZMQ;
+using ZmqSocket = ZMQ.Socket;
+using Exception = System.Exception;
+using R = Nohros.Resources.StringResources;
 
 namespace Nohros.Ruby
 {
@@ -57,14 +60,14 @@ namespace Nohros.Ruby
       IEnumerable<KeyValuePair<string, string>> facts) {
       RubyMessage request = RubyMessages.CreateMessage(message_id, type,
         message, token);
-        return Send(request, facts);
+      return Send(request, facts);
     }
 
     public bool Send(byte[] message_id, int type, byte[] message,
       byte[] destination, IEnumerable<KeyValuePair<string, string>> facts) {
       RubyMessage request = RubyMessages.CreateMessage(message_id, type,
         message, destination);
-        return Send(request, facts);
+      return Send(request, facts);
     }
 
     public bool Send(byte[] message_id, int type, byte[] message, string token,
