@@ -12,25 +12,16 @@ namespace Nohros.Ruby.Data
     /// <summary>
     /// Searchs for a service that matches the specified facts.
     /// </summary>
-    /// <param name="criteria">
-    /// A <see cref="ServicesByFactsCriteria"/> object containing the facts to
-    /// search for.
-    /// </param>
-    /// <returns></returns>
-    IEnumerable<ZMQEndPoint> Query(ServiceFacts criteria);
+    IServicesByFactsQuery Query(out IServicesByFactsQuery query);
 
     /// <summary>
     /// Adds services to the repository.
     /// </summary>
-    void Add(ServiceEndpoint criteria);
+    INewServiceCommand Query(out INewServiceCommand command);
 
     /// <summary>
     /// Removes the service from the repository.
     /// </summary>
-    /// <param name="criteria">
-    /// The <see cref="ServiceFacts"/> associated with the services to be
-    /// removed.
-    /// </param>
-    void Remove(ServiceFacts criteria);
+    IRemoveServicesCommand Query(out IRemoveServicesCommand query);
   }
 }

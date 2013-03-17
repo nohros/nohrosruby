@@ -11,15 +11,9 @@ using R = Nohros.Resources.StringResources;
 
 namespace Nohros.Ruby.Data.SQLite
 {
-  public class ServicesByFactsQuery :
-    IQuery<IEnumerable<ZMQEndPoint>, ServiceFacts>
+  public class ServicesByFactsQuery : IServicesByFactsQuery
   {
     const string kClassName = "Nohros.Ruby.Data.SQLite.ServicesByFactsQuery";
-
-    const string kExecute = @"
-select distinct service_id
-from service_fact
-where service_fact_hash = @service_fact_hash";
 
     readonly RubyLogger logger_ = RubyLogger.ForCurrentProcess;
     readonly SQLiteConnection sqlite_connection_;
@@ -39,13 +33,19 @@ where service_fact_hash = @service_fact_hash";
     }
     #endregion
 
-    public IEnumerable<ZMQEndPoint> Execute(ServiceFacts criteria) {
+    public IServicesByFactsQuery SetFacts(ServiceFacts facts) {
+      Facts = facts;
+      return this;
+    }
+
+    public IEnumerable<ZMQEndPoint> Execute() {
       using (var builder = new CommandBuilder(sqlite_connection_)) {
         IEnumerable<int> ids = new ServicesIDsByFacts(sqlite_connection_)
-          .Execute(criteria);
+          .SetFacts(Facts)
+          .Execute();
         IDbDataParameter parameter;
         IDbCommand cmd = builder
-          .SetText(GetQueryText(criteria.Facts))
+          .SetText(GetQueryText())
           .AddParameter("@service_id", DbType.Int32, out parameter)
           .Build();
         try {
@@ -66,14 +66,14 @@ where service_fact_hash = @service_fact_hash";
       }
     }
 
-    string GetQueryText(IEnumerable<KeyValuePair<string, string>> facts) {
+    string GetQueryText() {
       const string kQueryPrefix = @"
 select distinct endpoint
 from service s
   inner join service_fact sf on sf.service_id = s.service_id
 where service_id = @service_id and service_fact_hash in (";
       var select = new StringBuilder(kQueryPrefix);
-      foreach (KeyValuePair<string, string> fact in facts) {
+      foreach (KeyValuePair<string, string> fact in Facts) {
         select
           .Append("'")
           .Append(ServiceFacts.ComputeHash(fact))
@@ -82,5 +82,7 @@ where service_id = @service_id and service_fact_hash in (";
       select.Remove(select.Length - 1, 1).Append(")");
       return select.ToString();
     }
+
+    ServiceFacts Facts { get; set; }
   }
 }

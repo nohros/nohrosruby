@@ -7,44 +7,45 @@ using R = Nohros.Resources.StringResources;
 
 namespace Nohros.Ruby.Data.SQLite
 {
-  internal class AddServiceCommand : IQuery<int, ServiceEndpoint>
+  internal class NewServiceCommand : INewServiceCommand
   {
-    const string kClassName = "Nohros.Ruby.Data.SQLite.AddServiceCommand";
-    const string kExecute = "";
+    const string kClassName = "Nohros.Ruby.Data.SQLite.NewServiceCommand";
+    const string kExecute = @"
+insert into service(service_endpoint)
+values(@service_endpoint);
+";
 
     readonly RubyLogger logger_ = RubyLogger.ForCurrentProcess;
     readonly SQLiteConnection sqlite_connection_;
 
     #region .ctor
     /// <summary>
-    /// Initializes a new instance of the <see cref="AddServiceCommand"/>
+    /// Initializes a new instance of the <see cref="NewServiceCommand"/>
     /// using the specified sql connection provider.
     /// </summary>
     /// <param name="sqlite_connection">
     /// A <see cref="SQLiteConnection"/> object that can be used to execute
     /// SQL queries.
     /// </param>
-    public AddServiceCommand(SQLiteConnection sqlite_connection) {
+    public NewServiceCommand(SQLiteConnection sqlite_connection) {
       sqlite_connection_ = sqlite_connection;
       logger_ = RubyLogger.ForCurrentProcess;
     }
     #endregion
 
-    public int Execute(ServiceEndpoint criteria) {
+    public int Execute() {
       using (var builder = new CommandBuilder(sqlite_connection_)) {
         var parms = new IDbDataParameter[1];
         IDbCommand cmd = builder
           .SetText(kExecute)
-          .AddParameter("@endpoint", criteria.Endpoint.Endpoint)
-          .AddParameter("@fact_hash", DbType.String, out parms[0])
+          .AddParameter("@endpoint", Endpoint.Endpoint)
           .Build();
         try {
-          int affected_rows = 0;
-          foreach (KeyValuePair<string, string> fact in criteria.Facts) {
-            parms[0].Value = ServiceFacts.ComputeHash(fact);
-            affected_rows += cmd.ExecuteNonQuery();
-          }
-          return affected_rows;
+          int affected = cmd.ExecuteNonQuery();
+          return affected + new NewServiceFactsCommand(sqlite_connection_)
+            .SetFacts(Facts)
+            .SetServiceID((int) sqlite_connection_.LastInsertRowId)
+            .Execute();
         } catch (SQLiteException e) {
           logger_.Error(string.Format(R.Log_MethodThrowsException, "Execute",
             kClassName), e);
@@ -52,5 +53,18 @@ namespace Nohros.Ruby.Data.SQLite
         }
       }
     }
+
+    public INewServiceCommand SetFacts(ServiceFacts facts) {
+      Facts = facts;
+      return this;
+    }
+
+    public INewServiceCommand SetEndPoint(ZMQEndPoint endpoint) {
+      Endpoint = endpoint;
+      return this;
+    }
+
+    ServiceFacts Facts { get; set; }
+    ZMQEndPoint Endpoint { get; set; }
   }
 }

@@ -14,24 +14,25 @@ namespace Nohros.Ruby.Data.SQLite
     }
     #endregion
 
-    public IEnumerable<ZMQEndPoint> Query(ServiceFacts criteria) {
-      return new ServicesByFactsQuery(sqlite_connection_).Execute(criteria);
+    public IServicesByFactsQuery Query(out IServicesByFactsQuery query) {
+      query = new ServicesByFactsQuery(sqlite_connection_);
+      return query;
     }
 
-    public void Add(ServiceEndpoint criteria) {
-      new AddServiceCommand(sqlite_connection_).Execute(criteria);
+    public INewServiceCommand Query(out INewServiceCommand command) {
+      command = new NewServiceCommand(sqlite_connection_);
+      return command;
     }
 
-    public void Remove(ServiceFacts criteria) {
-      new RemoveServiceCommand(sqlite_connection_).Execute(criteria);
+    public IRemoveServicesCommand Query(out IRemoveServicesCommand query) {
+      query = new RemoveServiceQuery(sqlite_connection_);
+      return query;
     }
 
     public void Configure() {
       sqlite_connection_.Open();
-      new CreateServiceFactTableCommand(sqlite_connection_)
-        .Execute(new NewServiceFactTableCriteria());
-      new CreateServiceTableCommand(sqlite_connection_)
-        .Execute(new NewServiceTableCriteria());
+      new CreateServiceFactTableCommand(sqlite_connection_).Execute();
+      new CreateServiceTableCommand(sqlite_connection_).Execute();
     }
   }
 }

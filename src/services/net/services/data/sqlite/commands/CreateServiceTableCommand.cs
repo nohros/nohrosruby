@@ -9,7 +9,7 @@ using R = Nohros.Resources.StringResources;
 
 namespace Nohros.Ruby.Data.SQLite
 {
-  public class CreateServiceTableCommand : IQuery<int, NewServiceTableCriteria>
+  public class CreateServiceTableCommand : IQuery<int>
   {
     const string kClassName =
       "Nohros.Ruby.Data.SQLite.CreateServiceTableCommand";
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS service (
     }
     #endregion
 
-    public int Execute(NewServiceTableCriteria criteria) {
+    public int Execute() {
       using (var builder = new CommandBuilder(sqlite_connection_)) {
         IDbCommand cmd = builder
           .SetText(kExecute)

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.Data.SqlClient;
+using System.Text;
 using Nohros.Data;
-using Nohros.Data.Providers;
 using R = Nohros.Resources.StringResources;
 
 namespace Nohros.Ruby.Data.SQLite
 {
-  public class ServicesIDsByFacts : IQuery<IEnumerable<int>, ServiceFacts>
+  public class ServicesIDsByFacts : IQuery<IEnumerable<int>>
   {
     const string kClassName = "Nohros.Ruby.Data.SQLite.ServicesIDsByFacts";
     const string kExecute = @"
@@ -35,10 +35,10 @@ where service_fact_hash = @service_fact_hash";
     }
     #endregion
 
-    public IEnumerable<int> Execute(ServiceFacts criteria) {
+    public IEnumerable<int> Execute() {
       using (var builder = new CommandBuilder(sqlite_connection_)) {
         IEnumerator<KeyValuePair<string, string>> enumerator =
-          criteria.GetEnumerator();
+          Facts.GetEnumerator();
         if (!enumerator.MoveNext()) {
           return new int[0];
         }
@@ -66,5 +66,12 @@ where service_fact_hash = @service_fact_hash";
         }
       }
     }
+
+    public ServicesIDsByFacts SetFacts(ServiceFacts facts) {
+      Facts = facts;
+      return this;
+    }
+
+    ServiceFacts Facts { get; set; }
   }
 }
