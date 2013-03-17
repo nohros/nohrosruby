@@ -7,9 +7,9 @@ using R = Nohros.Resources.StringResources;
 
 namespace Nohros.Ruby.Data.SQLite
 {
-  public class RemoveServiceCommand : IQuery<int, ServiceFacts>
+  public class RemoveServiceQuery : IRemoveServicesCommand
   {
-    const string kClassName = "Nohros.Ruby.Data.SQLite.RemoveServiceCommand";
+    const string kClassName = "Nohros.Ruby.Data.SQLite.RemoveServiceQuery";
 
     const string kExecute = @"
 delete from service
@@ -22,24 +22,30 @@ where service_id = @service_id";
 
     #region .ctor
     /// <summary>
-    /// Initializes a new instance of the <see cref="RemoveServiceCommand"/>
+    /// Initializes a new instance of the <see cref="RemoveServiceQuery"/>
     /// using the specified sql connection provider.
     /// </summary>
     /// <param name="sqlite_connection">
     /// A <see cref="SQLiteConnection"/> object that can be used to
     /// create connections to the data provider.
     /// </param>
-    public RemoveServiceCommand(SQLiteConnection sqlite_connection) {
+    public RemoveServiceQuery(SQLiteConnection sqlite_connection) {
       sqlite_connection_ = sqlite_connection;
       logger_ = RubyLogger.ForCurrentProcess;
     }
     #endregion
 
+    public IRemoveServicesCommand SetFacts(ServiceFacts facts) {
+      Facts = facts;
+      return this;
+    }
+
     /// <inheritdoc/>
-    public int Execute(ServiceFacts criteria) {
+    public int Execute() {
       using (var builder = new CommandBuilder(sqlite_connection_)) {
         IEnumerable<int> ids = new ServicesIDsByFacts(sqlite_connection_)
-          .Execute(criteria);
+          .SetFacts(Facts)
+          .Execute();
         IDbDataParameter parameter;
         var transaction = sqlite_connection_.BeginTransaction();
         IDbCommand cmd = builder
@@ -70,5 +76,7 @@ where service_id = @service_id";
         }
       }
     }
+
+    ServiceFacts Facts { get; set; }
   }
 }

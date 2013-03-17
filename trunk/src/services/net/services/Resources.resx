@@ -168,4 +168,7 @@
   <data name="Arg_OutOfRange_ConnectionShouldBeOpen" xml:space="preserve">
     <value>The connection state should be equals to "Open".</value>
   </data>
+  <data name="ZMQEndpoint_InvalidFormat" xml:space="preserve">
+    <value>The "{0}" does not represent a valid endpoint.</value>
+  </data>
 </root>

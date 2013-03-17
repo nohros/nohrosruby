@@ -58,20 +58,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="data\criteria\NewServiceFactTableCriteria.cs" />
-    <Compile Include="data\criteria\NewServiceTableCriteria.cs" />
-    <Compile Include="data\criteria\ServiceByFactsCriteria.cs" />
-    <Compile Include="data\criteria\ServiceEndpoint.cs" />
+    <Compile Include="data\commands\INewServiceCommand.cs" />
     <Compile Include="data\IServicesRepository.cs" />
     <Compile Include="data\IServicesRepositoryFactory.cs" />
-    <Compile Include="data\sqlite\commands\AddServiceCommand.cs" />
+    <Compile Include="data\commands\IRemoveServicesCommand.cs" />
+    <Compile Include="data\queries\IServicesByFactsQuery.cs" />
+    <Compile Include="data\sqlite\commands\NewServiceCommand.cs" />
     <Compile Include="data\sqlite\commands\CreateServiceFactTableCommand.cs" />
     <Compile Include="data\sqlite\commands\CreateServiceTableCommand.cs" />
-    <Compile Include="data\sqlite\commands\RemoveServiceCommand.cs" />
+    <Compile Include="data\sqlite\commands\NewServiceFactCommand.cs" />
+    <Compile Include="data\sqlite\commands\RemoveServiceQuery.cs" />
     <Compile Include="data\sqlite\queries\ServicesByFactsQuery.cs" />
     <Compile Include="data\sqlite\queries\ServicesIDsByFacts.cs" />
     <Compile Include="data\sqlite\SQLiteServicesRepository.cs" />
     <Compile Include="data\sqlite\SQLiteServicesRepositoryFactory.cs" />
+    <Compile Include="extensions\ByteStringExtensions.cs" />
     <Compile Include="extensions\TransportExtensions.cs" />
     <Compile Include="ipc\AbstractRubyMessageSender.cs" />
     <Compile Include="ipc\Beacon.cs" />
@@ -89,7 +90,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="extensions\RubyMessageExtensions.cs" />
     <Compile Include="ServiceFacts.cs" />
     <Compile Include="trackers\ITrackerFactory.cs" />
     <Compile Include="trackers\Tracker.cs" />
@@ -100,6 +100,10 @@
     <Compile Include="ZMQEndpoint.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\extensions\extensions.csproj">
+      <Project>{84727DA5-79D3-4F42-BA0C-19FD583A6834}</Project>
+      <Name>extensions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\irubynet\irubyservice.csproj">
       <Project>{970C40CD-03F5-4761-9AE3-7E358E108E56}</Project>
       <Name>irubyservice</Name>
@@ -124,6 +128,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

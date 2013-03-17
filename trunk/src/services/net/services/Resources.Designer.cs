@@ -212,5 +212,14 @@ namespace Nohros.Ruby {
                 return ResourceManager.GetString("RubyProcess_ResponseMessageHandle_NotFound", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The &quot;{0}&quot; does not represent a valid endpoint..
+        /// </summary>
+        internal static string ZMQEndpoint_InvalidFormat {
+            get {
+                return ResourceManager.GetString("ZMQEndpoint_InvalidFormat", resourceCulture);
+            }
+        }
     }
 }
