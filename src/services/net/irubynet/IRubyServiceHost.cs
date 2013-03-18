@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Nohros.Ruby
 {
@@ -19,5 +20,21 @@ namespace Nohros.Ruby
     /// to log messages using the ruby logging infrastructure.
     /// </summary>
     IRubyLogger Logger { get; }
+
+    /// <summary>
+    /// Announce to the world that the service is running.
+    /// </summary>
+    /// <param name="facts">
+    /// A collection of key/value pairs that can be used to identify a service.
+    /// </param>
+    /// <remarks>
+    /// A service should announce that it is running in order to be dynamically
+    /// found by other services. The announcement will contains the facts
+    /// declared by the service.
+    /// <para>
+    /// If a service declares a new fact a new announcment should be performed.
+    /// </para>
+    /// </remarks>
+    void Announce(IDictionary<string, string> facts);
   }
 }

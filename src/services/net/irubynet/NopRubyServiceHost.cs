@@ -20,6 +20,10 @@ namespace Nohros.Ruby
     }
     #endregion
 
+    public void Announce(IDictionary<string, string> facts)
+    {
+    }
+
     /// <inheritdoc/>
     public bool Send(IRubyMessage message) {
       return true;

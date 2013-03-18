@@ -71,5 +71,14 @@ namespace Nohros.Ruby.Protocol
     /// Serializes a <see cref="IRubyMessage"/> object into a byte array.
     /// </summary>
     byte[] ToByteArray();
+
+    /// <summary>
+    /// Contains aditional information about the message.
+    /// </summary>
+    /// <remarks>
+    /// This is used to provide detailed information about the message only if
+    /// explicitly required.
+    /// </remarks>
+    string[] ExtraInfo { get; }
   }
 }
