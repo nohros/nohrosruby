@@ -8,9 +8,21 @@ namespace Nohros.Ruby
   {
     public class Builder : AbstractConfigurationBuilder<TrackerSettings>
     {
+      #region .ctor
+      public Builder() {
+        BroadcastPort = 8520;
+      }
+      #endregion
+
       public override TrackerSettings Build() {
         return new TrackerSettings(this);
       }
+
+      public void SetBroadcastPort(int port) {
+        BroadcastPort = port;
+      }
+
+      public int BroadcastPort { get; private set; }
     }
   }
 }

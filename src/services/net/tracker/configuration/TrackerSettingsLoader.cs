@@ -7,6 +7,10 @@ namespace Nohros.Ruby
   {
     public class Loader : AbstractConfigurationLoader<TrackerSettings>
     {
+      #region .ctor
+      public Loader() : base(new Builder()) {
+      }
+      #endregion
     }
   }
 }
