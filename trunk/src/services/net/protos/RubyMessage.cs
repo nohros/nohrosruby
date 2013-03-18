@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Nohros.Ruby.Protocol
 {
@@ -17,6 +18,14 @@ namespace Nohros.Ruby.Protocol
 
     byte[] IRubyMessage.Id {
       get { return Id.ToByteArray(); }
+    }
+
+    string[] IRubyMessage.ExtraInfo {
+      get {
+        string[] array = new string[ExtraInfoCount];
+        ExtraInfoList.CopyTo(array, 0);
+        return array;
+      }
     }
   }
 }
