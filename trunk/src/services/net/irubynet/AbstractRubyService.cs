@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using Nohros.Ruby.Protocol;
 
 namespace Nohros.Ruby
@@ -57,7 +58,9 @@ namespace Nohros.Ruby
     }
 
     /// <inheritdoc/>
-    public abstract void Start(IRubyServiceHost service_host);
+    public virtual void Start(IRubyServiceHost service_host) {
+      service_host.Announce(Facts);
+    }
 
     /// <inheritdoc/>
     public abstract void Stop(IRubyMessage message);

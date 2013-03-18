@@ -42,7 +42,7 @@ namespace Nohros.Ruby
       IRubyLogger service_logger, IRubySettings settings) {
 #if DEBUG
       if (service == null || sender == null || settings == null ||
-        service_logger_ == null) {
+        service_logger == null) {
         throw new ArgumentNullException(service == null ? "service" : "sender");
       }
 #endif
@@ -129,6 +129,24 @@ namespace Nohros.Ruby
     /// <inherithdoc/>
     public IRubyLogger Logger {
       get { return service_logger_; }
+    }
+
+    /// <inherithdoc/>
+    public void Announce(IDictionary<string, string> facts) {
+      // Tell the service node that we are hosting a new service.
+      AnnounceMessage.Builder builder = new AnnounceMessage.Builder()
+        .AddRangeFacts(KeyValuePairs.FromKeyValuePairs(facts));
+
+      RubyMessage message = new RubyMessage.Builder()
+        .SetToken(StringResources.kAnnounceMessageToken)
+        .SetType((int) NodeMessageType.kNodeAnnounce)
+        .SetMessage(builder.Build().ToByteString())
+        .Build();
+      Send(message);
+
+      if (logger_.IsDebugEnabled) {
+        logger_.Debug("announcing service", service_.Facts);
+      }
     }
 
     public byte[] FormatErrorMessage(byte[] message_id, int exception_code,
@@ -240,34 +258,10 @@ namespace Nohros.Ruby
     /// </para>
     /// </remarks>
     public void Start() {
-      Announce();
-
       Thread.CurrentThread.CurrentUICulture = settings_.Culture;
       service_.Start(this);
 
       logger_.Info("the following service has been finished: ", service_.Facts);
-    }
-
-    void Announce() {
-      // Tell the service node that we are hosting a new service.
-      AnnounceMessage.Builder builder = new AnnounceMessage.Builder();
-      foreach (KeyValuePair<string, string> fact in service_.Facts) {
-        builder
-          .AddFacts(KeyValuePairs.FromKeyValuePair(fact));
-        //.AddFacts(KeyValuePairs.FromKeyValuePair(Strings.kHostServiceFact,
-        //ruby_message_sender_.Endpoint));
-      }
-
-      RubyMessage message = new RubyMessage.Builder()
-        .SetToken(StringResources.kAnnounceMessageToken)
-        .SetType((int) NodeMessageType.kNodeAnnounce)
-        .SetMessage(builder.Build().ToByteString())
-        .Build();
-      Send(message);
-
-      if (logger_.IsDebugEnabled) {
-        logger_.Debug("announcing service", service_.Facts);
-      }
     }
 
     /// <inherithdoc/>

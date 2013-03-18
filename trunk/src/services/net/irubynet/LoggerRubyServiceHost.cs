@@ -26,6 +26,9 @@ namespace Nohros.Ruby
       get { return logger_; }
     }
 
+    public void Announce(IDictionary<string, string> facts) {
+    }
+
     public bool Send(IRubyMessage message) {
       return Send(message, new KeyValuePair<string, string>[0]);
     }
