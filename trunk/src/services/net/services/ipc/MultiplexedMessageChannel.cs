@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ZMQ;
@@ -31,7 +32,7 @@ namespace Nohros.Ruby
         Queue<byte[]> parts = inproc_socket.RecvAll();
 #if DEBUG
         if (parts.Count != 2) {
-          throw new ArugmentException("Received a invalid number of parts.");
+          throw new ArgumentException("Received a invalid number of parts.");
         }
 #endif
         ipc_socket.SendMore(parts.Dequeue());

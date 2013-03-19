@@ -18,8 +18,8 @@ namespace Nohros.Ruby
   {
     readonly ZmqContext context_;
     readonly ZMQEndPoint endpoint_;
-    readonly ZmqSocket socket_;
     readonly RubyLogger logger_;
+    readonly ZmqSocket socket_;
     bool opened_;
 
     #region .ctor
@@ -34,9 +34,11 @@ namespace Nohros.Ruby
     /// <param name="endpoint">
     /// The tracker's address.
     /// </param>
-    public TrackerMessageChannel(ZmqContext context, ZMQEndPoint endpoint) {
+    public TrackerMessageChannel(ZmqContext context, ZMQEndPoint endpoint,
+      byte[] peer_id) {
       context_ = context;
       socket_ = context.Socket(ZmqSocketType.DEALER);
+      socket_.Identity = peer_id;
       endpoint_ = endpoint;
       opened_ = false;
       logger_ = RubyLogger.ForCurrentProcess;
@@ -77,7 +79,6 @@ namespace Nohros.Ruby
     public void Open() {
       opened_ = true;
       socket_.Connect(endpoint_.Endpoint);
-      logger_.Info("connection established to a tracker at: " + endpoint_);
     }
 
     /// <inheritdoc/>

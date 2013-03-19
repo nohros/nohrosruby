@@ -62,9 +62,9 @@
     <Reference Include="mytoolspack.console, Version=0.3.8.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\nohros.mytoolspack.0.3.9\lib\mytoolspack.console.dll</HintPath>
     </Reference>
-    <Reference Include="nohros, Version=1.6.8.12, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="nohros, Version=1.6.10.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\must.common.1.6.8.12\lib\net40\nohros.dll</HintPath>
+      <HintPath>..\..\..\packages\must.common.1.6.10.0\lib\net40\nohros.dll</HintPath>
     </Reference>
     <Reference Include="nohros.data.sqlite">
       <HintPath>..\..\..\packages\must.data.sqlite.0.0.3\lib\net40\nohros.data.sqlite.dll</HintPath>
@@ -86,6 +86,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="configuration\ITrackerSettings.cs" />
     <Compile Include="configuration\NOPLogger.cs" />
     <Compile Include="configuration\RubySettingsBuilder.cs" />
     <Compile Include="configuration\RubySettingsLoader.cs" />
@@ -143,6 +144,7 @@
     <Compile Include="Strings.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="ruby.net.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -164,6 +166,10 @@
     <ProjectReference Include="..\services\services.csproj">
       <Project>{152B2BB5-2D84-4986-9667-2C418227BF6E}</Project>
       <Name>services</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\tracker\tracker.csproj">
+      <Project>{ABDD6B2C-98A4-4CFC-99BB-C83915B468EF}</Project>
+      <Name>tracker</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

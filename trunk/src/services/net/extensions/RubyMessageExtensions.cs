@@ -144,6 +144,14 @@ namespace Nohros.Ruby.Extensions
       return Encoding.Unicode.GetString(value);
     }
 
+    public static string AsBase64(this byte[] value) {
+      return Convert.ToBase64String(value);
+    }
+
+    public static byte[] FromBase64(this string value) {
+      return Convert.FromBase64String(value);
+    }
+
     /// <summary>
     /// Gets a 32-bit integer converted from four bytes at a specified position
     /// in a byte array.

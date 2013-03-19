@@ -21,6 +21,7 @@ namespace Nohros.Ruby
     /// The transport protocol that should be used by the channel.
     /// </param>
     /// <returns></returns>
-    Tracker CreateTracker(IPEndPoint endpoint, Transport transport);
+    Tracker CreateTracker(IPEndPoint endpoint, Transport transport,
+      byte[] peer_id);
   }
 }

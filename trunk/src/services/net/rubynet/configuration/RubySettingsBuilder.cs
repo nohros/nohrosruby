@@ -19,12 +19,18 @@ namespace Nohros.Ruby
         SelfHost = false;
         SelfHostEndpoint = Strings.kDefaultSelfHostEndpoint;
         IPCEndpoint = string.Empty;
-        DiscovererPort = 8520;
+        BroadcastPort = 8520;
+        EnableTracker = false;
       }
       #endregion
 
       public Builder SetServiceFolder(string service_folder) {
         ServiceFolder = service_folder;
+        return this;
+      }
+
+      public Builder SetEnableTracker(bool enable_tracker) {
+        EnableTracker = enable_tracker;
         return this;
       }
 
@@ -68,7 +74,7 @@ namespace Nohros.Ruby
       }
 
       public Builder SetDiscovererPort(int port) {
-        DiscovererPort = port;
+        BroadcastPort = port;
         return this;
       }
 
@@ -85,8 +91,9 @@ namespace Nohros.Ruby
       public CultureInfo Culture { get; private set; }
       public LogLevel LoggerLevel { get; private set; }
       public RunningMode RunningMode { get; private set; }
-      public int DiscovererPort { get; private set; }
+      public int BroadcastPort { get; private set; }
       public string IPCEndpoint { get; private set; }
+      public bool EnableTracker { get; private set; }
     }
   }
 }

@@ -30,6 +30,7 @@ namespace Nohros.Ruby
     readonly ForwardingAggregatorService forwarding_aggregator_service_;
 
     readonly object hosted_service_mutex_;
+    readonly List<RubyServiceHost> hosts_;
     readonly IRubyLogger logger_;
     readonly Dictionary<string, ResponseMessageHandler> messages_tokens_;
     readonly IRubyMessageChannel ruby_message_channel_;
@@ -48,6 +49,7 @@ namespace Nohros.Ruby
       logger_ = RubyLogger.ForCurrentProcess;
       settings_ = settings;
       running_services_count_ = 0;
+      hosts_ = new List<RubyServiceHost>();
       messages_tokens_ = new Dictionary<string, ResponseMessageHandler>();
       forwarding_aggregator_service_ =
         new ForwardingAggregatorService(new LoggerAggregatorService());
@@ -84,6 +86,14 @@ namespace Nohros.Ruby
       }
     }
 
+    public virtual void Exit() {
+      RubyServiceHost[] hosts = ServiceHosts;
+      foreach (var host in hosts) {
+        host.Shutdown();
+      }
+      ruby_message_channel_.Close();
+    }
+
     /// <inheritdoc/>
     //public virtual IRubyMessageChannel ProcessMessageChannel {
     //get { return ruby_message_channel_; }
@@ -108,7 +118,7 @@ namespace Nohros.Ruby
         }
       } catch (Exception exception) {
         logger_.Error(string.Format(R.Log_MethodThrowsException,
-          kClassName, "OnMessagePacketReceived"), exception);
+          kClassName, "OnMailboxMessagePacketReceived"), exception);
       }
     }
 
@@ -212,7 +222,7 @@ namespace Nohros.Ruby
           response_message.SerializedSize + 4)
         .Build();
 
-      OnMessagePacketReceived(response_packet);
+      OnMailboxMessagePacketReceived(response_packet);
     }*/
 
     void OnLogAggregatorQueryReseponse(ResponseMessage response) {
@@ -324,16 +334,19 @@ namespace Nohros.Ruby
         var host = new RubyServiceHost(service, ruby_message_channel_,
           aggregator_logger, settings_);
         ruby_message_channel_.AddListener(host, Executors.SameThreadExecutor());
+
+        // keep track the running services.
+        lock (hosts_) {
+          hosts_.Add(host);
+        }
+
+        // start the host and its associated service.
         host.Start();
       } catch (Exception exception) {
         logger_.Error(string.Format(R.Log_MethodThrowsException,
           kClassName, "ServiceThreadMain"), exception);
       }
       --running_services_count_;
-    }
-
-    public virtual void Exit() {
-      ruby_message_channel_.Close();
     }
 
     int Find(string pattern, IList<KeyValuePair> key_value_pairs) {
@@ -346,6 +359,14 @@ namespace Nohros.Ruby
         }
       }
       return -1;
+    }
+
+    internal RubyServiceHost[] ServiceHosts {
+      get {
+        lock (hosts_) {
+          return hosts_.ToArray();
+        }
+      }
     }
   }
 }

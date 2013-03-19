@@ -12,7 +12,7 @@ namespace Nohros.Ruby
   /// </summary>
   internal partial class RubySettings : Configuration.Configuration,
                                         IConfiguration, IConsoleSettings,
-                                        IRubySettings
+                                        IRubySettings, ITrackerSettings
   {
     public const int kDefaultSelfHostPort = 8520;
 
@@ -32,8 +32,10 @@ namespace Nohros.Ruby
       SelfHostEndpoint = builder.SelfHostEndpoint;
       NodeDirectory =
         Path.GetFullPath(AppDomain.CurrentDomain.BaseDirectory + "..\\..\\");
-      DiscovererPort = builder.DiscovererPort;
+      DiscovererPort = builder.BroadcastPort;
       IPCEndpoint = builder.IPCEndpoint;
+      BroadcastPort = builder.BroadcastPort;
+      EnableTracker = builder.EnableTracker;
     }
     #endregion
 
@@ -47,5 +49,7 @@ namespace Nohros.Ruby
     public bool SelfHost { get; private set; }
     public int DiscovererPort { get; private set; }
     public string SenderEndpoint { get; private set; }
+    public int BroadcastPort { get; private set; }
+    public bool EnableTracker { get; private set; }
   }
 }

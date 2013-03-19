@@ -23,13 +23,13 @@ namespace Nohros.Ruby
     const string kLogFileName = "rubynet.log";
     public const string kShellPrompt = "rubynet$: ";
 
-    readonly IRubySettings settings_;
+    readonly RubySettings settings_;
 
     #region .ctor
     /// <summary>
     /// Initializes a new instance of the <see cref="AppFactory"/> object.
     /// </summary>
-    public AppFactory(IRubySettings settings) {
+    public AppFactory(RubySettings settings) {
       settings_ = settings;
     }
     #endregion
@@ -83,7 +83,6 @@ namespace Nohros.Ruby
 
     SelfHostProcess CreateSelfHostMessageProcess(
       HostMessageChannel host_message_channel, ZmqContext context) {
-
       // reuse the address to prevent 'address already in use' error, this
       // tells the socket to receive any message that arrives at the bound
       // port.
@@ -95,8 +94,12 @@ namespace Nohros.Ruby
 
       var services_repository = CreateServicesRepository();
       var tracker_factory = new TrackerFactory(context);
+      var broadcaster = new Broadcaster(udp_client) {
+        BroadcastPort = settings_.BroadcastPort
+      };
       var trackers = new TrackerEngine(tracker_factory, services_repository,
-        udp_client);
+        broadcaster);
+      trackers.EnableTracker = settings_.EnableTracker;
       return new SelfHostProcess(settings_, host_message_channel, trackers);
     }
 

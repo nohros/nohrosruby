@@ -21,9 +21,10 @@ namespace Nohros.Ruby
     public const string kInteractiveRunningMode = "interactive";
     public const string kReceiverEndpoint = "ipc_receiver_endpoint";
     public const string kSenderEndpoint = "ipc_sender_endpoint";
-    public const string kDiscovererPortSwitch = "discoverer-port";
+    public const string kBroadcastPortSwitch = "broadcast-port";
     public const string kSelfHostIPCEndpoint = "inproc://self.host.ipc.channel";
     public const string kServiceEndpointFact = "endpoint";
+    public const string kEnableTrackerSwitch = "enable-tracker";
 
     public const string kServicesRepositoryNodeName = "ServicesRepository";
 
