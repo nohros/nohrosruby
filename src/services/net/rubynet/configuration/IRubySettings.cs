@@ -63,8 +63,11 @@ namespace Nohros.Ruby
     bool SelfHost { get; }
 
     /// <summary>
-    /// Gets the port number that is used to receive discovery beacons.
+    /// Gets a value indicating if the tracker service should be enabled or not.
     /// </summary>
-    int DiscovererPort { get; }
+    /// <remarks>
+    /// The tracker service acts as a bootstrap node.
+    /// </remarks>
+    bool EnableTracker { get; }
   }
 }

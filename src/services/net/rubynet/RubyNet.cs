@@ -62,8 +62,9 @@ namespace Nohros.Ruby
         .GetSwitchValue(Strings.kRunningModeSwitch);
       string services_folder = switches
         .GetSwitchValue(Strings.kServicesFolderSwitch);
-      int discoverer_port = switches.GetSwitchValueAsInt(
-        Strings.kDiscovererPortSwitch, 0);
+      int broadcast_port = switches.GetSwitchValueAsInt(
+        Strings.kBroadcastPortSwitch, 0);
+      bool enable_tracker = switches.HasSwitch(Strings.kEnableTrackerSwitch);
 
       var builder = new RubySettings.Builder();
       var loader = new RubySettings.Loader(builder);
@@ -91,8 +92,12 @@ namespace Nohros.Ruby
           builder.SetServiceFolder(services_folder);
         }
 
-        if (discoverer_port != 0) {
-          builder.SetDiscovererPort(discoverer_port);
+        if (broadcast_port != 0) {
+          builder.SetDiscovererPort(broadcast_port);
+        }
+
+        if(enable_tracker) {
+          builder.SetEnableTracker(true);
         }
       };
 

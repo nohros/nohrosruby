@@ -46,8 +46,7 @@ namespace Nohros.Ruby
     #endregion
 
     /// <inheritdoc/>
-    public virtual void Shutdown() {
-    }
+    public abstract void Shutdown();
 
     /// <inheritdoc/>
     public virtual void Pause(IRubyMessage message) {
@@ -63,7 +62,9 @@ namespace Nohros.Ruby
     }
 
     /// <inheritdoc/>
-    public abstract void Stop(IRubyMessage message);
+    public virtual void Stop(IRubyMessage message) {
+      Shutdown();
+    }
 
     /// <inheritdoc/>
     public abstract void OnMessage(IRubyMessage message);

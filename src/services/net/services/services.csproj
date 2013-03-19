@@ -44,35 +44,17 @@
     <Reference Include="Google.ProtocolBuffers.Serialization, Version=2.4.1.473, Culture=neutral, PublicKeyToken=55f7125234beb589, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Google.ProtocolBuffers.2.4.1.473\lib\net20\Google.ProtocolBuffers.Serialization.dll</HintPath>
     </Reference>
-    <Reference Include="nohros">
-      <HintPath>..\..\..\packages\must.common.1.6.9.0\lib\net20\nohros.dll</HintPath>
+    <Reference Include="nohros, Version=1.6.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\must.common.1.6.10.0\lib\net40\nohros.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Data.SQLite">
-      <HintPath>..\..\..\packages\System.Data.SQLite.x86.1.0.84.0\lib\net20\System.Data.SQLite.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Data.SQLite.Linq">
-      <HintPath>..\..\..\packages\System.Data.SQLite.x86.1.0.84.0\lib\net20\System.Data.SQLite.Linq.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="data\commands\INewServiceCommand.cs" />
-    <Compile Include="data\IServicesRepository.cs" />
-    <Compile Include="data\IServicesRepositoryFactory.cs" />
-    <Compile Include="data\commands\IRemoveServicesCommand.cs" />
-    <Compile Include="data\queries\IServicesByFactsQuery.cs" />
-    <Compile Include="data\sqlite\commands\NewServiceCommand.cs" />
-    <Compile Include="data\sqlite\commands\CreateServiceFactTableCommand.cs" />
-    <Compile Include="data\sqlite\commands\CreateServiceTableCommand.cs" />
-    <Compile Include="data\sqlite\commands\NewServiceFactCommand.cs" />
-    <Compile Include="data\sqlite\commands\RemoveServiceQuery.cs" />
-    <Compile Include="data\sqlite\queries\ServicesByFactsQuery.cs" />
-    <Compile Include="data\sqlite\queries\ServicesIDsByFacts.cs" />
-    <Compile Include="data\sqlite\SQLiteServicesRepository.cs" />
-    <Compile Include="data\sqlite\SQLiteServicesRepositoryFactory.cs" />
     <Compile Include="extensions\ByteStringExtensions.cs" />
+    <Compile Include="extensions\KeyValuePairs.cs" />
     <Compile Include="extensions\TransportExtensions.cs" />
     <Compile Include="ipc\AbstractRubyMessageSender.cs" />
     <Compile Include="ipc\Beacon.cs" />
@@ -91,12 +73,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="ServiceFacts.cs" />
-    <Compile Include="trackers\ITrackerFactory.cs" />
-    <Compile Include="trackers\Tracker.cs" />
-    <Compile Include="trackers\TrackerFactory.cs" />
-    <Compile Include="trackers\TrackerMessageChannel.cs" />
-    <Compile Include="trackers\TrackerMessageChannelFactory.cs" />
-    <Compile Include="trackers\TrackerEngine.cs" />
     <Compile Include="ZMQEndpoint.cs" />
   </ItemGroup>
   <ItemGroup>

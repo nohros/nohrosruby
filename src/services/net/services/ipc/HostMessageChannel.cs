@@ -25,6 +25,8 @@ namespace Nohros.Ruby
   internal class HostMessageChannel : MultiplexedMessageChannel,
                                       IRubyMessageChannel, IDisposable
   {
+    public delegate void MailboxBindEventHandler(ZMQEndPoint endpoint);
+
     public delegate void MessagePacketReceivedEventHandler(
       RubyMessagePacket packet);
 
@@ -112,7 +114,7 @@ namespace Nohros.Ruby
         int port = ZMQEndPoint.kMinEphemeralPort;
         string endpoint_suffix = endpoint.Transport.AsString()
           + "://" + endpoint.Address + ":";
-        while (port < ZMQEndPoint.kMaxEphemeralPort) {
+        while (port++ < ZMQEndPoint.kMaxEphemeralPort) {
           try {
             string address = endpoint_suffix + port.ToString();
             socket.Bind(address);
@@ -134,23 +136,38 @@ namespace Nohros.Ruby
     /// message channel. If you want to receive this events register a listener
     /// using the <see cref="AddListener"/> method.
     /// </remarks>
-    public event MessagePacketReceivedEventHandler MessagePacketReceived;
+    public event MessagePacketReceivedEventHandler MailboxMessagePacketReceived;
+
+    public event MailboxBindEventHandler MailboxBind;
+
+    public void OnMailboxBind(ZMQEndPoint endpoint) {
+      Listeners.SafeInvoke<MailboxBindEventHandler>(MailboxBind,
+        handler => handler(endpoint));
+    }
 
     /// <summary>
     /// Raised when a <see cref="RubyMessagePacket"/> is sent over the channel.
     /// </summary>
     public event MessagePacketReceivedEventHandler MessagePacketSent;
 
+    public void OnMessagePacketReceived(RubyMessagePacket packet) {
+      for (int i = 0, j = listeners_.Count; i < j; i++) {
+        ListenerExecutorPair pair = listeners_[i];
+        pair.Executor.Execute(
+          () => pair.Listener.OnMessagePacketReceived(packet));
+      }
+    }
 
     /// <summary>
-    /// Raises the <see cref="MessagePacketReceived"/> event.
+    /// Raises the <see cref="MailboxMessagePacketReceived"/> event.
     /// </summary>
     /// <param name="packet">
     /// As <see cref="RubyMessagePacket"/> containing the received packet.
     /// </param>
-    public void OnMessagePacketReceived(RubyMessagePacket packet) {
+    public void OnMailboxMessagePacketReceived(RubyMessagePacket packet) {
       Listeners
-        .SafeInvoke<MessagePacketReceivedEventHandler>(MessagePacketReceived,
+        .SafeInvoke<MessagePacketReceivedEventHandler>(
+          MailboxMessagePacketReceived,
           handler => handler(packet));
     }
 
@@ -185,7 +202,7 @@ namespace Nohros.Ruby
             logger_.Warn("");
           }
         }
-        OnMessagePacketReceived(GetRubyMessagePacket(parts));
+        OnMailboxMessagePacketReceived(GetRubyMessagePacket(parts));
       } catch (Exception e) {
         logger_.Error(string.Format(R.Log_MethodThrowsException,
           "MailboxThread", kClassName), e);
@@ -198,6 +215,8 @@ namespace Nohros.Ruby
 
       var mailbox_socket = context_.Socket(ZmqSocketType.ROUTER);
       receiver_endpoint_ = Bind(mailbox_socket, receiver_endpoint_);
+
+      OnMailboxBind(receiver_endpoint_);
 
       logger_.Info("self host mailbox bound to port: \""
         + receiver_endpoint_.Port + "\"");

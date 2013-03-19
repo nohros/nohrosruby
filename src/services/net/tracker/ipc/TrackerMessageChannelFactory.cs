@@ -35,9 +35,9 @@ namespace Nohros.Ruby
     /// <param name="transport"></param>
     /// <returns></returns>
     public TrackerMessageChannel CreateTrackerMessageChannel(
-      IPEndPoint endpoint, Transport transport) {
+      IPEndPoint endpoint, Transport transport, byte[] peer_id) {
       return new TrackerMessageChannel(context_,
-        new ZMQEndPoint(endpoint, transport));
+        new ZMQEndPoint(endpoint, transport), peer_id);
     }
   }
 }

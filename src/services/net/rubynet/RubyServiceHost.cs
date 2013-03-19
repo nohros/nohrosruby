@@ -143,10 +143,10 @@ namespace Nohros.Ruby
         .SetMessage(builder.Build().ToByteString())
         .Build();
       Send(message);
+    }
 
-      if (logger_.IsDebugEnabled) {
-        logger_.Debug("announcing service", service_.Facts);
-      }
+    public void Shutdown() {
+      service_.Shutdown();
     }
 
     public byte[] FormatErrorMessage(byte[] message_id, int exception_code,

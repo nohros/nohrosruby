@@ -55,6 +55,12 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite, Version=1.0.84.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
+      <HintPath>..\..\..\packages\System.Data.SQLite.x86.1.0.84.0\lib\net40\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite.Linq">
+      <HintPath>..\..\..\packages\System.Data.SQLite.x86.1.0.84.0\lib\net40\System.Data.SQLite.Linq.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -63,11 +69,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnnounceMessageHandler.cs" />
+    <Compile Include="BeaconReceivedEventHandler.cs" />
     <Compile Include="Broadcaster.cs" />
     <Compile Include="configuration\ITrackerSettings.cs" />
     <Compile Include="configuration\TrackerSettings.cs" />
     <Compile Include="configuration\TrackerSettingsBuilder.cs" />
     <Compile Include="configuration\TrackerSettingsLoader.cs" />
+    <Compile Include="data\commands\INewServiceCommand.cs" />
+    <Compile Include="data\commands\IRemoveServicesCommand.cs" />
+    <Compile Include="data\IServicesRepository.cs" />
+    <Compile Include="data\IServicesRepositoryFactory.cs" />
     <Compile Include="data\mssql\commands\NewServiceCommand.cs" />
     <Compile Include="data\mssql\commands\NewServiceFactsCommand.cs" />
     <Compile Include="data\mssql\commands\RemoveServicesCommand.cs" />
@@ -75,18 +86,29 @@
     <Compile Include="data\mssql\query\ServicesIDsByFacts.cs" />
     <Compile Include="data\mssql\SqlServicesRepository.cs" />
     <Compile Include="data\mssql\SqlServicesRepositoryFactory.cs" />
+    <Compile Include="data\queries\IServicesByFactsQuery.cs" />
+    <Compile Include="data\sqlite\commands\CreateServiceFactTableCommand.cs" />
+    <Compile Include="data\sqlite\commands\CreateServiceTableCommand.cs" />
+    <Compile Include="data\sqlite\commands\NewServiceCommand.cs" />
+    <Compile Include="data\sqlite\commands\NewServiceFactCommand.cs" />
+    <Compile Include="data\sqlite\commands\RemoveServiceQuery.cs" />
+    <Compile Include="data\sqlite\queries\ServicesByFactsQuery.cs" />
+    <Compile Include="data\sqlite\queries\ServicesIDsByFacts.cs" />
+    <Compile Include="data\sqlite\SQLiteServicesRepository.cs" />
+    <Compile Include="data\sqlite\SQLiteServicesRepositoryFactory.cs" />
     <Compile Include="HelloMessageHandler.cs" />
     <Compile Include="IMessageHandler.cs" />
+    <Compile Include="ipc\ITrackerFactory.cs" />
+    <Compile Include="ipc\Tracker.cs" />
+    <Compile Include="ipc\TrackerEngine.cs" />
+    <Compile Include="ipc\TrackerFactory.cs" />
+    <Compile Include="ipc\TrackerMessageChannel.cs" />
+    <Compile Include="ipc\TrackerMessageChannelFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Strings.cs" />
-    <Compile Include="TrackerService.cs" />
-    <Compile Include="TrackerServiceFactory.cs" />
+    <Compile Include="ResponseMessageHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="tracker.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="libzmq.dll">

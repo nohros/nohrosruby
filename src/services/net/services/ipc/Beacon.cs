@@ -20,7 +20,7 @@ namespace Nohros.Ruby
     /// <param name="peer_endpoint">
     /// A <see cref="IPEndPoint"/> containing the address of the peer.
     /// </param>
-    public Beacon(Guid peer_id, IPEndPoint peer_endpoint) {
+    public Beacon(byte[] peer_id, IPEndPoint peer_endpoint) {
       PeerID = peer_id;
       PeerEndpoint = peer_endpoint;
     }
@@ -45,7 +45,7 @@ namespace Nohros.Ruby
         try {
           BeaconMessage beacon = BeaconMessage
             .ParseFrom(ByteString.CopyFrom(bytes, 3, bytes.Length - 3));
-          var id = new Guid(beacon.PeerId.ToByteArray());
+          var id = beacon.PeerId.ToByteArray();
           var endpoint = new IPEndPoint(peer_address,
             beacon.PeerMailboxPort);
           return new Beacon(id, endpoint);
@@ -59,7 +59,7 @@ namespace Nohros.Ruby
     /// <summary>
     /// Gets a <see cref="Guid"/> that uniquely identifies a peers.
     /// </summary>
-    public Guid PeerID { get; private set; }
+    public byte[] PeerID { get; private set; }
 
     /// <summary>
     /// Gets the peer's address.

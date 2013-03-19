@@ -20,6 +20,10 @@ namespace Nohros.Ruby
     }
     #endregion
 
+    public void Shutdown()
+    {
+    }
+
     public void Announce(IDictionary<string, string> facts)
     {
     }

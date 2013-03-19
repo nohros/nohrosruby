@@ -22,6 +22,11 @@ namespace Nohros.Ruby
     IRubyLogger Logger { get; }
 
     /// <summary>
+    /// Shuts the service host down.
+    /// </summary>
+    void Shutdown();
+
+    /// <summary>
     /// Announce to the world that the service is running.
     /// </summary>
     /// <param name="facts">

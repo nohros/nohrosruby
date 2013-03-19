@@ -26,6 +26,9 @@ namespace Nohros.Ruby
       get { return logger_; }
     }
 
+    public void Shutdown() {
+    }
+
     public void Announce(IDictionary<string, string> facts) {
     }
 
