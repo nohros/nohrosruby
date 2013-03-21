@@ -52,6 +52,7 @@ namespace Nohros.Ruby.Logging
     #endregion
 
     public override void Start(IRubyServiceHost service_host) {
+      base.Start(service_host);
       main_thread_ = Thread.CurrentThread;
       publisher_.Bind("tcp://*:" + settings_.PublisherPort);
       start_stop_event_.WaitOne();
@@ -60,7 +61,7 @@ namespace Nohros.Ruby.Logging
       context_.Dispose();
     }
 
-    public override void Stop(IRubyMessage message) {
+    public override void Shutdown() {
       start_stop_event_.Set();
       if (main_thread_ != null) {
         main_thread_.Join(10000);
