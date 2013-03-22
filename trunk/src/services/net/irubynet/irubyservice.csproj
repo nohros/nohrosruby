@@ -57,6 +57,7 @@
     <Compile Include="IFact.cs" />
     <Compile Include="IRubyLogger.cs" />
     <Compile Include="IRubyMessage.cs" />
+    <Compile Include="IRubyMessageListener.cs" />
     <Compile Include="IRubyMessageSender.cs" />
     <Compile Include="IRubyService.cs" />
     <Compile Include="IRubyServiceFactory.cs" />

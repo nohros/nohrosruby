@@ -71,7 +71,8 @@ namespace Nohros.Ruby
     /// just send messages to the tracker. The tracker responses is received
     /// through another channel.
     /// </remarks>
-    public void AddListener(IRubyMessageListener listener, IExecutor executor) {
+    public void AddListener(IRubyMessagePacketListener listener, IExecutor executor)
+    {
       return;
     }
 

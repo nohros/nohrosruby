@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nohros.Concurrent;
 
 namespace Nohros.Ruby
 {
@@ -25,6 +26,24 @@ namespace Nohros.Ruby
     /// Shuts the service host down.
     /// </summary>
     void Shutdown();
+
+    /// <summary>
+    /// Adds a listener to receive notifications for incoming messages.
+    /// </summary>
+    /// <param name="listener">
+    /// A <see cref="IRubyMessageListener"/> that wants to receive
+    /// notifications for incoming messages.
+    /// </param>
+    /// <param name="executor">
+    /// A <see cref="IExecutor"/> object that is used to execute the
+    /// <see cref="IRubyMessageListener.OnMessagePacketReceived"/> callback.
+    /// </param>
+    /// <remarks>
+    /// Each listener should be associated with a service(real or virtual).
+    /// It will receive only the messages that is destinated to the
+    /// associated service.
+    /// </remarks>
+    void AddListener(IRubyMessageListener listener, IExecutor executor);
 
     /// <summary>
     /// Announce to the world that the service is running.

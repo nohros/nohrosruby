@@ -50,8 +50,13 @@
     <Reference Include="nohros.extensions">
       <HintPath>..\..\..\packages\must.extensions.0.0.2.11\lib\net40\nohros.extensions.dll</HintPath>
     </Reference>
-    <Reference Include="nohros.metrics">
-      <HintPath>..\..\..\packages\must.metrics.0.3.0.0\lib\net20\nohros.metrics.dll</HintPath>
+    <Reference Include="nohros.metrics, Version=0.3.4.5, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\must.metrics.0.3.4.5\lib\net20\nohros.metrics.dll</HintPath>
+    </Reference>
+    <Reference Include="nohros.ruby.net, Version=0.5.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\nohros.ruby.net.0.5.6.0\lib\net20\nohros.ruby.net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -119,10 +124,6 @@
     <ProjectReference Include="..\extensions\extensions.csproj">
       <Project>{84727DA5-79D3-4F42-BA0C-19FD583A6834}</Project>
       <Name>extensions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\irubynet\irubyservice.csproj">
-      <Project>{970C40CD-03F5-4761-9AE3-7E358E108E56}</Project>
-      <Name>irubyservice</Name>
     </ProjectReference>
     <ProjectReference Include="..\protos\protos.csproj">
       <Project>{3C54BE0B-813D-4543-81C5-62ABC1188CE2}</Project>

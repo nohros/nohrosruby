@@ -59,7 +59,7 @@
     <Compile Include="ipc\AbstractRubyMessageSender.cs" />
     <Compile Include="ipc\Beacon.cs" />
     <Compile Include="ipc\IRubyMessageChannel.cs" />
-    <Compile Include="ipc\IRubyMessageListener.cs" />
+    <Compile Include="ipc\IRubyMessagePacketListener.cs" />
     <Compile Include="ipc\IRubyMessageReceiver.cs" />
     <Compile Include="ipc\ListenerExecutorPair.cs" />
     <Compile Include="ipc\MultiplexedMessageChannel.cs" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Nohros.Concurrent;
 using Nohros.Ruby.Protocol;
 
 namespace Nohros.Ruby
@@ -26,6 +27,9 @@ namespace Nohros.Ruby
 
     public void Announce(IDictionary<string, string> facts)
     {
+    }
+
+    public void AddListener(IRubyMessageListener listener, IExecutor executor) {
     }
 
     /// <inheritdoc/>
