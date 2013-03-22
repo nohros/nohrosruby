@@ -5,7 +5,7 @@ using Nohros.Ruby.Protocol;
 namespace Nohros.Ruby
 {
   /// <summary>
-  /// An implementation of the <see cref="IRubyMessageListener"/> interface
+  /// An implementation of the <see cref="IRubyMessagePacketListener"/> interface
   /// that blocks until the application exit.
   /// </summary>
   public class BlockedMessageReceiver: IRubyMessageReceiver, IDisposable

@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Google.ProtocolBuffers;
+using Nohros.Concurrent;
 using Nohros.Extensions;
 using Nohros.Ruby.Protocol;
 using Nohros.Ruby.Protocol.Control;
+using R = Nohros.Resources.StringResources;
 
 namespace Nohros.Ruby
 {
@@ -12,9 +14,10 @@ namespace Nohros.Ruby
   /// .NET implementation of the <see cref="IRubyServiceHost"/> interface. This
   /// class is used to host a .NET based ruby services.
   /// </summary>
-  internal class RubyServiceHost : IRubyServiceHost, IRubyMessageListener
+  internal class RubyServiceHost : IRubyServiceHost, IRubyMessagePacketListener
   {
     const string kClassName = "Nohros.Ruby.RubyServiceHost";
+    readonly List<Tuple<IRubyMessageListener, IExecutor>> listeners_;
     readonly RubyLogger logger_ = RubyLogger.ForCurrentProcess;
 
     readonly IRubyMessageSender ruby_message_sender_;
@@ -50,6 +53,7 @@ namespace Nohros.Ruby
       service_ = service;
       ruby_message_sender_ = sender;
       service_logger_ = service_logger;
+      listeners_ = new List<Tuple<IRubyMessageListener, IExecutor>>();
     }
     #endregion
 
@@ -61,7 +65,22 @@ namespace Nohros.Ruby
       // TODO(neylor.silva): This method is called for any message that is
       // received by channel. We need to filter the control messages and
       // dispatch to the service only the messages directed to them.
-      service_.OnMessage(packet.Message);
+      RubyMessage message = packet.Message;
+      service_.OnMessage(message);
+      foreach (Tuple<IRubyMessageListener, IExecutor> tuple in listeners_) {
+        try {
+          var executor = tuple.Item2;
+          var listener = tuple.Item1;
+          executor.Execute(() => listener.OnMessageReceived(message));
+        } catch (Exception e) {
+          logger_.Error(string.Format(R.Log_MethodThrowsException,
+            "OnMessageReceived", kClassName), e);
+        }
+      }
+    }
+
+    public void AddListener(IRubyMessageListener listener, IExecutor executor) {
+      listeners_.Add(Tuple.Create(listener, executor));
     }
 
     /// <inheritdoc/>

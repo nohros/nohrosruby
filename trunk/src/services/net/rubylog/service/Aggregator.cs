@@ -46,8 +46,10 @@ namespace Nohros.Ruby.Logging
       aggregator_data_provider_ = aggregator_data_provider;
       logger_ = LocalLogger.ForCurrentProcess;
 
-      facts_ = new Dictionary<string, string>();
-      InitFacts();
+      facts_ = new Dictionary<string, string> {
+        {"service-name", "nohros.ruby.log"},
+        {"service-uid", "cfa950a0ca0611e19b230800200c9a66"}
+      };
     }
     #endregion
 
