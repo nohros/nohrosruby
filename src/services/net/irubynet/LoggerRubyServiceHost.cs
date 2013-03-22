@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Nohros.Concurrent;
 using Nohros.Data.Json;
 using Nohros.Ruby.Protocol;
 
@@ -21,6 +22,9 @@ namespace Nohros.Ruby
       logger_ = logger;
     }
     #endregion
+
+    public void AddListener(IRubyMessageListener listener, IExecutor executor) {
+    }
 
     public IRubyLogger Logger {
       get { return logger_; }

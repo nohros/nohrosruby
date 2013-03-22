@@ -25,7 +25,7 @@ namespace Nohros.Ruby
     /// It will receive only the messages that is destinated to the
     /// associated service.
     /// </remarks>
-    void AddListener(IRubyMessageListener listener, IExecutor executor);
+    void AddListener(IRubyMessagePacketListener listener, IExecutor executor);
 
     /// <summary>
     /// Sends a message packet to the ruby service node.

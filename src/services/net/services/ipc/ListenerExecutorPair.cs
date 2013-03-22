@@ -6,7 +6,7 @@ namespace Nohros.Ruby
   internal class ListenerExecutorPair
   {
     readonly IExecutor executor_;
-    readonly IRubyMessageListener listener_;
+    readonly IRubyMessagePacketListener listener_;
 
     #region .ctor
     /// <summary>
@@ -26,7 +26,7 @@ namespace Nohros.Ruby
     /// It will receive only the messages that is destinated to the
     /// associated service.
     /// </remarks>
-    public ListenerExecutorPair(IRubyMessageListener listener,
+    public ListenerExecutorPair(IRubyMessagePacketListener listener,
       IExecutor executor) {
       listener_ = listener;
       executor_ = executor;
@@ -44,7 +44,8 @@ namespace Nohros.Ruby
     /// gets the <see cref="IRubyMessageListener"/> object associated with
     /// the pair.
     /// </summary>
-    public IRubyMessageListener Listener {
+    public IRubyMessagePacketListener Listener
+    {
       get { return listener_; }
     }
   }

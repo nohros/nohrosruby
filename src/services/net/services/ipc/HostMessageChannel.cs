@@ -82,7 +82,7 @@ namespace Nohros.Ruby
     }
 
     /// <inheritdoc/>
-    public void AddListener(IRubyMessageListener listener, IExecutor executor) {
+    public void AddListener(IRubyMessagePacketListener listener, IExecutor executor) {
       listeners_.Add(new ListenerExecutorPair(listener, executor));
     }
 
