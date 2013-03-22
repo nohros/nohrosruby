@@ -13,7 +13,7 @@ namespace Nohros.Ruby
   internal class NullMessageChannel : IRubyMessageChannel
   {
     /// <inheritdoc/>
-    public void AddListener(IRubyMessageListener listener, IExecutor executor) {
+    public void AddListener(IRubyMessagePacketListener packet_listener, IExecutor executor) {
     }
 
     /// <inheritdoc/>

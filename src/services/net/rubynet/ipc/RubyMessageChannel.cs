@@ -120,7 +120,7 @@ namespace Nohros.Ruby
     }
 
     /// <inheritdoc/>
-    public void AddListener(IRubyMessageListener listener, IExecutor executor) {
+    public void AddListener(IRubyMessagePacketListener packet_listener, IExecutor executor) {
 #if DEBUG
       if (listener == null || executor == null) {
         throw new ArgumentNullException(listener == null
@@ -128,7 +128,7 @@ namespace Nohros.Ruby
           : "executor");
       }
 #endif
-      listeners_.Add(new ListenerExecutorPair(listener, executor));
+      listeners_.Add(new ListenerExecutorPair(packet_listener, executor));
     }
 
     /// <summary>

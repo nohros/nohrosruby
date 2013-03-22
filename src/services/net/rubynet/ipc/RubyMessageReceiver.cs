@@ -8,7 +8,7 @@ using R = Nohros.Resources;
 namespace Nohros.Ruby
 {
   /// <summary>
-  /// The default implementation of the <see cref="IRubyMessageListener"/>
+  /// The default implementation of the <see cref="IRubyMessagePacketListener"/>
   /// interface
   /// </summary>
   internal class RubyMessageReceiver : IRubyMessageReceiver
