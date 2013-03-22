@@ -38,10 +38,10 @@ namespace Nohros.Ruby
     /// </remarks>
     protected AbstractRubyService() {
       facts = new Dictionary<string, string>();
-      facts.Add(StringResources.kOSVersionFact, Environment.OSVersion.ToString());
-      facts.Add(StringResources.kUserNameFact, Environment.UserName);
-      facts.Add(StringResources.kMachineNameFact, Environment.MachineName);
-      facts.Add(StringResources.kCLRVersionFact, Environment.Version.ToString());
+      facts.Add(RubyStrings.kOSVersionFact, Environment.OSVersion.ToString());
+      facts.Add(RubyStrings.kUserNameFact, Environment.UserName);
+      facts.Add(RubyStrings.kMachineNameFact, Environment.MachineName);
+      facts.Add(RubyStrings.kCLRVersionFact, Environment.Version.ToString());
     }
     #endregion
 
