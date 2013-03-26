@@ -50,13 +50,13 @@
     <Reference Include="nohros.extensions">
       <HintPath>..\..\..\packages\must.extensions.0.0.2.11\lib\net40\nohros.extensions.dll</HintPath>
     </Reference>
-    <Reference Include="nohros.metrics, Version=0.3.4.5, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="nohros.metrics, Version=0.3.4.9, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\must.metrics.0.3.4.5\lib\net20\nohros.metrics.dll</HintPath>
+      <HintPath>..\..\..\packages\must.metrics.0.3.4.9\lib\net20\nohros.metrics.dll</HintPath>
     </Reference>
-    <Reference Include="nohros.ruby.net, Version=0.5.6.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="nohros.ruby.net, Version=0.5.7.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\nohros.ruby.net.0.5.6.0\lib\net20\nohros.ruby.net.dll</HintPath>
+      <HintPath>..\..\..\packages\nohros.ruby.net.0.5.7.2\lib\net20\nohros.ruby.net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

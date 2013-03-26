@@ -20,8 +20,11 @@ namespace Nohros.Ruby
     /// </summary>
     public LoggerRubyServiceHost(IRubyLogger logger) {
       logger_ = logger;
+      Service = new NopService();
     }
     #endregion
+
+    public IRubyService Service { get; private set; }
 
     public void AddListener(IRubyMessageListener listener, IExecutor executor) {
     }

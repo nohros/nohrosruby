@@ -157,7 +157,7 @@ namespace Nohros.Ruby
         .AddRangeFacts(KeyValuePairs.FromKeyValuePairs(facts));
 
       RubyMessage message = new RubyMessage.Builder()
-        .SetToken(StringResources.kAnnounceMessageToken)
+        .SetToken("node-announce")
         .SetType((int) NodeMessageType.kNodeAnnounce)
         .SetMessage(builder.Build().ToByteString())
         .Build();
@@ -278,10 +278,20 @@ namespace Nohros.Ruby
     /// </remarks>
     public void Start() {
       Thread.CurrentThread.CurrentUICulture = settings_.Culture;
+
+      OnServiceHostStart();
+
       service_.Start(this);
 
       logger_.Info("the following service has been finished: ", service_.Facts);
     }
+
+    void OnServiceHostStart() {
+      Listeners.SafeInvoke<ServiceHostStartEventHandler>(ServiceHostStart,
+        handler => handler(this));
+    }
+
+    public event ServiceHostStartEventHandler ServiceHostStart;
 
     /// <inherithdoc/>
     public IRubyService Service {

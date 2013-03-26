@@ -18,15 +18,16 @@ namespace Nohros.Ruby
     /// </summary>
     public NopRubyServiceHost() {
       logger_ = new NopRubyLogger();
+      Service = new NopService();
     }
     #endregion
 
-    public void Shutdown()
-    {
+    public IRubyService Service { get; private set; }
+
+    public void Shutdown() {
     }
 
-    public void Announce(IDictionary<string, string> facts)
-    {
+    public void Announce(IDictionary<string, string> facts) {
     }
 
     public void AddListener(IRubyMessageListener listener, IExecutor executor) {

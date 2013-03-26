@@ -11,7 +11,7 @@ namespace Nohros.Ruby.Data.SQLite
   {
     const string kClassName = "Nohros.Ruby.Data.SQLite.NewServiceCommand";
     const string kExecute = @"
-insert into service_fact_hash(service_id, service_fact_hash)
+insert into service_fact(service_id, service_fact_hash)
 values(@service_id, @service_fact_hash);
 ";
 

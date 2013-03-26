@@ -18,6 +18,12 @@ namespace Nohros.Ruby
       SelfHostProcess self_host_process) {
       shell_ruby_process_ = shell_ruby_process;
       self_host_process_ = self_host_process;
+
+      // The services are started by the shell service host and the tracker
+      // communication is handled by the self host process. We need to sync the
+      // services information between the two process.
+      shell_ruby_process_.ServiceHostStart +=
+        self_host_process.OnServiceHostStart;
     }
     #endregion
 

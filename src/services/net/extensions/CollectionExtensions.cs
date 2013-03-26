@@ -19,8 +19,8 @@ namespace Nohros.Ruby
     /// <c>true</c> if <paramref name="value"/> is found in the
     /// <paramref name="collection"/>; otherwise, <c>false</c>.
     /// </returns>
-    public static bool Contains(this string[] collection, string value,
-      StringComparison comparison_type) {
+    public static bool Contains(this IEnumerable<string> collection,
+      string value, StringComparison comparison_type) {
       foreach (var s in collection) {
         if (string.Compare(s, value, comparison_type) == 0) {
           return true;

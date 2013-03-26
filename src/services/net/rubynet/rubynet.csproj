@@ -73,6 +73,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\must.extensions.0.0.2.11\lib\net40\nohros.extensions.dll</HintPath>
     </Reference>
+    <Reference Include="nohros.metrics, Version=0.3.4.9, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\must.metrics.0.3.4.9\lib\net20\nohros.metrics.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
@@ -97,6 +101,7 @@
     <Compile Include="process\AbstractRubyProcess.cs" />
     <Compile Include="AppFactory.cs" />
     <Compile Include="process\SelfHostProcess.cs" />
+    <Compile Include="process\ServiceHostStartEventHandler.cs" />
     <Compile Include="process\ShellSelfHostProcess.cs" />
     <Compile Include="service\AggregatorLogger.cs" />
     <Compile Include="configuration\ConsoleSettings.cs" />

@@ -3,6 +3,7 @@ using System.Threading;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using Nohros.Concurrent;
 using Nohros.Ruby.Data;
 using Nohros.Ruby.Extensions;
 using Nohros.Ruby.Protocol;
@@ -23,6 +24,7 @@ namespace Nohros.Ruby
 
     readonly Broadcaster broadcaster_;
     readonly RubyLogger logger_;
+    readonly Queue<RubyMessagePacket> pending_queries_;
     readonly Dictionary<int, Action<ZMQEndPoint>> queries_;
     readonly Dictionary<string, Action<RubyMessage>> reseponse_handlers_;
 
@@ -51,6 +53,7 @@ namespace Nohros.Ruby
       logger_ = RubyLogger.ForCurrentProcess;
       broadcaster_ = broadcaster;
       queries_ = new Dictionary<int, Action<ZMQEndPoint>>();
+      pending_queries_ = new Queue<RubyMessagePacket>();
       peer_id_ = Guid.NewGuid().ToByteArray();
       broadcaster_.BeaconReceived += OnBeaconReceived;
       running_ = false;
@@ -67,6 +70,15 @@ namespace Nohros.Ruby
       RubyMessagePacket packet = RubyMessages.CreateMessagePacket(0.AsBytes(),
         (int) NodeMessageType.kNodeHello, hello.ToByteArray());
       tracker.MessageChannel.Send(packet);
+
+      // send the pending queries to the new discovered tracker, so the
+      // queries that was performed when no trackers was known can be resolved.
+      lock (pending_queries_) {
+        var channel = tracker.MessageChannel;
+        while (pending_queries_.Count > 0) {
+          channel.Send(pending_queries_.Dequeue());
+        }
+      }
 
       Listeners.SafeInvoke<TrackerDiscoveredEventHandler>(TrackerDiscovered,
         handler => handler(tracker));
@@ -173,14 +185,24 @@ namespace Nohros.Ruby
         queries_[key] = callback;
       }
 
+
       // Send the message to all the connected trackers. Response duplication
       // should be handled at response time.
-      foreach (var tracker in trackers_) {
-        var channel = tracker.Value.MessageChannel;
-        var packet = RubyMessages.CreateMessagePacket(key.AsBytes(),
-          (int) NodeMessageType.kNodeQuery, query.ToByteArray(),
-          kQueryServiceToken);
-        channel.Send(packet);
+      //
+      // If there are no trackers enqueue the query and send it to the first
+      // discovered tracker.
+      var packet = RubyMessages.CreateMessagePacket(key.AsBytes(),
+        (int) NodeMessageType.kNodeQuery, query.ToByteArray(),
+        kQueryServiceToken);
+      if (trackers_.Count == 0) {
+        lock (pending_queries_) {
+          pending_queries_.Enqueue(packet);
+        }
+      } else {
+        foreach (var tracker in trackers_) {
+          var channel = tracker.Value.MessageChannel;
+          channel.Send(packet);
+        }
       }
     }
 
