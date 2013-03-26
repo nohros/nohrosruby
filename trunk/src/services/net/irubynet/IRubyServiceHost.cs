@@ -23,6 +23,12 @@ namespace Nohros.Ruby
     IRubyLogger Logger { get; }
 
     /// <summary>
+    /// Gets the <see cref="IRubyService"/> the is beign hosted by the
+    /// <see cref="IRubyServiceHost"/> object.
+    /// </summary>
+    IRubyService Service { get; }
+
+    /// <summary>
     /// Shuts the service host down.
     /// </summary>
     void Shutdown();

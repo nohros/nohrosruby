@@ -93,7 +93,7 @@ namespace Nohros.Ruby.Shell
       RubyMessageHeader header = new RubyMessageHeader.Builder()
         .AddFacts(
           new KeyValuePair.Builder()
-            .SetKey(StringResources.kServiceNameFact)
+            .SetKey(RubyStrings.kServiceNameFact)
             .SetValue(Strings.kServiceHostServiceName)
             .Build())
         .SetSize(start_control_message_bytes.Length)

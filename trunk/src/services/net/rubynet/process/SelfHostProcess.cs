@@ -16,6 +16,7 @@ namespace Nohros.Ruby
     readonly Dictionary<int, QueryMessage> queries_;
     readonly RubySettings settings_;
     readonly TrackerEngine trackers_;
+    readonly List<IRubyServiceHost> hosts_;
 
     #region .ctor
     /// <summary>
@@ -37,6 +38,7 @@ namespace Nohros.Ruby
       trackers_ = trackers;
       logger_ = RubyLogger.ForCurrentProcess;
       settings_ = settings;
+      hosts_ = new List<IRubyServiceHost>();
     }
     #endregion
 
@@ -100,9 +102,30 @@ namespace Nohros.Ruby
 
     void OnTrackerDiscovered(Tracker tracker) {
       // sync our services database with the tracker.
-      RubyServiceHost[] hosts = ServiceHosts;
-      foreach (var host in hosts) {
+      foreach (var host in hosts_) {
         trackers_.Announce(host.Service.Facts.FromKeyValuePairs(), tracker);
+      }
+    }
+
+    /// <summary>
+    /// Method taht should be called when a <see cref="IRubyServiceHost"/> is
+    /// started.
+    /// </summary>
+    /// <param name="host">
+    /// The <see cref="IRubyServiceHost"/> that has been started.
+    /// </param>
+    /// <remarks>
+    /// <see cref="SelfHostProcess"/> does not start services for itself, this
+    /// operation should be performed by the class that is using the
+    /// <see cref="SelfHostProcess"/> object. The
+    /// <see cref="OnServiceHostStart"/> method allows the service that is
+    /// using the <see cref="SelfHostProcess"/> object to signal about the
+    /// host tha has been started. This allows the self host class to perform
+    /// its operation over the hosted service(i.e announce, find service)
+    /// </remarks>
+    internal void OnServiceHostStart(IRubyServiceHost host) {
+      lock(hosts_) {
+        hosts_.Add(host);
       }
     }
 

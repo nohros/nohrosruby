@@ -38,7 +38,7 @@ values(@service_endpoint);
         var parms = new IDbDataParameter[1];
         IDbCommand cmd = builder
           .SetText(kExecute)
-          .AddParameter("@endpoint", Endpoint.Endpoint)
+          .AddParameter("@service_endpoint", Endpoint.Endpoint)
           .Build();
         try {
           int affected = cmd.ExecuteNonQuery();

@@ -29,8 +29,7 @@ namespace Nohros.Ruby
     const int kMaxRunningServices = 10;
     readonly ForwardingAggregatorService forwarding_aggregator_service_;
 
-    readonly object hosted_service_mutex_;
-    readonly List<RubyServiceHost> hosts_;
+    readonly List<IRubyServiceHost> hosts_;
     readonly IRubyLogger logger_;
     readonly Dictionary<string, ResponseMessageHandler> messages_tokens_;
     readonly IRubyMessageChannel ruby_message_channel_;
@@ -45,11 +44,10 @@ namespace Nohros.Ruby
     protected AbstractRubyProcess(IRubySettings settings,
       IRubyMessageChannel ruby_message_channel) {
       ruby_message_channel_ = ruby_message_channel;
-      hosted_service_mutex_ = new object();
       logger_ = RubyLogger.ForCurrentProcess;
       settings_ = settings;
       running_services_count_ = 0;
-      hosts_ = new List<RubyServiceHost>();
+      hosts_ = new List<IRubyServiceHost>();
       messages_tokens_ = new Dictionary<string, ResponseMessageHandler>();
       forwarding_aggregator_service_ =
         new ForwardingAggregatorService(new LoggerAggregatorService());
@@ -87,8 +85,7 @@ namespace Nohros.Ruby
     }
 
     public virtual void Exit() {
-      RubyServiceHost[] hosts = ServiceHosts;
-      foreach (var host in hosts) {
+      foreach (var host in hosts_) {
         host.Shutdown();
       }
       ruby_message_channel_.Close();
@@ -154,7 +151,7 @@ namespace Nohros.Ruby
       QueryMessage query = new QueryMessage.Builder()
         .SetType(QueryMessageType.kQueryFind)
         .AddFacts(
-          KeyValuePairs.FromKeyValuePair(StringResources.kMessageUUIDFact,
+          KeyValuePairs.FromKeyValuePair(RubyStrings.kMessageIDFact,
             "cfa950a0ca0611e19b230800200c9a66"))
         .Build();
 
@@ -165,7 +162,7 @@ namespace Nohros.Ruby
         .SetId(ByteString.CopyFrom(kLogAggregatorQuery.AsBytes(Encoding.ASCII)))
         .Build();
       ruby_message_channel_.Send(message, new[] {
-        new KeyValuePair<string, string>(StringResources.kServiceNameFact,
+        new KeyValuePair<string, string>(RubyStrings.kServiceNameFact,
           Strings.kNodeServiceName)
       });
     }
@@ -174,7 +171,7 @@ namespace Nohros.Ruby
       QueryMessage query = new QueryMessage.Builder()
         .SetType(QueryMessageType.kQueryFind)
         .AddFacts(
-          KeyValuePairs.FromKeyValuePair(StringResources.kMessageUUIDFact,
+          KeyValuePairs.FromKeyValuePair(RubyStrings.kServiceUIDFact,
             "cfa950a0ca0611e19b230800200c9a66"))
         .Build();
 
@@ -188,7 +185,7 @@ namespace Nohros.Ruby
       RubyMessageHeader header = new RubyMessageHeader.Builder()
         .SetId(message.Id)
         .AddFacts(
-          KeyValuePairs.FromKeyValuePair(StringResources.kServiceNameFact,
+          KeyValuePairs.FromKeyValuePair(RubyStrings.kServiceNameFact,
             Strings.kNodeServiceName))
         .SetSize(message.SerializedSize)
         .Build();
@@ -201,7 +198,7 @@ namespace Nohros.Ruby
 
       RubyMessage response_message = new RubyMessage.Builder()
         .SetId(0)
-        .SetToken(StringResources.kNodeResponseToken)
+        .SetToken(RubyStrings.kNodeResponseToken)
         .SetType((int) NodeMessageType.kNodeResponse)
         .SetMessage(response.ToByteString())
         .Build();
@@ -209,7 +206,7 @@ namespace Nohros.Ruby
       RubyMessageHeader response_header = new RubyMessageHeader.Builder()
         .SetId(response_message.Id)
         .AddFacts(
-          KeyValuePairs.FromKeyValuePair(StringResources.kServiceNameFact,
+          KeyValuePairs.FromKeyValuePair(RubyStrings.kServiceNameFact,
             Strings.kNodeServiceName))
         .SetSize(response_message.SerializedSize)
         .Build();
@@ -341,6 +338,7 @@ namespace Nohros.Ruby
         }
 
         // start the host and its associated service.
+        host.ServiceHostStart += OnServiceHostStart;
         host.Start();
       } catch (Exception exception) {
         logger_.Error(string.Format(R.Log_MethodThrowsException,
@@ -361,12 +359,11 @@ namespace Nohros.Ruby
       return -1;
     }
 
-    internal RubyServiceHost[] ServiceHosts {
-      get {
-        lock (hosts_) {
-          return hosts_.ToArray();
-        }
-      }
+    void OnServiceHostStart(IRubyServiceHost host) {
+      Listeners.SafeInvoke<ServiceHostStartEventHandler>(ServiceHostStart,
+        handler => handler(host));
     }
+
+    public event ServiceHostStartEventHandler ServiceHostStart;
   }
 }

@@ -38,6 +38,10 @@
     <Reference Include="Google.ProtocolBuffers.Serialization">
       <HintPath>..\..\..\packages\Google.ProtocolBuffers.2.4.1.473\lib\net20\Google.ProtocolBuffers.Serialization.dll</HintPath>
     </Reference>
+    <Reference Include="nohros, Version=1.6.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\must.common.1.6.10.0\lib\net20\nohros.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
