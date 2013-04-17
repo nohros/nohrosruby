@@ -43,12 +43,12 @@
     <Reference Include="Google.ProtocolBuffers.Serialization">
       <HintPath>..\..\..\packages\Google.ProtocolBuffers.2.4.1.473\lib\net40\Google.ProtocolBuffers.Serialization.dll</HintPath>
     </Reference>
-    <Reference Include="nohros, Version=1.6.10.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="nohros, Version=1.6.16.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\must.common.1.6.10.0\lib\net40\nohros.dll</HintPath>
+      <HintPath>..\..\..\packages\must.common.1.6.16.0\lib\net40\nohros.dll</HintPath>
     </Reference>
-    <Reference Include="nohros.extensions">
-      <HintPath>..\..\..\packages\must.extensions.0.0.2.11\lib\net40\nohros.extensions.dll</HintPath>
+    <Reference Include="nohros.extensions, Version=0.0.2.11, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\must.extensions.0.0.3.0\lib\net40\nohros.extensions.dll</HintPath>
     </Reference>
     <Reference Include="nohros.metrics, Version=0.3.4.9, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

@@ -7,6 +7,10 @@ namespace Nohros.Ruby.Logging
   {
     public class Loader : AbstractConfigurationLoader<Settings>
     {
+      #region .ctor
+      public Loader() : base(new Builder()) {
+      }
+      #endregion
     }
   }
 }
