@@ -7,7 +7,7 @@ namespace Nohros.Ruby.Logging
     public const string kConfigFileName = "rubylog.config";
     public const string kConfigRootNodeName = "logging";
     public const string kLoggingProviderName = "LoggingProvider";
-    public const string kAggregatorDataProvider = "AggregatorDataProvider";
+    public const string kAggregatorDataProvider = "LogMessageRepository";
     public const string kApplicationName = "Nohros.Ruby.RubyLog";
   }
 }

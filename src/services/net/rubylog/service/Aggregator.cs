@@ -18,7 +18,7 @@ namespace Nohros.Ruby.Logging
   {
     const string kClassName = "Nohros.Ruby.Logging.Aggregator";
     const string kJsonFeedName = "json";
-    readonly IAggregatorDataProvider aggregator_data_provider_;
+    readonly ILogMessageRepository aggregator_data_provider_;
     readonly Context context_;
 
     readonly IDictionary<string, string> facts_;
@@ -36,7 +36,7 @@ namespace Nohros.Ruby.Logging
     /// by using the specified ZMQ sockets.
     /// </summary>
     public Aggregator(Context context, IAggregatorSettings settings,
-      IAggregatorDataProvider aggregator_data_provider) {
+      ILogMessageRepository aggregator_data_provider) {
       settings_ = settings;
       mailbox_ = new Mailbox<LogMessage>(ProcessLogMessage);
       context_ = context;

@@ -42,7 +42,7 @@ namespace Nohros.Ruby
     /// </param>
     /// <param name="executor">
     /// A <see cref="IExecutor"/> object that is used to execute the
-    /// <see cref="IRubyMessageListener.OnMessagePacketReceived"/> callback.
+    /// <see cref="IRubyMessageListener.OnMessageReceived"/> callback.
     /// </param>
     /// <remarks>
     /// Each listener should be associated with a service(real or virtual).

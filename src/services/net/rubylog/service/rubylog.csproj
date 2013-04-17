@@ -51,13 +51,14 @@
       <HintPath>..\..\..\..\packages\Google.ProtocolBuffers.2.4.1.473\lib\net40\Google.ProtocolBuffers.Serialization.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MongoDB.Bson, Version=1.8.0.124, Culture=neutral, PublicKeyToken=f686731cfb9cc103, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\packages\mongocsharpdriver.1.8.0\lib\net35\MongoDB.Bson.dll</HintPath>
+    <Reference Include="MongoDB.Bson">
+      <HintPath>..\..\..\..\packages\mongocsharpdriver.1.8.1\lib\net35\MongoDB.Bson.dll</HintPath>
     </Reference>
-    <Reference Include="MongoDB.Driver, Version=1.8.0.124, Culture=neutral, PublicKeyToken=f686731cfb9cc103, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\packages\mongocsharpdriver.1.8.0\lib\net35\MongoDB.Driver.dll</HintPath>
+    <Reference Include="MongoDB.Driver">
+      <HintPath>..\..\..\..\packages\mongocsharpdriver.1.8.1\lib\net35\MongoDB.Driver.dll</HintPath>
+    </Reference>
+    <Reference Include="nohros">
+      <HintPath>..\..\..\..\packages\must.common.1.6.16.0\lib\net40\nohros.dll</HintPath>
     </Reference>
     <Reference Include="nohros.extensions">
       <HintPath>..\..\..\..\packages\must.extensions.0.0.2.11\lib\net40\nohros.extensions.dll</HintPath>
@@ -72,16 +73,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Aggregator.cs" />
-    <Compile Include="..\..\..\..\protos\parsers\csharp\Logging.cs" />
     <Compile Include="AggregatorFactory.cs" />
     <Compile Include="AppFactory.cs" />
-    <Compile Include="data\IAggregatorDataProvider.cs" />
-    <Compile Include="data\IAggregatorDataProviderFactory.cs" />
-    <Compile Include="data\MongoAggregatorDataProviderFactory.cs" />
+    <Compile Include="data\ILogMessageRepository.cs" />
+    <Compile Include="data\ILogMessageRepositoryFactory.cs" />
+    <Compile Include="data\MongoDataProviderFactory.cs" />
     <Compile Include="LocalLogger.cs" />
     <Compile Include="settings\IAggregatorSettings.cs" />
-    <Compile Include="data\LoggerAggregatorDataProvider.cs" />
-    <Compile Include="data\MongoAggregatorDataProvider.cs" />
+    <Compile Include="data\LoggerLogMessageRepository.cs" />
+    <Compile Include="data\MongoDataProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="settings\ISettings.cs" />
     <Compile Include="settings\SettingsBuilder.cs" />

@@ -4,21 +4,21 @@ using Nohros.Data.Json;
 namespace Nohros.Ruby.Logging
 {
   /// <summary>
-  /// An implementation of the <see cref="IAggregatorDataProvider"/> class
+  /// An implementation of the <see cref="ILogMessageRepository"/> class
   /// that does not really stores the log messages. It just forwards the
   /// messages to the configured logger.
   /// </summary>
-  public class LoggerAggregatorDataProvider : IAggregatorDataProvider
+  public class LoggerLogMessageRepository : ILogMessageRepository
   {
     readonly LocalLogger logger_;
 
     #region .ctor
     /// <summary>
     /// Initializes a new instance of the
-    /// <see cref="LoggerAggregatorDataProvider"/> that uses the current
+    /// <see cref="LoggerLogMessageRepository"/> that uses the current
     /// configured logger to "store" the log messages.
     /// </summary>
-    public LoggerAggregatorDataProvider() {
+    public LoggerLogMessageRepository() {
       logger_ = LocalLogger.ForCurrentProcess;
     }
     #endregion

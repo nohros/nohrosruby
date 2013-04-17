@@ -3,9 +3,9 @@
 namespace Nohros.Ruby.Logging
 {
   /// <summary>
-  /// A class used to persist the aggrgated messages to a database.
+  /// A repository for aggregated log messages.
   /// </summary>
-  public interface IAggregatorDataProvider
+  public interface ILogMessageRepository
   {
     /// <summary>
     /// Store a <see cref="LogMessage"/> to the database.

@@ -10,7 +10,6 @@ namespace Nohros.Ruby.Logging
                                   IAggregatorSettings
   {
     readonly int publisher_port_;
-    IAggregatorDataProvider aggregator_data_provider_;
 
     #region .ctor
     /// <summary>

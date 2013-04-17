@@ -17,16 +17,16 @@ namespace Nohros.Ruby.Logging
     }
 
     Aggregator CreateAggregator(IAggregatorSettings settings) {
-      IAggregatorDataProvider aggregator_data_provider =
+      ILogMessageRepository aggregator_data_provider =
         GetAggregatorDataProvider(settings);
       return new Aggregator(new Context(), settings, aggregator_data_provider);
     }
 
-    IAggregatorDataProvider GetAggregatorDataProvider(
+    ILogMessageRepository GetAggregatorDataProvider(
       IAggregatorSettings settings) {
       IProviderNode provider = settings
         .Providers[string.Empty][Strings.kAggregatorDataProvider];
-      return RuntimeTypeFactory<IAggregatorDataProviderFactory>
+      return RuntimeTypeFactory<ILogMessageRepositoryFactory>
         .CreateInstanceFallback(provider, settings)
         .CreateAggregatorDataProvider(provider.Options.ToDictionary());
     }

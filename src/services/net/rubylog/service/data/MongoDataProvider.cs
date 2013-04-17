@@ -6,9 +6,9 @@ using R = Nohros.Resources.StringResources;
 
 namespace Nohros.Ruby.Logging
 {
-  public partial class MongoAggregatorDataProvider : IAggregatorDataProvider
+  public class MongoDataProvider : ILogMessageRepository
   {
-    const string kClassName = "Nohros.Ruby.Logging.MongoAggregatorDataProvider";
+    const string kClassName = "Nohros.Ruby.Logging.MongoDataProvider";
 
     const string kStorageCollectionName = "storages";
     const string kStorageApplicationField = "app";
@@ -24,14 +24,14 @@ namespace Nohros.Ruby.Logging
     #region .ctor
     /// <summary>
     /// Initializes a new instance of the
-    /// <see cref="MongoAggregatorDataProvider"/> class by using the specified
+    /// <see cref="MongoDataProvider"/> class by using the specified
     /// <see cref="MongoDatabase"/> object.
     /// </summary>
     /// <param name="database">
     /// A <see cref="MongoDatabase"/> object that is used to store the log
     /// messages.
     /// </param>
-    public MongoAggregatorDataProvider(MongoDatabase database) {
+    public MongoDataProvider(MongoDatabase database) {
       database_ = database;
       logger_ = LocalLogger.ForCurrentProcess;
     }
@@ -46,8 +46,7 @@ namespace Nohros.Ruby.Logging
         categorization_document.Add(new BsonElement(pair.Key, pair.Value));
       }
 
-      var document = new BsonDocument
-      {
+      var document = new BsonDocument {
         new BsonElement("application", message.Application),
         new BsonElement("level", message.Level),
         new BsonElement("reason", message.Reason),
@@ -84,8 +83,7 @@ namespace Nohros.Ruby.Logging
         if (collection_exists) {
           // If the storage is not capped, try to convert it.
           if (!collection.IsCapped() && storage.Size > 0) {
-            var cmd = new CommandDocument
-            {
+            var cmd = new CommandDocument {
               {"convertToCapped", storage.Name},
               {"size", kLogMessageSize*storage.Size*2},
               {"max", storage.Size}
@@ -97,8 +95,7 @@ namespace Nohros.Ruby.Logging
           // is a normal collection and it is automatically created by the
           // server at first insert.
           if (storage.Size > 0) {
-            var options = new CollectionOptionsDocument
-            {
+            var options = new CollectionOptionsDocument {
               {"capped", true},
               {"size", kLogMessageSize*storage.Size*2},
               {"max", storage.Size}
@@ -109,11 +106,11 @@ namespace Nohros.Ruby.Logging
 
         // Associates the application with the storage.
         collection = database_.GetCollection(kStorageCollectionName);
-        SafeModeResult result = collection.Save(new BsonDocument
-        {
-          {kStorageNameField, storage.Name},
-          {kStorageApplicationField, storage.Application}
-        });
+        WriteConcernResult result = collection.Save(
+          new BsonDocument {
+            {kStorageNameField, storage.Name},
+            {kStorageApplicationField, storage.Application}
+          });
         return result.Ok;
       } catch (Exception exception) {
         logger_.Error(string.Format(R.Log_MethodThrowsException,
