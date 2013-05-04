@@ -62,16 +62,15 @@
     <Reference Include="mytoolspack.console, Version=0.3.8.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\nohros.mytoolspack.0.3.9\lib\mytoolspack.console.dll</HintPath>
     </Reference>
-    <Reference Include="nohros, Version=1.6.10.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="nohros, Version=1.6.22.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\must.common.1.6.10.0\lib\net40\nohros.dll</HintPath>
+      <HintPath>..\..\..\packages\must.common.1.6.22.1\lib\net40\nohros.dll</HintPath>
     </Reference>
     <Reference Include="nohros.data.sqlite">
       <HintPath>..\..\..\packages\must.data.sqlite.0.0.3\lib\net40\nohros.data.sqlite.dll</HintPath>
     </Reference>
     <Reference Include="nohros.extensions, Version=0.0.2.11, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\must.extensions.0.0.2.11\lib\net40\nohros.extensions.dll</HintPath>
+      <HintPath>..\..\..\packages\must.extensions.0.0.3.0\lib\net40\nohros.extensions.dll</HintPath>
     </Reference>
     <Reference Include="nohros.metrics, Version=0.3.4.9, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -80,11 +79,13 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Data.SQLite">
-      <HintPath>..\..\..\packages\System.Data.SQLite.x86.1.0.84.0\lib\net40\System.Data.SQLite.dll</HintPath>
+    <Reference Include="System.Data.SQLite, Version=1.0.85.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\System.Data.SQLite.x86.1.0.85.0\lib\net40\System.Data.SQLite.dll</HintPath>
     </Reference>
-    <Reference Include="System.Data.SQLite.Linq">
-      <HintPath>..\..\..\packages\System.Data.SQLite.x86.1.0.84.0\lib\net40\System.Data.SQLite.Linq.dll</HintPath>
+    <Reference Include="System.Data.SQLite.Linq, Version=1.0.85.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\System.Data.SQLite.x86.1.0.85.0\lib\net40\System.Data.SQLite.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
@@ -102,6 +103,7 @@
     <Compile Include="AppFactory.cs" />
     <Compile Include="process\SelfHostProcess.cs" />
     <Compile Include="process\ServiceHostStartEventHandler.cs" />
+    <Compile Include="process\ServiceSelfHostProcess.cs" />
     <Compile Include="process\ShellSelfHostProcess.cs" />
     <Compile Include="service\AggregatorLogger.cs" />
     <Compile Include="configuration\ConsoleSettings.cs" />

@@ -119,7 +119,7 @@ namespace Nohros.Ruby
       }
     }
 
-    protected void OnResponseMessage(RubyMessage message) {
+    void OnResponseMessage(RubyMessage message) {
       try {
         ResponseMessage response = ResponseMessage.ParseFrom(message.Message);
         ResponseMessageHandler handler;
@@ -279,7 +279,7 @@ namespace Nohros.Ruby
     /// has been reached.
     /// </para>
     /// </remarks>
-    void StartService(ServiceControlMessage message) {
+    protected virtual void StartService(ServiceControlMessage message) {
       if (running_services_count_ > kMaxRunningServices) {
         logger_.Warn(
           "The limit of simultaneous running services has been reached");

@@ -6,7 +6,8 @@ namespace Nohros.Ruby
   /// <summary>
   /// A <see cref="IRubyProcess"/> that runs as a pseudo windows service.
   /// </summary>
-  internal class ServiceRubyProcess : AbstractRubyProcess, IRubyMessagePacketListener
+  internal class ServiceRubyProcess : AbstractRubyProcess,
+                                      IRubyMessagePacketListener
   {
     #region .ctor
     /// <summary>
@@ -20,7 +21,14 @@ namespace Nohros.Ruby
     #endregion
 
     /// <inheritdoc/>
-    void IRubyMessagePacketListener.OnMessagePacketReceived(RubyMessagePacket packet) {
+    void IRubyMessagePacketListener.OnMessagePacketReceived(
+      RubyMessagePacket packet) {
+    }
+
+    /// <inheritdoc/>
+    public override void Run(string command_line_string) {
+      base.Run();
+      QueryLogAggregatorService();
     }
   }
 }

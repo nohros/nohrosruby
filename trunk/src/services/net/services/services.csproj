@@ -44,9 +44,8 @@
     <Reference Include="Google.ProtocolBuffers.Serialization, Version=2.4.1.473, Culture=neutral, PublicKeyToken=55f7125234beb589, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Google.ProtocolBuffers.2.4.1.473\lib\net20\Google.ProtocolBuffers.Serialization.dll</HintPath>
     </Reference>
-    <Reference Include="nohros, Version=1.6.10.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\must.common.1.6.10.0\lib\net40\nohros.dll</HintPath>
+    <Reference Include="nohros, Version=1.6.22.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\must.common.1.6.22.1\lib\net40\nohros.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />

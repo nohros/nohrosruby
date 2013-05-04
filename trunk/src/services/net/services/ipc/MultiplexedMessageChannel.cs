@@ -24,6 +24,17 @@ namespace Nohros.Ruby
     }
     #endregion
 
+    /// <summary>
+    /// Gets a message from the <seealso cref="inproc_socket"/> socket and send
+    /// it through the <seealso cref="ipc_socket"/> socket.
+    /// </summary>
+    /// <param name="inproc_socket">
+    /// The <seealso cref="ZmqSocket"/> objetc where the messages should be get.
+    /// </param>
+    /// <param name="ipc_socket">
+    /// The <see cref="ZmqSocket"/> object where the received messages should
+    /// be proxied.
+    /// </param>
     protected void Proxy(ZmqSocket inproc_socket, ZmqSocket ipc_socket) {
       byte[] response = false_byte_array_;
       try {

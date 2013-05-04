@@ -58,10 +58,11 @@ namespace Nohros.Ruby
       trackers_.TrackerDiscovered += OnTrackerDiscovered;
     }
 
-    public void OnMailboxBind(ZMQEndPoint endpoint) {
+    void OnMailboxBind(ZMQEndPoint endpoint) {
       trackers_.Start(host_message_channel_.Endpoint);
     }
 
+    /// <inheritdoc/>
     public override void OnMessagePacketReceived(RubyMessagePacket packet) {
       // TODO: Filter the message based on the facts.
       base.OnMessagePacketReceived(packet);
