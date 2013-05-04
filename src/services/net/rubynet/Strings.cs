@@ -19,8 +19,6 @@ namespace Nohros.Ruby
     public const string kDefaultSelfHostEndpoint = "tcp://*:0";
     public const string kSelfHostSwitch = "self-host";
     public const string kInteractiveRunningMode = "interactive";
-    public const string kReceiverEndpoint = "ipc_receiver_endpoint";
-    public const string kSenderEndpoint = "ipc_sender_endpoint";
     public const string kBroadcastPortSwitch = "broadcast-port";
     public const string kSelfHostIPCEndpoint = "inproc://self.host.ipc.channel";
     public const string kServiceEndpointFact = "endpoint";
@@ -56,6 +54,7 @@ namespace Nohros.Ruby
     public const string kServiceName = "name";
     public const string kServiceType = "type";
     public const string kServiceSwitches = "switches";
+    public const string kServiceHostType = "HostType";
 
     /// <summary>
     /// The name of the fodler that is used to store the services binaries.

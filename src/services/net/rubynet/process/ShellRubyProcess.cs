@@ -43,17 +43,7 @@ namespace Nohros.Ruby
       console_.WriteLine(message);
     }
 
-    /// <summary>
-    /// Runs the shell.
-    /// </summary>
-    /// <remarks>
-    /// Legacy version of this app was used to start a single service without
-    /// a shell. For compatbility with this legacy softwares this method allows
-    /// a string to be specified as a argument, this string represents the list
-    /// of arguments that is accepted by the start command. When supplied the
-    /// shell will run and the specified service will be started; after that
-    /// the shell will runs normally.
-    /// </remarks>
+    /// <inheritdoc/>
     public override void Run(string command_line_string) {
       // A try-block is used to catch any unhandled exception that is raised
       // by a service.

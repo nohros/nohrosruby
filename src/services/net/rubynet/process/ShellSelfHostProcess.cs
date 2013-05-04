@@ -27,16 +27,19 @@ namespace Nohros.Ruby
     }
     #endregion
 
+    /// <inheritdoc/>
     public void Run() {
       Run(string.Empty);
     }
 
+    /// <inheritdoc/>
     public void Run(string command_line_string) {
       self_host_process_.Run(command_line_string);
       shell_ruby_process_.Run(command_line_string);
       Exit();
     }
 
+    /// <inheritdoc/>
     public void Exit() {
       self_host_process_.Exit();
     }

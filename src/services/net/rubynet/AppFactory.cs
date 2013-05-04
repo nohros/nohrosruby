@@ -1,13 +1,10 @@
 ﻿using System;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Reflection;
 using Nohros.Configuration;
 using Nohros.Extensions;
 using Nohros.Logging;
 using Nohros.MyToolsPack.Console;
-using Nohros.Providers;
 using Nohros.Ruby.Data;
 using Nohros.Ruby.Shell;
 using ZmqContext = ZMQ.Context;
@@ -34,8 +31,7 @@ namespace Nohros.Ruby
     }
     #endregion
 
-    ShellSelfHostProcess CreateShellSelfHostProcess(ZmqContext context,
-      IRubyMessageChannel ruby_message_channel) {
+    ShellSelfHostProcess CreateShellSelfHostProcess(ZmqContext context) {
       var self_host_message_channel =
         new HostMessageChannel(context,
           new ZMQEndPoint(Strings.kDefaultSelfHostEndpoint));
@@ -70,7 +66,7 @@ namespace Nohros.Ruby
 
         case RunningMode.Interactive:
           if (settings_.SelfHost) {
-            return CreateShellSelfHostProcess(context, ruby_message_channel);
+            return CreateShellSelfHostProcess(context);
           }
           return CreateShellProcess(ruby_message_channel);
       }

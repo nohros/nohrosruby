@@ -209,6 +209,9 @@ namespace Nohros.Ruby
       }
     }
 
+    /// <summary>
+    /// Multiplex the send/receive channels.
+    /// </summary>
     void Multiplex() {
       var inproc_socket = context_.Socket(ZmqSocketType.REP);
       inproc_socket.Bind(kSenderChannelEndpoint);
@@ -221,6 +224,8 @@ namespace Nohros.Ruby
       logger_.Info("self host mailbox bound to port: \""
         + receiver_endpoint_.Port + "\"");
 
+      // Watch the inproc(send) and mailbox(receive) channels for incoming
+      // messges.
       var items = new[] {
         inproc_socket.CreatePollItem(IOMultiPlex.POLLIN),
         mailbox_socket.CreatePollItem(IOMultiPlex.POLLIN)

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Nohros.Extensions;
 using Nohros.IO;
 using Nohros.Ruby.Shell;
 
@@ -71,7 +70,8 @@ namespace Nohros.Ruby
 
       // override the values set by class loader.
       loader.ParseComplete += sender => {
-        bool self_host = switches.HasSwitch(Strings.kSelfHostSwitch);
+        bool self_host = switches.HasSwitch(Strings.kSelfHostSwitch) ||
+          builder.SelfHost;
 
         if (self_host) {
           string self_host_endpoint = switches
