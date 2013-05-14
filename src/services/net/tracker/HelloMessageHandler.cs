@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Threading;
 using Nohros.Ruby.Extensions;
 using Nohros.Ruby.Protocol;
 using Nohros.Ruby.Protocol.Control;

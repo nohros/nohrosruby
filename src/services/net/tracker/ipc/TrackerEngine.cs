@@ -3,7 +3,6 @@ using System.Threading;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using Nohros.Concurrent;
 using Nohros.Ruby.Data;
 using Nohros.Ruby.Extensions;
 using Nohros.Ruby.Protocol;
@@ -31,6 +30,8 @@ namespace Nohros.Ruby
     readonly IServicesRepository services_repository_;
     readonly ITrackerFactory tracker_factory_;
     readonly Dictionary<string, Tracker> trackers_;
+
+    readonly QueryMessageHandler query_message_handler_;
     ZMQEndPoint endpoint_;
 
     volatile byte[] peer_id_;
@@ -72,7 +73,7 @@ namespace Nohros.Ruby
       tracker.MessageChannel.Send(packet);
 
       // send the pending queries to the new discovered tracker, so the
-      // queries that was performed when no trackers was known can be resolved.
+      // queries that was performed when we did not know about any tracker.
       lock (pending_queries_) {
         var channel = tracker.MessageChannel;
         while (pending_queries_.Count > 0) {
@@ -99,7 +100,7 @@ namespace Nohros.Ruby
     /// <remarks>
     /// This overloads starts listening for incoming beacons only, if you want
     /// to starts broadcasting beacons, you should call the
-    /// <see cref="Start(byte[], int)"/> overload.
+    /// <see cref="Start"/> overload.
     /// </remarks>
     /// <exception cref="InvalidOperationException">
     /// The service was already started.
@@ -168,7 +169,7 @@ namespace Nohros.Ruby
         return;
       }
 
-      // If a service is not found in the local queue, ask the connected
+      // If a service is not found in the local database, ask the connected
       // trackers about the service.
       var query = new QueryMessage.Builder()
         .AddRangeFacts(KeyValuePairs.FromKeyValuePairs(facts))

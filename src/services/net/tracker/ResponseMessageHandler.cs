@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Nohros.Extensions;
 using Nohros.Ruby.Extensions;
 using Nohros.Ruby.Protocol;
 using Nohros.Ruby.Protocol.Control;
+using R = Nohros.Resources.StringResources;
 
 namespace Nohros.Ruby
 {
@@ -34,23 +36,19 @@ namespace Nohros.Ruby
               return;
             }
           }
-          foreach (var pair in response.ReponsesList) {
+          foreach (var pair in response.AddressesList) {
             try {
               // TODO: Add the service to the local database
-              callback(new ZMQEndPoint(pair.Value));
+              callback(new ZMQEndPoint(pair));
             } catch (ArgumentException ae) {
-              logger_.Error(
-                string.Format(Resources.ZMQEndpoint_InvalidFormat, pair.Key,
-                  pair.Value), ae);
+              logger_.Error(string.Format(Resources.ZMQEndpoint_InvalidFormat,
+                pair), ae);
             }
           }
         }
       } catch (Exception e) {
-        logger_.Error(
-          string.Format(
-            Nohros.Resources.StringResources.Log_MethodThrowsException,
-            "OnQueryServiceResponse",
-            kClassName), e);
+        logger_.Error(R.Log_MethodThrowsException.Fmt("OnQueryServiceResponse",
+          kClassName), e);
       }
     }
   }
