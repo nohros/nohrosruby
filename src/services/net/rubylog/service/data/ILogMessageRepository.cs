@@ -8,22 +8,23 @@ namespace Nohros.Ruby.Logging
   public interface ILogMessageRepository
   {
     /// <summary>
-    /// Store a <see cref="LogMessage"/> to the database.
+    /// Creates an instance of the <see cref="ILogMessageCommand"/> query
+    /// for the associated repository.
     /// </summary>
-    /// <param name="message">
-    /// The message to be stored.
+    /// <param name="query">
+    /// A <see cref="ILogMessageCommand"/> object taht can be used to log
+    /// messages through the associated repository.
     /// </param>
-    bool Store(LogMessage message);
+    ILogMessageCommand Query(out ILogMessageCommand query);
 
     /// <summary>
-    /// Sets the storage properties for a particular application.
+    /// Creates an instance of the <see cref="ISetupStorageCommand"/> query
+    /// for the associate repository.
     /// </summary>
-    /// <param name="storage">
-    /// A <see cref="StorageInfo"/> object containing the storage properties
-    /// to set.
+    /// <param name="query">
+    /// A <see cref="ISetupStorageCommand"/> object that can be used to setup
+    /// the storage for an application.
     /// </param>
-    /// <returns><c>true</c> if the storage properties was successfully set;
-    /// otherwise, <c>false</c>.</returns>
-    bool SetupStorage(StorageInfo storage);
+    ISetupStorageCommand Query(out ISetupStorageCommand query);
   }
 }

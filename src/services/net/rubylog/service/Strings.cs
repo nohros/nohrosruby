@@ -9,5 +9,6 @@ namespace Nohros.Ruby.Logging
     public const string kLoggingProviderName = "LoggingProvider";
     public const string kAggregatorDataProvider = "LogMessageRepository";
     public const string kApplicationName = "Nohros.Ruby.RubyLog";
+    public const string kDebugSwitch = "debug";
   }
 }
