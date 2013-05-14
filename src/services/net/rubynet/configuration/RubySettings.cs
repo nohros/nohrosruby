@@ -36,6 +36,7 @@ namespace Nohros.Ruby
       IPCEndpoint = builder.IPCEndpoint;
       BroadcastPort = builder.BroadcastPort;
       EnableTracker = builder.EnableTracker;
+      LoggingChannel = builder.LoggingChannel;
     }
     #endregion
 
@@ -51,5 +52,6 @@ namespace Nohros.Ruby
     public string SenderEndpoint { get; private set; }
     public int BroadcastPort { get; private set; }
     public bool EnableTracker { get; private set; }
+    public string LoggingChannel { get; private set; }
   }
 }

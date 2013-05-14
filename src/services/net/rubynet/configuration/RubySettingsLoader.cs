@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Globalization;
-using System.Xml;
 using Nohros.Configuration;
 using Nohros.Extensions;
-using Nohros.Logging;
 
 namespace Nohros.Ruby
 {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using Google.ProtocolBuffers;
@@ -81,6 +82,14 @@ namespace Nohros.Ruby
         case (int) NodeMessageType.kNodeResponse:
           OnResponseMessage(packet.Message);
           break;
+
+        case (int) NodeMessageType.kNodePing:
+          OnNodePing(packet);
+          break;
+
+        case (int) NodeMessageType.kNodeExit:
+          Exit();
+          break;
       }
     }
 
@@ -99,7 +108,23 @@ namespace Nohros.Ruby
       messages_tokens_.Add(kLogAggregatorQuery, OnLogAggregatorQueryReseponse);
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Handle
+    /// </summary>
+    /// <param name="packet"></param>
+    void OnNodePing(RubyMessagePacket packet) {
+      RubyMessage message = new RubyMessage.Builder()
+        .SetToken(kLogAggregatorQuery)
+        .SetType((int) NodeMessageType.kNodePong)
+        .SetId(packet.Message.Id)
+        .SetSender(packet.Message.Sender)
+        .Build();
+      ruby_message_channel_.Send(message, new[] {
+        new KeyValuePair<string, string>(RubyStrings.kServiceNameFact,
+          Strings.kNodeServiceName)
+      });
+    }
+
     void OnServiceControlMessage(ByteString message) {
       try {
         ServiceControlMessage service_control_message =
@@ -149,7 +174,6 @@ namespace Nohros.Ruby
 
     protected void QueryLogAggregatorService() {
       QueryMessage query = new QueryMessage.Builder()
-        .SetType(QueryMessageType.kQueryFind)
         .AddFacts(
           KeyValuePairs.FromKeyValuePair(RubyStrings.kMessageIDFact,
             "cfa950a0ca0611e19b230800200c9a66"))
@@ -165,6 +189,13 @@ namespace Nohros.Ruby
         new KeyValuePair<string, string>(RubyStrings.kServiceNameFact,
           Strings.kNodeServiceName)
       });
+
+      // If the logging server was defined in the config fake the query response
+      if (!string.IsNullOrEmpty(settings_.LoggingChannel))
+      OnLogAggregatorQueryReseponse(
+        new ResponseMessage.Builder()
+          .AddAddresses(settings_.LoggingChannel)
+          .Build());
     }
 
     /*void SimulateQueryResponse() {
@@ -223,10 +254,9 @@ namespace Nohros.Ruby
     }*/
 
     void OnLogAggregatorQueryReseponse(ResponseMessage response) {
-      IList<KeyValuePair> responses = response.ReponsesList;
-      int index = Find(Strings.kHostServiceFact, responses);
-      if (index != -1) {
-        string log_aggregator_address = responses[index].Value;
+      var addresses = response.AddressesList;
+      if (addresses.Count != 0) {
+        string log_aggregator_address = addresses[0];
         var context = new Context();
         ILogger logger = RubyLogger.ForCurrentProcess.Logger;
 
@@ -244,8 +274,7 @@ namespace Nohros.Ruby
         }
 
         RubyLogger.ForCurrentProcess.BackingLogger =
-          new AggregatorLogger(Strings.kServiceHostServiceName, settings_,
-            aggregator);
+          new AggregatorLogger(Strings.kAppName, settings_, aggregator);
       }
     }
 
@@ -337,14 +366,30 @@ namespace Nohros.Ruby
           hosts_.Add(host);
         }
 
+        // Syn message should be sent each time a service is started and
+        // stopped.
+        Syn();
+
         // start the host and its associated service.
         host.ServiceHostStart += OnServiceHostStart;
         host.Start();
+        Syn();
       } catch (Exception exception) {
         logger_.Error(string.Format(R.Log_MethodThrowsException,
           kClassName, "ServiceThreadMain"), exception);
       }
       --running_services_count_;
+    }
+
+    protected void Syn() {
+      SynMessage syn = new SynMessage.Builder()
+        .SetProcessId(Process.GetCurrentProcess().Id)
+        .SetRunningServicesCount(hosts_.Count)
+        .Build();
+      RubyMessage msg = RubyMessages
+        .CreateMessage((int) NodeMessageType.kNodeSyn, syn.ToByteArray());
+      RubyMessagePacket packet = RubyMessages.CreateMessagePacket(msg);
+      ruby_message_channel_.Send(packet);
     }
 
     int Find(string pattern, IList<KeyValuePair> key_value_pairs) {

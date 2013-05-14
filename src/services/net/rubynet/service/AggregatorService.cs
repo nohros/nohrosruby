@@ -52,7 +52,6 @@ namespace Nohros.Ruby
     public void Log(LogMessage log) {
       try {
         RubyMessagePacket packet = GetMessagePacket(log);
-        dealer_.SendMore();
         dealer_.Send(packet.ToByteArray());
       } catch (System.Exception exception) {
         logger_.Error(

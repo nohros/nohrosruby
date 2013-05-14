@@ -69,5 +69,16 @@ namespace Nohros.Ruby
     /// The tracker service acts as a bootstrap node.
     /// </remarks>
     bool EnableTracker { get; }
+
+    /// <summary>
+    /// Gets the address of teh logging server.
+    /// </summary>
+    /// <remarks>
+    /// The logging server is usually discovered through the ruby auto discover
+    /// mechanism. This setting should be used on larger networks when you have
+    /// a know central loggin server and/or when the auto discoverer feature
+    /// is not enabled.
+    /// </remarks>
+    string LoggingChannel { get; }
   }
 }

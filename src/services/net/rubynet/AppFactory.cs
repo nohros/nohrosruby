@@ -37,7 +37,7 @@ namespace Nohros.Ruby
           new ZMQEndPoint(Strings.kDefaultSelfHostEndpoint));
       var shell_ruby_process = CreateShellProcess(self_host_message_channel);
       var self_host_process =
-        CreateSelfHostMessageProcess(self_host_message_channel, context);
+        CreateSelfHostProcess(self_host_message_channel, context);
       return new ShellSelfHostProcess(shell_ruby_process,
         self_host_process);
     }
@@ -60,9 +60,9 @@ namespace Nohros.Ruby
       switch (settings_.RunningMode) {
         case RunningMode.Service:
           if (settings_.SelfHost) {
-            return CreateServiceSelfHostProcess();
+            return CreateServiceSelfHostProcess(context);
           }
-          return CreateServiceProcess(context, ruby_message_channel);
+          return CreateServiceProcess(ruby_message_channel);
 
         case RunningMode.Interactive:
           if (settings_.SelfHost) {
@@ -73,11 +73,34 @@ namespace Nohros.Ruby
       throw new ArgumentException();
     }
 
-    IRubyProcess CreateServiceSelfHostProcess() {
-      throw new NotImplementedException();
+    IRubyProcess CreateServiceSelfHostProcess(ZmqContext context) {
+      var self_host_message_channel =
+        new HostMessageChannel(context,
+          new ZMQEndPoint(Strings.kDefaultSelfHostEndpoint));
+
+      // reuse the address to prevent 'address already in use' error, this
+      // tells the socket to receive any message that arrives at the bound
+      // port.
+      var udp_client = new UdpClient();
+      udp_client.Client.SetSocketOption(SocketOptionLevel.Socket,
+        SocketOptionName.ReuseAddress, true);
+      udp_client.Client.Bind(
+        new IPEndPoint(IPAddress.Any, settings_.DiscovererPort));
+
+      var services_repository = CreateServicesRepository();
+      var tracker_factory = new TrackerFactory(context);
+      var broadcaster = new Broadcaster(udp_client)
+      {
+        BroadcastPort = settings_.BroadcastPort
+      };
+      var trackers = new TrackerEngine(tracker_factory, services_repository,
+        broadcaster);
+      trackers.EnableTracker = settings_.EnableTracker;
+      return new ServiceSelfHostProcess(settings_, self_host_message_channel,
+        trackers);
     }
 
-    SelfHostProcess CreateSelfHostMessageProcess(
+    SelfHostProcess CreateSelfHostProcess(
       HostMessageChannel host_message_channel, ZmqContext context) {
       // reuse the address to prevent 'address already in use' error, this
       // tells the socket to receive any message that arrives at the bound
@@ -119,7 +142,7 @@ namespace Nohros.Ruby
     /// Creates an instance of the <see cref="ServiceRubyProcess"/> class.
     /// </summary>
     /// <returns></returns>
-    ServiceRubyProcess CreateServiceProcess(ZmqContext context,
+    ServiceRubyProcess CreateServiceProcess(
       IRubyMessageChannel ruby_message_channel) {
       return new ServiceRubyProcess(settings_, ruby_message_channel);
     }

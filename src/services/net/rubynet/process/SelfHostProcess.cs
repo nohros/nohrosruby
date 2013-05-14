@@ -11,12 +11,11 @@ namespace Nohros.Ruby
   {
     const string kClassName = "Nohros.Ruby.SelfHostProcess";
     readonly HostMessageChannel host_message_channel_;
+    readonly List<IRubyServiceHost> hosts_;
     readonly RubyLogger logger_;
 
-    readonly Dictionary<int, QueryMessage> queries_;
     readonly RubySettings settings_;
     readonly TrackerEngine trackers_;
-    readonly List<IRubyServiceHost> hosts_;
 
     #region .ctor
     /// <summary>
@@ -67,6 +66,11 @@ namespace Nohros.Ruby
       // TODO: Filter the message based on the facts.
       base.OnMessagePacketReceived(packet);
       host_message_channel_.OnMessagePacketReceived(packet);
+
+      // The self host process is responsible for tracking message handling.
+      if (packet.Message.Type == (int) NodeMessageType.kNodeQuery) {
+        QueryService(packet);
+      }
     }
 
     public void OnMessagePacketSent(RubyMessagePacket packet) {
@@ -125,7 +129,7 @@ namespace Nohros.Ruby
     /// its operation over the hosted service(i.e announce, find service)
     /// </remarks>
     internal void OnServiceHostStart(IRubyServiceHost host) {
-      lock(hosts_) {
+      lock (hosts_) {
         hosts_.Add(host);
       }
     }
@@ -133,8 +137,7 @@ namespace Nohros.Ruby
     RubyMessagePacket CreateMessagePacket(byte[] request_id,
       ZMQEndPoint endpoint) {
       ResponseMessage response = new ResponseMessage.Builder()
-        .AddReponses(KeyValuePairs.FromKeyValuePair(
-          Strings.kServiceEndpointFact, endpoint.Endpoint))
+        .AddAddresses(endpoint.Endpoint)
         .Build();
       return RubyMessages.CreateMessagePacket(request_id,
         (int) NodeMessageType.kNodeResponse, response.ToByteArray());

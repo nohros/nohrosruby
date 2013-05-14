@@ -56,8 +56,7 @@
       <HintPath>..\..\..\packages\Google.ProtocolBuffers.2.4.1.473\lib\net20\Google.ProtocolBuffers.Serialization.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
+      <HintPath>..\..\..\packages\log4net.1.2.11\lib\net40-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="mytoolspack.console, Version=0.3.8.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\nohros.mytoolspack.0.3.9\lib\mytoolspack.console.dll</HintPath>
@@ -69,8 +68,9 @@
     <Reference Include="nohros.data.sqlite">
       <HintPath>..\..\..\packages\must.data.sqlite.0.0.3\lib\net40\nohros.data.sqlite.dll</HintPath>
     </Reference>
-    <Reference Include="nohros.extensions, Version=0.0.2.11, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\must.extensions.0.0.3.0\lib\net40\nohros.extensions.dll</HintPath>
+    <Reference Include="nohros.extensions, Version=0.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\must.extensions.0.0.5.0\lib\net40\nohros.extensions.dll</HintPath>
     </Reference>
     <Reference Include="nohros.metrics, Version=0.3.4.9, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -101,6 +101,7 @@
     <Compile Include="IRubyMessageChannelFactory.cs" />
     <Compile Include="process\AbstractRubyProcess.cs" />
     <Compile Include="AppFactory.cs" />
+    <Compile Include="process\messages\PingMessageHandler.cs" />
     <Compile Include="process\SelfHostProcess.cs" />
     <Compile Include="process\ServiceHostStartEventHandler.cs" />
     <Compile Include="process\ServiceSelfHostProcess.cs" />

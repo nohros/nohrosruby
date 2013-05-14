@@ -61,6 +61,10 @@ namespace Nohros.Ruby
         .GetSwitchValue(Strings.kRunningModeSwitch);
       string services_folder = switches
         .GetSwitchValue(Strings.kServicesFolderSwitch);
+      string ipc_channel_endpoint = switches
+        .GetSwitchValue(Strings.kIPCChannelAddressSwitch);
+      string logging_channel = switches
+        .GetSwitchValue(Strings.kLoggingChannel);
       int broadcast_port = switches.GetSwitchValueAsInt(
         Strings.kBroadcastPortSwitch, 0);
       bool enable_tracker = switches.HasSwitch(Strings.kEnableTrackerSwitch);
@@ -74,6 +78,7 @@ namespace Nohros.Ruby
           builder.SelfHost;
 
         if (self_host) {
+          builder.SetSelfHost(true);
           string self_host_endpoint = switches
             .GetSwitchValue(Strings.kSelfHostSwitch);
           if (self_host_endpoint != string.Empty) {
@@ -96,8 +101,20 @@ namespace Nohros.Ruby
           builder.SetDiscovererPort(broadcast_port);
         }
 
-        if(enable_tracker) {
+        if (enable_tracker) {
           builder.SetEnableTracker(true);
+        }
+
+        if (ipc_channel_endpoint != string.Empty) {
+          builder.SetIPCEndpoint(ipc_channel_endpoint);
+        }
+
+        if (logging_channel != string.Empty) {
+          builder.SetLoggingChannel(logging_channel);
+        }
+
+        if (running_mode != string.Empty) {
+          loader.RunningMode = running_mode;
         }
       };
 

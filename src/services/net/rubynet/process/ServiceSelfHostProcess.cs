@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
-using Google.ProtocolBuffers;
 using Nohros.Ruby.Protocol;
 using Nohros.Ruby.Protocol.Control;
 
@@ -36,6 +35,10 @@ namespace Nohros.Ruby
       info.CreateNoWindow = true;
       info.Arguments = "--debug";
       new_process.Start();
+    }
+
+    public override void OnMessagePacketReceived(RubyMessagePacket packet) {
+      base.OnMessagePacketReceived(packet);
     }
 
     public override void Exit() {
