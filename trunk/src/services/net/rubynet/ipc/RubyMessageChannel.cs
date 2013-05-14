@@ -109,6 +109,9 @@ namespace Nohros.Ruby
           }
 
           byte[] reply = socket.Recv();
+          if (logger_.IsDebugEnabled) {
+            logger_.Debug("Sent a message through the RubyMessageChannel");
+          }
           return reply.Length > 0 && reply[0] == 1;
         } catch (ZMQ.Exception e) {
           logger_.Error(

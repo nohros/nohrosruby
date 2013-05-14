@@ -21,8 +21,9 @@ namespace Nohros.Ruby
     public const string kInteractiveRunningMode = "interactive";
     public const string kBroadcastPortSwitch = "broadcast-port";
     public const string kSelfHostIPCEndpoint = "inproc://self.host.ipc.channel";
-    public const string kServiceEndpointFact = "endpoint";
+    
     public const string kEnableTrackerSwitch = "enable-tracker";
+    public const string kPongMessageToken = "pong-message";
 
     public const string kServicesRepositoryNodeName = "ServicesRepository";
 
@@ -38,7 +39,13 @@ namespace Nohros.Ruby
     /// The address of th IPC channel tha handles the communication between
     /// the services and clients.
     /// </summary>
-    public const string kIPCChannelAddressSwitch = "ipc-channel-address";
+    public const string kIPCChannelAddressSwitch = "ipc-channel";
+
+    /// <summary>
+    /// The address of the ruby logging server. It should be in the form:
+    /// [HOST]:[PORT].
+    /// </summary>
+    public const string kLoggingChannel = "logging-channel";
 
     /// <summary>
     /// The zeromq socket's endpoint that send messages to services.
@@ -55,6 +62,7 @@ namespace Nohros.Ruby
     public const string kServiceType = "type";
     public const string kServiceSwitches = "switches";
     public const string kServiceHostType = "HostType";
+    public const string kAppName = "nohros.ruby";
 
     /// <summary>
     /// The name of the fodler that is used to store the services binaries.

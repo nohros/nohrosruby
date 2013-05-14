@@ -21,11 +21,17 @@ namespace Nohros.Ruby
         IPCEndpoint = string.Empty;
         BroadcastPort = 8520;
         EnableTracker = false;
+        LoggingChannel = string.Empty;
       }
       #endregion
 
       public Builder SetServiceFolder(string service_folder) {
         ServiceFolder = service_folder;
+        return this;
+      }
+
+      public Builder SetLoggingChannel(string logging_channel) {
+        LoggingChannel = logging_channel;
         return this;
       }
 
@@ -82,6 +88,8 @@ namespace Nohros.Ruby
         IPCEndpoint = endpoint;
         return this;
       }
+
+      public string LoggingChannel { get; set; }
 
       public string SelfHostEndpoint { get; private set; }
       public bool SelfHost { get; private set; }
