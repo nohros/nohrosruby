@@ -41,12 +41,9 @@ namespace Nohros.Ruby
         // Get the message that should be sent over the DEALER socket from
         // the REP socket and reply with the status of the SEND operation.
         Queue<byte[]> parts = inproc_socket.RecvAll();
-#if DEBUG
-        if (parts.Count != 2) {
-          throw new ArgumentException("Received a invalid number of parts.");
+        while (parts.Count > 1) {
+          ipc_socket.SendMore(parts.Dequeue());
         }
-#endif
-        ipc_socket.SendMore(parts.Dequeue());
         SendStatus status = ipc_socket.Send(parts.Dequeue());
         if (status == SendStatus.Sent) {
           response = true_byte_array_;
