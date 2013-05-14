@@ -10,6 +10,40 @@ namespace Nohros.Ruby.Logging
   /// </summary>
   public class LoggerLogMessageRepository : ILogMessageRepository
   {
+    class LogMessageCommand : ILogMessageCommand
+    {
+      readonly LocalLogger logger_;
+
+      #region .ctor
+      public LogMessageCommand(LocalLogger logger) {
+        logger_ = logger;
+      }
+      #endregion
+
+      public void Execute(LogMessage message) {
+        logger_.Info(
+          new JsonStringBuilder()
+            .WriteBeginObject()
+            .WriteMember("level", message.Level)
+            .WriteMember("reason", message.Reason)
+            .WriteMember("timestamp", message.TimeStamp)
+            .WriteMember("application", message.Application)
+            .ToString());
+      }
+    }
+
+    class SetupStorageCommand : ISetupStorageCommand
+    {
+      #region .ctor
+      public SetupStorageCommand() {
+      }
+      #endregion
+
+      public bool Execute(StorageInfo info) {
+        return true;
+      }
+    }
+
     readonly LocalLogger logger_;
 
     #region .ctor
@@ -23,20 +57,14 @@ namespace Nohros.Ruby.Logging
     }
     #endregion
 
-    public bool Store(LogMessage message) {
-      logger_.Info(
-        new JsonStringBuilder()
-          .WriteBeginObject()
-          .WriteMember("level", message.Level)
-          .WriteMember("reason", message.Reason)
-          .WriteMember("timestamp", message.TimeStamp)
-          .WriteMember("application", message.Application)
-          .ToString());
-      return true;
+    /// <inheritdoc/>
+    public ILogMessageCommand Query(out ILogMessageCommand query) {
+      return query = new LogMessageCommand(logger_);
     }
 
-    public bool SetupStorage(StorageInfo storage) {
-      return true;
+    /// <inheritdoc/>
+    public ISetupStorageCommand Query(out ISetupStorageCommand query) {
+      return query = new SetupStorageCommand();
     }
   }
 }

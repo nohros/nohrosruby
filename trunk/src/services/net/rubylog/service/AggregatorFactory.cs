@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Nohros.Configuration;
 using Nohros.IO;
 using Nohros.Logging;
@@ -9,8 +10,13 @@ namespace Nohros.Ruby.Logging
   public class AggregatorFactory : IRubyServiceFactory
   {
     public IRubyService CreateService(string command_line_string) {
+      CommandLine switches = CommandLine.FromString(command_line_string);
+      if (switches.HasSwitch(Strings.kDebugSwitch)) {
+        Debugger.Launch();
+      }
+
       Settings settings = new Settings.Loader()
-        .Load(Path.AbsoluteForCallingAssembly(string.Empty),
+        .Load(Path.AbsoluteForCallingAssembly(Strings.kConfigFileName),
           Strings.kConfigRootNodeName);
       ConfigureLogger(settings);
       return CreateAggregator(settings);

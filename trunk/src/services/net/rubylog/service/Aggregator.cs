@@ -20,8 +20,7 @@ namespace Nohros.Ruby.Logging
     const string kJsonFeedName = "json";
     readonly ILogMessageRepository aggregator_data_provider_;
     readonly Context context_;
-
-    readonly IDictionary<string, string> facts_;
+    readonly ILogMessageCommand log_message_;
 
     readonly LocalLogger logger_;
     readonly Mailbox<LogMessage> mailbox_;
@@ -45,11 +44,10 @@ namespace Nohros.Ruby.Logging
       context_ = context;
       aggregator_data_provider_ = aggregator_data_provider;
       logger_ = LocalLogger.ForCurrentProcess;
+      aggregator_data_provider_.Query(out log_message_);
 
-      facts_ = new Dictionary<string, string> {
-        {"service-name", "nohros.ruby.log"},
-        {"service-uid", "cfa950a0ca0611e19b230800200c9a66"}
-      };
+      Facts["service-name"] = "nohros.ruby.log";
+      Facts["service-uid"] = "cfa950a0ca0611e19b230800200c9a66";
     }
     #endregion
 
@@ -58,9 +56,6 @@ namespace Nohros.Ruby.Logging
       main_thread_ = Thread.CurrentThread;
       publisher_.Bind("tcp://*:" + settings_.PublisherPort);
       start_stop_event_.WaitOne();
-      start_stop_event_.Close();
-      publisher_.Dispose();
-      context_.Dispose();
     }
 
     public override void Shutdown() {
@@ -137,30 +132,13 @@ namespace Nohros.Ruby.Logging
     /// </param>
     void Publish(LogMessage message) {
       try {
-        // publish to the JSON feed.
-        publisher_.SendMore(
-          kJsonFeedName + ":" + message.Application, Encoding.UTF8);
-        publisher_.Send(GetJson(message), Encoding.UTF8);
-
+        publisher_.Send(message.ToByteArray());
         if (logger_.IsDebugEnabled) {
-          logger_.Debug("Published a message to the JSON feed");
+          logger_.Debug("A log message has been published.");
         }
-
-        // TODO(neylor.silva): Publish the message to the zeromq feed.
       } catch (System.Exception exception) {
         Store(GetInternalLogMessage(exception));
       }
-    }
-
-    string GetJson(LogMessage message) {
-      return new JsonStringBuilder()
-        .WriteBeginObject()
-        .WriteMember("application", message.Application)
-        .WriteMember("level", message.Level)
-        .WriteMember("reason", message.Reason)
-        .WriteMember("timestamp", message.TimeStamp.ToString())
-        .WriteEndObject()
-        .ToString();
     }
 
     /// <summary>
@@ -171,7 +149,7 @@ namespace Nohros.Ruby.Logging
     /// </param>
     void Store(LogMessage message) {
       try {
-        aggregator_data_provider_.Store(message);
+        log_message_.Execute(message);
       } catch (System.Exception exception) {
         // This is the last place where an internal raised exception could
         // reach. So, at this point we need to log the message using our
@@ -180,16 +158,6 @@ namespace Nohros.Ruby.Logging
           string.Format(R.Log_MethodThrowsException, kClassName,
             "Store"), exception);
       }
-    }
-
-    void InitFacts() {
-      facts_.Add("service-name", "nohros.ruby.log");
-      facts_.Add("can-process-message", "cfa950a0ca0611e19b230800200c9a66");
-    }
-
-    /// <inheritdoc/>
-    public override IDictionary<string, string> Facts {
-      get { return facts_; }
     }
   }
 }
