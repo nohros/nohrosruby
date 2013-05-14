@@ -19,7 +19,8 @@ import "ruby_protos.proto";
 package ruby.protocol.control;
 option optimize_for = LITE_RUNTIME;
 
-// The service control message types.
+// Message that are used by the service node to communicate with the
+// hosted service and vice-versa.
 enum NodeMessageType {
   // A message that is sent to control the behavior of a service. The are four
   // control types: start, stop, pause and continue.
@@ -29,10 +30,8 @@ enum NodeMessageType {
   // query types: ping and find.
   kNodeQuery = 2;
    
-  // A message that is sent upon successfully completion of a node message
-  // processing. This message is not mandatory, a service could choose to
-  // not send response for particular messages, or not send any responses at
-  // all.
+  // A message that is sent upon successfully completion of a query message
+  // processing.
   kNodeResponse = 3;
   
   // A message that should be sent when an error has been occurred.
@@ -46,8 +45,21 @@ enum NodeMessageType {
   // by a node.
   kNodeAck = 6;
   
-  // TODO: Add documentation for that message.
+  // The first message that is sent when a tracker's connection is established.
   kNodeHello = 7;
+  
+  // A message that is sent to test is a host is alive.
+  kNodePing = 8;
+  
+  // A message that is send in response to a ping message.
+  kNodePong = 9;
+  
+  // A message that is sent by a service host to inform the service node
+  // about its state.
+  kNodeSyn = 10;
+  
+  // A message that is sent by a service node to shutdown a service host.
+  kNodeExit = 11;
 }
 
 enum ServiceControlMessageType {
@@ -81,46 +93,24 @@ message ServiceControlMessage {
   repeated ruby.KeyValuePair arguments = 3;
 }
 
-enum QueryMessageType {
-  // The most basic query is ping. A ping query has no arguments.
-  kQueryPing = 1;
-  
-  // Find query is used to find informations about a service given its facts. A
-  // find query has a list of key/value pairs representing the facts of the
-  // searched service. When a node receives a "find" query, it should respond
-  // with a list of found services nodes or the K(8) closest good nodes in its
-  // own rounting table.
-  kQueryFind = 2;
-}
-
 // A message that is sent to search for services.
 //
 // Protocol
 //  RubyMessage.Type = [NodeMessageType.kNodeQuery]
 message QueryMessage {
-  // The method type of the query.
-  optional QueryMessageType type = 1;
-  
   // A list of key/value pairs containing the service facts to be searched.
   repeated ruby.KeyValuePair facts = 2;
 }
 
-// A message that is sent upon successfully completion of a node message
-// processing.
+// A message that is sent upon successfully completion of a query message.
 //
 // Protocol
 //  RubyMessage.Type = [NodeMessageType.kNodeResponse]
 //  RubyMessage.Token = [node-response]
 message ResponseMessage {
-  // The request message associated with this response. The original
-  // request is sent with the response only when it is explicitly
-  // requested by the caller. To explicitly request the resquest, the caller
-  // should add the string "attachResponse" to the extra_info field of
-  // the request message.
-  //optional RubyMessage request = 1;
-  
-  // A list of key value pairs containing named return values.
-  repeated ruby.KeyValuePair reponses = 2;
+  // A list of strings containing the addresses of the found services. Each
+  // address should be in the format [HOST]:[PORT]
+  repeated string Addresses = 1;
 }
 
 // Announce that the sender node is hosting a service that has the specified
@@ -177,4 +167,17 @@ message ErrorMessage {
 // node. This message is sent only when the sender explicit specifies it.
 message AckMessage {
   optional RubyMessage request = 1;
+}
+
+// A message that is sent by a service host to inform the parent service node
+// about its state. The SynMessage should sent each time a service is started
+// and stopped. When the service host is not running any process it can does
+// not need to exit, so it can be reused by the service node to host another
+// service.
+message SynMessage {
+  // The ID of the service host process.
+  optional sint32 process_id = 1;
+  
+  // The number of services that is beign hosted by the sender.
+  optional sint32 running_services_count = 2;
 }
