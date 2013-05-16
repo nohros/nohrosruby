@@ -139,6 +139,7 @@
     <Compile Include="MessageReceivedEventHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="HttpPublisher.cs" />
+    <Compile Include="RubyLogLogger.cs" />
     <Compile Include="settings\ISettings.cs" />
     <Compile Include="settings\Settings.cs" />
     <Compile Include="settings\SettingsBuilder.cs" />
