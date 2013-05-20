@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using Nohros.Data;
-using Nohros.Data.Providers;
+using Nohros.Data.SqlServer;
 using R = Nohros.Resources.StringResources;
 
 namespace Nohros.Ruby.Data.Sql

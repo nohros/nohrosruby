@@ -18,7 +18,6 @@ namespace Nohros.Ruby.Logging
   public class Aggregator : AbstractRubyService
   {
     const string kClassName = "Nohros.Ruby.Logging.Aggregator";
-    const string kJsonFeedName = "json";
     readonly ILogMessageRepository aggregator_data_provider_;
     readonly Context context_;
     readonly ILogMessageCommand log_message_;

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Nohros.Data.Providers;
+using Nohros.Data.SqlServer;
 
 namespace Nohros.Ruby.Data.Sql
 {
