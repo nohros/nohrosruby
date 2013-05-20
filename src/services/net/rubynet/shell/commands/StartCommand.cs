@@ -27,10 +27,10 @@ namespace Nohros.Ruby.Shell
   internal class StartCommand : ShellCommand
   {
     const string kServiceDirectory = "service-directory";
+    readonly IRubyLogger logger_;
 
     readonly IRubySettings settings_;
     readonly CommandLine switches_;
-    readonly IRubyLogger logger_;
 
     #region .ctor
     /// <summary>
@@ -61,7 +61,7 @@ namespace Nohros.Ruby.Shell
       string service_factory_type_name = GetServiceFactoryTypeName();
       string service_switches = GetServiceSwicthes(service_factory_type_name);
 
-      ServiceControlMessage start_control_message =
+      ServiceControlMessage.Builder start_control_message_builder =
         new ServiceControlMessage.Builder()
           .SetType(ServiceControlMessageType.kServiceControlStart)
           .AddArguments(
@@ -79,14 +79,25 @@ namespace Nohros.Ruby.Shell
             new KeyValuePair.Builder()
               .SetKey(Strings.kServiceSwitches)
               .SetValue(service_switches)
-              .Build())
-          .Build();
+              .Build());
 
-      process.OnMessagePacketReceived(
-        GetRubyMessagePacketHeader(start_control_message));
+      string service_alias =
+        switches_.GetSwitchValue(Strings.kServiceAliasSwitch);
+      if (service_alias != string.Empty) {
+        start_control_message_builder.AddArguments(
+          new KeyValuePair.Builder()
+            .SetKey(Strings.kServiceAliasSwitch)
+            .SetValue(service_alias)
+            .Build());
+      }
+
+      ServiceControlMessage service_control_message =
+        start_control_message_builder.Build();
+      RubyMessagePacket packet = GetRubyMessagePacket(service_control_message);
+      process.OnMessagePacketReceived(packet);
     }
 
-    RubyMessagePacket GetRubyMessagePacketHeader(
+    RubyMessagePacket GetRubyMessagePacket(
       ServiceControlMessage start_control_message) {
       ByteString start_control_message_bytes =
         start_control_message.ToByteString();

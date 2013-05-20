@@ -27,6 +27,8 @@ namespace Nohros.Ruby
 
     public const string kServicesRepositoryNodeName = "ServicesRepository";
 
+    public const string kServiceAliasSwitch = "alias";
+
     /// <summary>
     /// The name of the node that contains the configuration data for the
     /// MyToolsPack library.
