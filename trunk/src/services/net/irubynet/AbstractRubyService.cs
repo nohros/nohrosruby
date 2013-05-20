@@ -42,6 +42,7 @@ namespace Nohros.Ruby
       facts.Add(RubyStrings.kUserNameFact, Environment.UserName);
       facts.Add(RubyStrings.kMachineNameFact, Environment.MachineName);
       facts.Add(RubyStrings.kCLRVersionFact, Environment.Version.ToString());
+      facts.Add(RubyStrings.kServiceNameFact, GetType().Assembly.GetName().Name);
     }
     #endregion
 

@@ -192,10 +192,10 @@ namespace Nohros.Ruby
 
       // If the logging server was defined in the config fake the query response
       if (!string.IsNullOrEmpty(settings_.LoggingChannel))
-      OnLogAggregatorQueryReseponse(
-        new ResponseMessage.Builder()
-          .AddAddresses(settings_.LoggingChannel)
-          .Build());
+        OnLogAggregatorQueryReseponse(
+          new ResponseMessage.Builder()
+            .AddAddresses(settings_.LoggingChannel)
+            .Build());
     }
 
     /*void SimulateQueryResponse() {
@@ -347,14 +347,15 @@ namespace Nohros.Ruby
 #endif
       ++running_services_count_;
       // A try/catch block is used here to ensure the consistence of the
-      // list of running services and to handle exceptions taht may occur
+      // list of running services and to handle exceptions that may occur
       // during service initialization and is not properly handled by
       // the service.
       try {
         var factory = new ServicesFactory(settings_);
         IRubyService service = factory.CreateService(message);
         string service_name = service.Facts
-          .GetString(Strings.kServiceNameFact, Strings.kNodeServiceName);
+          .GetString(Strings.kServiceNameFact,
+            service.GetType().Assembly.GetName().Name);
         var aggregator_logger = new AggregatorLogger(service_name, settings_,
           forwarding_aggregator_service_);
         var host = new RubyServiceHost(service, ruby_message_channel_,

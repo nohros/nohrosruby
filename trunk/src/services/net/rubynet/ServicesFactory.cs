@@ -28,7 +28,13 @@ namespace Nohros.Ruby
       IRubyServiceFactory factory = GetServiceFactory(options);
       string service_switches = options
         .GetString(Strings.kServiceSwitches, string.Empty);
-      return factory.CreateService(service_switches);
+      string alias = options.GetString(Strings.kServiceAliasSwitch, string.Empty);
+      IRubyService service = factory.CreateService(service_switches);
+      if (alias != string.Empty) {
+        // If the alias was defined override the service name fact.
+        service.Facts.Add(Strings.kServiceNameFact, alias);
+      }
+      return service;
     }
 
     IRubyServiceFactory GetServiceFactory(IDictionary<string, string> options) {
