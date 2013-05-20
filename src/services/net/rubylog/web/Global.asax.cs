@@ -7,6 +7,7 @@ namespace Nohros.Ruby.Logging
   public class Global : HttpApplication
   {
     void Application_Start(object sender, EventArgs e) {
+      new AppFactory().CreateApp().Run(); 
       RouteTable.Routes.MapConnection<HttpPublisher>("logs", "/logs");
     }
 

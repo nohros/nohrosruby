@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using Nohros.Data.Json;
+using Nohros.Ruby.Extensions;
 using ZMQ;
 using Nohros.Ruby.Protocol;
 using Nohros.Concurrent;
@@ -132,6 +133,7 @@ namespace Nohros.Ruby.Logging
     /// </param>
     void Publish(LogMessage message) {
       try {
+        publisher_.Send(message.Application.AsBytes());
         publisher_.Send(message.ToByteArray());
         if (logger_.IsDebugEnabled) {
           logger_.Debug("A log message has been published.");
