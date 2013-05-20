@@ -34,7 +34,7 @@ namespace Nohros.Ruby
     ShellSelfHostProcess CreateShellSelfHostProcess(ZmqContext context) {
       var self_host_message_channel =
         new HostMessageChannel(context,
-          new ZMQEndPoint(Strings.kDefaultSelfHostEndpoint));
+          new ZMQEndPoint(settings_.SelfHostEndpoint));
       var shell_ruby_process = CreateShellProcess(self_host_message_channel);
       var self_host_process =
         CreateSelfHostProcess(self_host_message_channel, context);
@@ -76,7 +76,7 @@ namespace Nohros.Ruby
     IRubyProcess CreateServiceSelfHostProcess(ZmqContext context) {
       var self_host_message_channel =
         new HostMessageChannel(context,
-          new ZMQEndPoint(Strings.kDefaultSelfHostEndpoint));
+          new ZMQEndPoint(settings_.SelfHostEndpoint));
 
       // reuse the address to prevent 'address already in use' error, this
       // tells the socket to receive any message that arrives at the bound

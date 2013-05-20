@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using Google.ProtocolBuffers;
 using Nohros.Concurrent;
 using Nohros.Resources;
+using Nohros.Ruby.Extensions;
 using ZMQ;
 using ZmqContext = ZMQ.Context;
 using ZmqSocket = ZMQ.Socket;
@@ -50,9 +52,13 @@ namespace Nohros.Ruby.Logging
       socket.Subscribe(new byte[0]);
       while (channel_is_opened_) {
         try {
-          byte[] message = socket.Recv();
-          LogMessage log = LogMessage.ParseFrom(ByteString.CopyFrom(message));
-          OnMessageReceived(log);
+          Queue<byte[]> parts = socket.RecvAll();
+          if (parts.Count != 2) {
+            parts.Dequeue(); // discard the subscription.
+            byte[] message = parts.Dequeue();
+            LogMessage log = LogMessage.ParseFrom(ByteString.CopyFrom(message));
+            OnMessageReceived(log);
+          }
         } catch (ZMQ.Exception ze) {
           // TODO: Check for context disposition.
         } catch (System.Exception e) {

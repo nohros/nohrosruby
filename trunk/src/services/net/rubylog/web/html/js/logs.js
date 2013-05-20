@@ -1,10 +1,15 @@
-$(function(){
-  var connection = $.connection('/logs');
+function LogCtrl($scope) {
+  $scope.apps = [];
 
+  $scope.addApp = function() {
+  };
+
+  // starts the SignalR persistent connection.
+  var connection = $scope.connection = $.connection('/logs');
   connection.received(function(data) {
-    console.log(data);
+    var log = JSON.parse(data);
+    var app = apps[log.application];
+    $scope.apply(function() { });
   });
-
-  connection.start().done(function() {
-  });
-});
+  connection.start().done(function() { });
+}
