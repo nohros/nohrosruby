@@ -1,0 +1,66 @@
+header {
+  background-color: #1b1b24;
+  padding: 22px;
+  margin-bottom: 20px;
+}
+
+header h2 {
+  color: #fff;
+  font-weight: 500;
+}
+
+header h4 {
+  color: #fff;
+  font-weight: 300;
+  font-size: 23px;
+}
+
+h1, h2, h3, h4 {
+  margin-bottom: 8px;
+  margin-top: 8px;
+}
+
+.status {
+  background-color: #82BD1A;
+  height: 150px;
+  font-size: 30px;
+  font-family: sans-serif;
+  text-align: center;
+  color: #fff;
+  line-height: 150px;
+  margin-top: 50px;
+}
+
+.title {
+  color: #fff;
+  background-color: #66B649;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.app {
+  padding: 0;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  border: solid 1px #6CC644;border: solid 1px #6CC644;
+  margin: 10px;
+}
+
+.app h1 {
+  font-size: 18px;
+  font-weight: 200;
+  margin: 0;
+}
+
+.app .up-time,
+.app .title {
+  padding: 6px 8px;
+}
+
+.app .title h1 {
+  color: #fff;
+}
+
+.app .up-time {
+}

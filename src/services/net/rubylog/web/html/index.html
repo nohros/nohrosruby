@@ -8,21 +8,37 @@
   <title>Ruby Logging</title>
 
   <link rel="stylesheet" href="css/foundation.css" />
+  <link rel="stylesheet" href="css/logs.css" />
   <script src="js/vendor/custom.modernizr.js"></script>
 
 </head>
 <body>
-
-<div class="row" ng-controller="LogCtrl">
-  <ul ng-repeat="(app, log) in logs">
-    <li>{{app}}</li>
-  </ul>
-</div>
+  <header>
+    <div class="row">
+      <div class="twelve columns">
+        <h2>Logs</h2>
+        <h4>Services status</h4>
+      </div>
+    </div>
+  </header>
+  <div class="row" ng-controller='LogCtrl'>
+    <div class="twelve columns">
+      <ul class="small-block-grid-4">
+        <li ng-repeat="(name, app) in apps">
+          <div class="app">
+            <div class="title">
+              <h1>{{app.name}}</h1>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
 
   <script>
-  document.write('<script src=' +
-  ('__proto__' in {} ? 'js/vendor/zepto' : 'js/vendor/jquery') +
-  '.js><\/script>')
+    document.write('<script src=' +
+    ('__proto__' in {} ? 'js/vendor/zepto' : 'js/vendor/jquery') +
+    '.js><\/script>')
   </script>
   
   <script src="js/foundation.min.js"></script>
