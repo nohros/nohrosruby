@@ -1,5 +1,11 @@
 function LogCtrl($scope) {
-  var logs = $scope.logs = {};
+  var apps = $scope.apps = {
+    "atk.rgo" : {
+      name: 'RGO SQL00',
+      timestamp:20,
+      status: "ERROR"
+    }
+  };
 
   $scope.addApp = function() {
   };
@@ -13,13 +19,4 @@ function LogCtrl($scope) {
       }
     }
   }, 1000);
-
-  // starts the SignalR persistent connection.
-  var connection = $scope.connection = $.connection('/logs');
-  connection.received(function(data) {
-    var msg = JSON.parse(data);
-    logs[msg.app] = msg;
-    $scope.$apply();
-  });
-  connection.start().done(function() { });
 }
