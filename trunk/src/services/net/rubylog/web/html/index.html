@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<!--[if IE 8]> 				 <html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<!--[if IE 8]> 				 <html class="no-js lt-ie9" ng-app lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" ng-app lang="en" > <!--<![endif]-->
 
 <head>
 	<meta charset="utf-8" />
@@ -13,6 +13,12 @@
 </head>
 <body>
 
+<div class="row" ng-controller="LogCtrl">
+  <ul ng-repeat="(app, log) in logs">
+    <li>{{app}}</li>
+  </ul>
+</div>
+
   <script>
   document.write('<script src=' +
   ('__proto__' in {} ? 'js/vendor/zepto' : 'js/vendor/jquery') +
@@ -22,6 +28,7 @@
   <script src="js/foundation.min.js"></script>
   <script src="js/jquery-1.6.4.min.js"></script>
   <script src="js/jquery.signalR-1.1.0.min.js"></script>
+  <script src="js/angular.min.js"></script>
   <script src="js/logs.js"></script>
   <!--
   
@@ -54,9 +61,5 @@
   <script src="js/foundation/foundation.topbar.js"></script>
   
   -->
-  
-  <script>
-    $(document).foundation();
-  </script>
 </body>
 </html>
