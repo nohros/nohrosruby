@@ -154,9 +154,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-    <None Include="protos\google\protobuf\csharp_options.proto" />
-    <None Include="protos\google\protobuf\descriptor.proto" />
-    <None Include="protos\tutorial\addressbook.proto" />
     <None Include="ruby.net.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -188,8 +185,6 @@
     <Content Include="libzmq.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="licenses\license.txt" />
-    <Content Include="licenses\protoc-license.txt" />
     <None Include="nohros.logging.log4net.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
