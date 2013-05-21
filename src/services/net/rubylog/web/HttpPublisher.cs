@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.AspNet.SignalR;
 using Nohros.Data.Json;
+using Nohros.Extensions;
 
 namespace Nohros.Ruby.Logging
 {
@@ -42,14 +43,15 @@ namespace Nohros.Ruby.Logging
       context_.Connection.Broadcast(
         new JsonStringBuilder()
           .WriteBeginObject()
-          .WriteMember("app", message.Application)
+          .WriteMember("app", message.Application.JsonEscape())
           .WriteMember("level", message.Level)
-          .WriteMember("reason", message.Reason)
-          .WriteMember("user", message.User)
+          .WriteMember("reason", message.Reason.JsonEscape())
+          .WriteMember("user", message.User.JsonEscape())
           .WriteMember("timestamp", message.TimeStamp)
           .ForEach(message.CategorizationList,
             (category, builder) =>
               builder.WriteMember(category.Key, category.Value))
+          .WriteEndObject()
           .ToString());
     }
   }

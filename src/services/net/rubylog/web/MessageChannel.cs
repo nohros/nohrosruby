@@ -4,7 +4,6 @@ using System.Threading;
 using Google.ProtocolBuffers;
 using Nohros.Concurrent;
 using Nohros.Resources;
-using Nohros.Ruby.Extensions;
 using ZMQ;
 using ZmqContext = ZMQ.Context;
 using ZmqSocket = ZMQ.Socket;
@@ -53,7 +52,7 @@ namespace Nohros.Ruby.Logging
       while (channel_is_opened_) {
         try {
           Queue<byte[]> parts = socket.RecvAll();
-          if (parts.Count != 2) {
+          if (parts.Count == 2) {
             parts.Dequeue(); // discard the subscription.
             byte[] message = parts.Dequeue();
             LogMessage log = LogMessage.ParseFrom(ByteString.CopyFrom(message));

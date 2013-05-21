@@ -64,12 +64,13 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\..\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="nohros, Version=1.6.24.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="nohros, Version=1.6.25.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\packages\must.common.1.6.24.0\lib\net40\nohros.dll</HintPath>
+      <HintPath>..\..\..\..\packages\must.common.1.6.25.3\lib\net40\nohros.dll</HintPath>
     </Reference>
-    <Reference Include="nohros.extensions">
-      <HintPath>..\..\..\..\packages\must.extensions.0.0.6.0\lib\net40\nohros.extensions.dll</HintPath>
+    <Reference Include="nohros.extensions, Version=0.0.7.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\packages\must.extensions.0.0.7.2\lib\net40\nohros.extensions.dll</HintPath>
     </Reference>
     <Reference Include="nohros.ruby.net.extensions">
       <HintPath>..\..\..\..\packages\nohros.ruby.net.extensions.0.0.4.0\lib\net40\nohros.ruby.net.extensions.dll</HintPath>
@@ -166,7 +167,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>3743</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>

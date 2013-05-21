@@ -132,7 +132,7 @@ namespace Nohros.Ruby.Logging
     /// </param>
     void Publish(LogMessage message) {
       try {
-        publisher_.Send(message.Application.AsBytes());
+        publisher_.SendMore(message.Application.AsBytes());
         publisher_.Send(message.ToByteArray());
         if (logger_.IsDebugEnabled) {
           logger_.Debug("A log message has been published.");
