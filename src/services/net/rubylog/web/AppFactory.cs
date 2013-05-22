@@ -3,14 +3,14 @@ using System.Configuration;
 using Nohros.Configuration;
 using Nohros.IO;
 using Nohros.Extensions;
+using ServiceStack.WebHost.Endpoints;
 using ZmqContext = ZMQ.Context;
 
 namespace Nohros.Ruby.Logging
 {
   public class AppFactory
   {
-    public App CreateApp() {
-      Settings settings = LoadSettings();
+    public App CreateApp(StatusManager manager, Settings settings) {
       var publisher = new HttpPublisher();
       var context = new ZmqContext();
       if (settings.PublisherEndpoint.IsNullOrEmpty()) {
@@ -19,10 +19,14 @@ namespace Nohros.Ruby.Logging
             settings.PublisherEndpoint));
       }
       var channel = new MessageChannel(context, settings.PublisherEndpoint);
-      return new App(publisher, channel, settings);
+      return new App(publisher, channel, manager, settings);
     }
 
-    Settings LoadSettings() {
+    public StatusManager CreateStatusManager() {
+      return new StatusManager();
+    }
+
+    public Settings CreateSettings() {
       string config_file_name =
         ConfigurationManager.AppSettings[Strings.kConfigFileNameKey];
       if (string.IsNullOrEmpty(config_file_name)) {
