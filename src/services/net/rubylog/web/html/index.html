@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <!--[if IE 8]> 				 <html class="no-js lt-ie9" ng-app lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" ng-app lang="en" > <!--<![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" ng-app="logging" lang="en" > <!--<![endif]-->
 
 <head>
 	<meta charset="utf-8" />
   <meta name="viewport" content="width=device-width" />
   <title>Ruby Logging</title>
 
-  <link rel="stylesheet" href="css/foundation.css" />
-  <link rel="stylesheet" href="css/logs.css" />
+  <link rel="stylesheet" href="css/foundation.css"/>
+  <link rel="stylesheet" href="css/logs.css"/>
   <script src="js/vendor/custom.modernizr.js"></script>
 
 </head>
@@ -24,10 +24,10 @@
   <div class="row" ng-controller='LogCtrl'>
     <div class="twelve columns">
       <ul class="small-block-grid-4">
-        <li ng-repeat="(name, app) in apps">
-          <div class="app">
+        <li ng-repeat="service in services">
+          <div class="app" rb-status="{{service.status.type}}">
             <div class="title">
-              <h1>{{app.name}}</h1>
+              <h1>{{service.name}}</h1>
             </div>
           </div>
         </li>
@@ -45,6 +45,7 @@
   <script src="js/jquery-1.6.4.min.js"></script>
   <script src="js/jquery.signalR-1.1.0.min.js"></script>
   <script src="js/angular.min.js"></script>
+  <script src="js/angular-resource.min.js"></script>
   <script src="js/logs.js"></script>
   <!--
   

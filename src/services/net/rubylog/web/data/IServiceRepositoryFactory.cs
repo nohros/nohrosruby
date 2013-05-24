@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Nohros.Ruby.Logging.Data
 {
-  public interface IServicesRepositoryFactory
+  public interface IServiceRepositoryFactory
   {
     /// <summary>
     /// Creates a new instance of the <see cref="IServiceRepository"/> class

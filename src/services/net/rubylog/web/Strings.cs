@@ -9,5 +9,7 @@ namespace Nohros.Ruby.Logging
 
     public const string kDefaultConfigFileName = "rubylog.config";
     public const string kDefaultConfigRootNode = "rubylog";
+
+    public const string kServiceRepository = "ServiceRepository";
   }
 }

@@ -43,7 +43,6 @@ h1, h2, h3, h4 {
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
   border-radius: 3px;
-  border: solid 1px #6CC644;border: solid 1px #6CC644;
   margin: 10px;
 }
 
@@ -63,4 +62,36 @@ h1, h2, h3, h4 {
 }
 
 .app .up-time {
+}
+
+.app.unknown {
+  border: solid 1px gray;
+}
+
+.app.unknown .title {
+  background-color: gray;
+}
+
+.app.error {
+  border: solid 1px red;
+}
+
+.app.error .title {
+  background-color: red;
+}
+
+.app.info {
+  border: solid 1px #6CC644;
+}
+
+.app.info .title {
+  background-color: #6CC644;
+}
+
+.app.warn {
+  border: solid 1px yellow;
+}
+
+.app.warn .title {
+  background-color: yellow;
 }

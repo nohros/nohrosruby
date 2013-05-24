@@ -68,8 +68,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\packages\must.common.1.6.26.0\lib\net40\nohros.dll</HintPath>
     </Reference>
-    <Reference Include="nohros.data.sqlserver">
-      <HintPath>..\..\..\..\packages\must.data.sqlserver.0.0.1\lib\net20\nohros.data.sqlserver.dll</HintPath>
+    <Reference Include="nohros.data.sqlserver, Version=0.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\packages\must.data.sqlserver.0.0.2.0\lib\net20\nohros.data.sqlserver.dll</HintPath>
     </Reference>
     <Reference Include="nohros.extensions, Version=0.0.7.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -138,8 +139,10 @@
     <Compile Include="AppFactory.cs" />
     <Compile Include="data\IRegisteredServicesQuery.cs" />
     <Compile Include="data\IServiceRepository.cs" />
-    <Compile Include="data\IServicesRepositoryFactory.cs" />
+    <Compile Include="data\IServiceRepositoryFactory.cs" />
     <Compile Include="data\mssql\RegisteredServicesQuery.cs" />
+    <Compile Include="data\mssql\SqlServiceRepository.cs" />
+    <Compile Include="data\mssql\SqlServiceRepositoryFactory.cs" />
     <Compile Include="data\poco\Service.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
