@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web;
 using System.Web.Routing;
+using Nohros.Ruby.Logging.Data;
 using ServiceStack.WebHost.Endpoints;
 
 namespace Nohros.Ruby.Logging
@@ -10,15 +11,19 @@ namespace Nohros.Ruby.Logging
     class HttpApp : AppHostBase
     {
       readonly StatusManager manager_;
+      readonly Settings settings_;
 
       #region .ctor
-      public HttpApp(StatusManager manager)
+      public HttpApp(StatusManager manager, Settings settings)
         : base("Ruby Logging Web Service", typeof (HttpApp).Assembly) {
         manager_ = manager;
+        settings_ = settings;
       }
       #endregion
 
       public override void Configure(Funq.Container container) {
+        var factory = new AppFactory();
+        container.Register(ctx => factory.CreateServiceRepository(settings_));
         container.Register(manager_);
       }
     }
@@ -28,7 +33,7 @@ namespace Nohros.Ruby.Logging
       Settings settings = factory.CreateSettings();
       StatusManager manager = factory.CreateStatusManager();
       factory.CreateApp(manager, settings).Run();
-      new HttpApp(manager).Init();
+      new HttpApp(manager, settings).Init();
       RouteTable.Routes.MapConnection<HttpPublisher>("logs", "/logs");
     }
 

@@ -19,24 +19,9 @@ namespace Nohros.Ruby.Logging
       return new JsonStringBuilder()
         .WriteBeginObject()
         .WriteMember("timestamp", TimeUnitHelper.ToUnixTime(status.Timestamp))
-        .WriteMember("status", (int) status.Type)
+        .WriteMember("type", (int) status.Type)
         .WriteEndObject()
         .ToString();
-    }
-
-    string GetStatusText(StatusType type) {
-      switch (type) {
-        case StatusType.Error:
-          return "error";
-        case StatusType.Info:
-          return "info";
-        case StatusType.Warn:
-          return "warn";
-        case StatusType.Unknown:
-          return "unknown";
-        default:
-          throw new ArgumentException("type");
-      }
     }
   }
 }

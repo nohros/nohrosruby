@@ -45,12 +45,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\Google.ProtocolBuffers.2.4.1.521\lib\net40\Google.ProtocolBuffers.Serialization.dll</HintPath>
     </Reference>
-    <Reference Include="nohros, Version=1.6.24.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="nohros, Version=1.6.26.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\must.common.1.6.24.0\lib\net40\nohros.dll</HintPath>
+      <HintPath>..\..\..\packages\must.common.1.6.26.0\lib\net40\nohros.dll</HintPath>
     </Reference>
-    <Reference Include="nohros.data.sqlserver">
-      <HintPath>..\..\..\packages\must.data.sqlserver.0.0.1\lib\net20\nohros.data.sqlserver.dll</HintPath>
+    <Reference Include="nohros.data.sqlserver, Version=0.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\must.data.sqlserver.0.0.2.0\lib\net20\nohros.data.sqlserver.dll</HintPath>
     </Reference>
     <Reference Include="nohros.extensions, Version=0.0.6.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

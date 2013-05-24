@@ -3,6 +3,7 @@ using System.Configuration;
 using Nohros.Configuration;
 using Nohros.IO;
 using Nohros.Extensions;
+using Nohros.Ruby.Logging.Data;
 using ServiceStack.WebHost.Endpoints;
 using ZmqContext = ZMQ.Context;
 
@@ -24,6 +25,15 @@ namespace Nohros.Ruby.Logging
 
     public StatusManager CreateStatusManager() {
       return new StatusManager();
+    }
+
+    public IServiceRepository CreateServiceRepository(Settings settings) {
+      IProviderNode provider = settings
+        .Providers
+        .GetProviderNode(Strings.kServiceRepository);
+      return RuntimeTypeFactory<IServiceRepositoryFactory>
+        .CreateInstance(provider)
+        .CreateServiceRepository(provider.Options.ToDictionary());
     }
 
     public Settings CreateSettings() {
