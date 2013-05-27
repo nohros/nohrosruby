@@ -52,15 +52,19 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\packages\Google.ProtocolBuffers.2.4.1.521\lib\net40\Google.ProtocolBuffers.Serialization.dll</HintPath>
     </Reference>
+    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="MongoDB.Bson">
       <HintPath>..\..\..\..\packages\mongocsharpdriver.1.8.1\lib\net35\MongoDB.Bson.dll</HintPath>
     </Reference>
     <Reference Include="MongoDB.Driver">
       <HintPath>..\..\..\..\packages\mongocsharpdriver.1.8.1\lib\net35\MongoDB.Driver.dll</HintPath>
     </Reference>
-    <Reference Include="nohros, Version=1.6.24.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="nohros, Version=1.7.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\packages\must.common.1.6.24.0\lib\net40\nohros.dll</HintPath>
+      <HintPath>..\..\..\..\packages\must.common.1.7.0.0\lib\net40\nohros.dll</HintPath>
     </Reference>
     <Reference Include="nohros.data.mongodb">
       <HintPath>..\..\..\..\packages\must.data.mongodb.0.0.1\lib\net40\nohros.data.mongodb.dll</HintPath>
@@ -124,6 +128,11 @@
       <Project>{3C54BE0B-813D-4543-81C5-62ABC1188CE2}</Project>
       <Name>protos</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="nohros.logging.log4net.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

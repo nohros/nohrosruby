@@ -7,5 +7,6 @@ namespace Nohros.Ruby.Logging
   public class StatusRequest
   {
     public string ServiceName { get; set; }
+    public long MaxIdleTime { get; set; }
   }
 }

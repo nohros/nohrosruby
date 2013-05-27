@@ -11,7 +11,7 @@ namespace Nohros.Ruby.Logging.Data.MongoDB
     const string kClassName =
       "Nohros.Ruby.Logging.Data.MongoDB.LogMessageCommand";
 
-    const string kStorageCollectionName = "storages";
+    const string kStorageCollectionName = kStoragePrefix + "storages";
     const string kStorageApplicationField = "app";
     const string kStorageNameField = "name";
     const string kStoragePrefix = "logging.";
@@ -54,10 +54,10 @@ namespace Nohros.Ruby.Logging.Data.MongoDB
     }
 
     MongoCollection GetStorage(string application) {
-      var name = application;
+      var name = SanitizeCollectionName(application);
       var collection = database_.GetCollection(kStorageCollectionName);
       var storage = collection.FindOne(
-        Query.EQ(kStorageApplicationField, application));
+        Query.EQ(kStorageApplicationField, name));
       if (storage != null) {
         name = storage[kStorageNameField].AsString;
         collection = database_.GetCollection(kStoragePrefix + name);
@@ -68,10 +68,19 @@ namespace Nohros.Ruby.Logging.Data.MongoDB
       return CreateStorage(kStoragePrefix + name);
     }
 
+    string SanitizeCollectionName(string name) {
+      return name.Replace(" ", ".").ToLower();
+    }
+
     MongoCollection CreateStorage(string name) {
       var storage = database_.GetCollection(name);
       if (!storage.Exists()) {
-        // TODO: Add the default indexes.
+        storage.EnsureIndex(
+          new IndexKeysBuilder()
+            .Ascending("timestamp"));
+        storage.EnsureIndex(
+          new IndexKeysBuilder()
+            .Ascending("level"));
       }
       return storage;
     }

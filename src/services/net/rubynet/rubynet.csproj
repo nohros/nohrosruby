@@ -61,9 +61,9 @@
     <Reference Include="mytoolspack.console, Version=0.3.8.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\nohros.mytoolspack.0.3.9\lib\mytoolspack.console.dll</HintPath>
     </Reference>
-    <Reference Include="nohros, Version=1.6.24.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="nohros, Version=1.7.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\must.common.1.6.24.0\lib\net40\nohros.dll</HintPath>
+      <HintPath>..\..\..\packages\must.common.1.7.0.0\lib\net40\nohros.dll</HintPath>
     </Reference>
     <Reference Include="nohros.data.sqlite">
       <HintPath>..\..\..\packages\must.data.sqlite.0.0.3\lib\net40\nohros.data.sqlite.dll</HintPath>

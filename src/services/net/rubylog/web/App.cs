@@ -8,7 +8,6 @@ namespace Nohros.Ruby.Logging
   {
     readonly StatusManager manager_;
     readonly MessageChannel message_channel_;
-    readonly HttpPublisher publisher_;
     readonly Settings settings_;
 
     #region .ctor
@@ -27,11 +26,9 @@ namespace Nohros.Ruby.Logging
     /// <param name="settings">
     /// A <see cref="Settings"/> object containing the user defined settings.
     /// </param>
-    public App(HttpPublisher publisher,
-      MessageChannel message_channel,
+    public App(MessageChannel message_channel,
       StatusManager manager,
       Settings settings) {
-      publisher_ = publisher;
       message_channel_ = message_channel;
       settings_ = settings;
       manager_ = manager;
@@ -41,7 +38,6 @@ namespace Nohros.Ruby.Logging
     #endregion
 
     void OnMessageReceived(LogMessage message) {
-      publisher_.Broadcast(message);
       manager_.SetStatus(message.Application, GetStatus(message));
     }
 
@@ -64,6 +60,9 @@ namespace Nohros.Ruby.Logging
           status.Type = StatusType.Unknown;
           break;
       }
+      status.Timestamp =
+        new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+          .AddSeconds(message.TimeStamp);
       return status;
     }
 

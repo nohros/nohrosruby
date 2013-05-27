@@ -2,6 +2,7 @@
 using System.Web;
 using System.Web.Routing;
 using Nohros.Ruby.Logging.Data;
+using ServiceStack.Text;
 using ServiceStack.WebHost.Endpoints;
 
 namespace Nohros.Ruby.Logging
@@ -22,6 +23,8 @@ namespace Nohros.Ruby.Logging
       #endregion
 
       public override void Configure(Funq.Container container) {
+        JsConfig.EmitCamelCaseNames = true;
+
         var factory = new AppFactory();
         container.Register(ctx => factory.CreateServiceRepository(settings_));
         container.Register(manager_);
