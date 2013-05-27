@@ -47,7 +47,9 @@ namespace Nohros.Ruby.Logging
             RuntimeTypeFactory<ILoggerFactory>
               .CreateInstanceFallback(provider, settings)
               .CreateLogger(provider.Options.ToDictionary());
-        } catch {
+        } catch(System.Exception e) {
+          Console.WriteLine();
+          Console.WriteLine("[ERROR] - " + e.Message);
         }
       }
     }

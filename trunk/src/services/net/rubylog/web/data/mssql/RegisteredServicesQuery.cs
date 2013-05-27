@@ -14,7 +14,12 @@ namespace Nohros.Ruby.Logging.Data.Sql
     const string kClassName =
       "Nohros.Ruby.Logging.Data.Sql.RegisteredServicesQuery";
 
-    const string kExecute = "";
+    const string kExecute = @"
+select service_name
+  ,service_display_name
+  ,service_max_idle_time
+from rb_logging_service
+";
 
     readonly LogLogger logger_ = LogLogger.ForCurrentProcess;
     readonly IDataReaderMapper<Service> mapper_;
@@ -40,8 +45,8 @@ namespace Nohros.Ruby.Logging.Data.Sql
       using (SqlConnection conn = sql_connection_provider_.CreateConnection())
       using (var builder = new CommandBuilder(conn)) {
         IDbCommand cmd = builder
-          .SetText(sql_connection_provider_.Schema + kExecute)
-          .SetType(CommandType.StoredProcedure)
+          .SetText(kExecute)
+          .SetType(CommandType.Text)
           .Build();
         try {
           conn.Open();
@@ -61,7 +66,10 @@ namespace Nohros.Ruby.Logging.Data.Sql
       return new DataReaderMapperBuilder<Service>(kClassName)
         .Map(x => x.Name, "service_name")
         .Map(x => x.DisplayName, "service_display_name")
-        .Map(x => x.MaxIdleTime, "max_idle_time")
+        .Map(x => x.MaxIdleTime, "service_max_idle_time")
+        .SetFactory(() => new Service {
+          Status = Status.Unknown
+        })
         .Build();
     }
   }

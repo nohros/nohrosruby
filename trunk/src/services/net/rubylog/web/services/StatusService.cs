@@ -16,9 +16,14 @@ namespace Nohros.Ruby.Logging
 
     public string Get(StatusRequest request) {
       Status status = status_manager_.GetStatus(request.ServiceName);
+      var idle_too_long =
+        DateTime.UtcNow.Subtract(status.Timestamp).TotalSeconds >
+          request.MaxIdleTime;
+      if (status.Type != StatusType.Unknown && idle_too_long) {
+        status = Status.Unknown;
+      }
       return new JsonStringBuilder()
         .WriteBeginObject()
-        .WriteMember("timestamp", TimeUnitHelper.ToUnixTime(status.Timestamp))
         .WriteMember("type", (int) status.Type)
         .WriteEndObject()
         .ToString();

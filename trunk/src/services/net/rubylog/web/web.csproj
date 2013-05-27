@@ -64,9 +64,9 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\..\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="nohros, Version=1.6.26.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="nohros, Version=1.7.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\packages\must.common.1.6.26.0\lib\net40\nohros.dll</HintPath>
+      <HintPath>..\..\..\..\packages\must.common.1.7.0.0\lib\net40\nohros.dll</HintPath>
     </Reference>
     <Reference Include="nohros.data.sqlserver, Version=0.0.2.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -189,7 +189,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>3743</DevelopmentServerPort>
+          <DevelopmentServerPort>1740</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost/rubylog</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>

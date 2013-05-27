@@ -22,6 +22,11 @@ namespace Nohros.Ruby.Logging.Data
     /// Gets a value that indicates how long a service should be idle before it
     /// is considered dead.
     /// </summary>
-    public long MaxIdleTime { get; set; }
+    public int MaxIdleTime { get; set; }
+
+    /// <summary>
+    /// Gets the current service status.
+    /// </summary>
+    public Status Status { get; set; }
   }
 }

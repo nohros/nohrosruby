@@ -4,7 +4,6 @@ using Nohros.Configuration;
 using Nohros.IO;
 using Nohros.Extensions;
 using Nohros.Ruby.Logging.Data;
-using ServiceStack.WebHost.Endpoints;
 using ZmqContext = ZMQ.Context;
 
 namespace Nohros.Ruby.Logging
@@ -12,7 +11,6 @@ namespace Nohros.Ruby.Logging
   public class AppFactory
   {
     public App CreateApp(StatusManager manager, Settings settings) {
-      var publisher = new HttpPublisher();
       var context = new ZmqContext();
       if (settings.PublisherEndpoint.IsNullOrEmpty()) {
         throw new ConfigurationErrorsException(
@@ -20,7 +18,7 @@ namespace Nohros.Ruby.Logging
             settings.PublisherEndpoint));
       }
       var channel = new MessageChannel(context, settings.PublisherEndpoint);
-      return new App(publisher, channel, manager, settings);
+      return new App(channel, manager, settings);
     }
 
     public StatusManager CreateStatusManager() {
