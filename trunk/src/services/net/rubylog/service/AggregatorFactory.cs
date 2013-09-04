@@ -42,15 +42,10 @@ namespace Nohros.Ruby.Logging
       IProvidersNodeGroup providers = settings
         .Providers[String.Empty];
       if (providers.GetProviderNode(Strings.kLoggingProviderName, out provider)) {
-        try {
-          LocalLogger.ForCurrentProcess.Logger =
-            RuntimeTypeFactory<ILoggerFactory>
-              .CreateInstanceFallback(provider, settings)
-              .CreateLogger(provider.Options.ToDictionary());
-        } catch(System.Exception e) {
-          Console.WriteLine();
-          Console.WriteLine("[ERROR] - " + e.Message);
-        }
+        LocalLogger.ForCurrentProcess.Logger =
+          RuntimeTypeFactory<ILoggerFactory>
+            .CreateInstanceFallback(provider, settings)
+            .CreateLogger(provider.Options.ToDictionary());
       }
     }
   }

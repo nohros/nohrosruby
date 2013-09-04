@@ -62,9 +62,9 @@
     <Reference Include="MongoDB.Driver">
       <HintPath>..\..\..\..\packages\mongocsharpdriver.1.8.1\lib\net35\MongoDB.Driver.dll</HintPath>
     </Reference>
-    <Reference Include="nohros, Version=1.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="nohros, Version=1.8.8.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\packages\must.common.1.7.0.0\lib\net40\nohros.dll</HintPath>
+      <HintPath>..\..\..\..\packages\must.common.1.8.8.0\lib\net40\nohros.dll</HintPath>
     </Reference>
     <Reference Include="nohros.data.mongodb">
       <HintPath>..\..\..\..\packages\must.data.mongodb.0.0.1\lib\net40\nohros.data.mongodb.dll</HintPath>

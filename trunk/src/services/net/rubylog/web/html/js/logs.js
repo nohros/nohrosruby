@@ -4,8 +4,8 @@
 angular.module('webService', ['ngResource'])
   .factory('WebService', function($resource) {
     var WebService = {
-      status : $resource('../api.ashx/services/status?ServiceName=:name&MaxIdleTime=:maxIdleTime', {maxIdleTime:5*60}, {}),
-      services: $resource('../api.ashx/services', {}, {})
+      status : $resource('api.ashx/services/status?ServiceName=:name&MaxIdleTime=:maxIdleTime', {maxIdleTime:5*60}, {}),
+      services: $resource('api.ashx/services', {}, {})
     }
     return WebService;
   });
