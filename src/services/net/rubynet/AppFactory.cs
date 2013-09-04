@@ -168,16 +168,10 @@ namespace Nohros.Ruby
       IProviderNode provider;
       if (settings_.Providers.GetProviderNode(Strings.kLogProviderNode,
         out provider)) {
-        // try/catch: logging related operations should not causes application
-        // issues.
-        try {
-          RubyLogger.ForCurrentProcess.Logger =
-            RuntimeTypeFactory<ILoggerFactory>
-              .CreateInstanceFallback(provider, settings_)
-              .CreateLogger(provider.Options.ToDictionary());
-        } catch (System.Exception e) {
-          // fails silently.
-        }
+        RubyLogger.ForCurrentProcess.Logger =
+          RuntimeTypeFactory<ILoggerFactory>
+            .CreateInstanceFallback(provider, settings_)
+            .CreateLogger(provider.Options.ToDictionary());
       }
     }
   }

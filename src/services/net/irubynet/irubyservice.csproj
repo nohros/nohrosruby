@@ -41,9 +41,9 @@
     <DocumentationFile>$(SolutionDir)docs\services\net\nohros.rubynet.irubyservice.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nohros, Version=1.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="nohros, Version=1.8.8.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\must.common.1.7.0.0\lib\net20\nohros.dll</HintPath>
+      <HintPath>..\..\..\packages\must.common.1.8.8.0\lib\net20\nohros.dll</HintPath>
     </Reference>
     <Reference Include="nohros.metrics, Version=0.3.4.9, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
